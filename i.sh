@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Instalar programas
-sudo pacman -S --noconfirm git go hyprland zsh kitty vim wofi nemo htop papirus-icon-theme ttf-nerd-fonts-symbols ttf-fira-code ttf-font-awesome redshift neofetch ncspot pavucontrol firefox chromium libreoffice-fresh orchis-theme
+sudo pacman -S --noconfirm git go hyprland qt5-wayland qt6-wayland dg-desktop-portal-hyprland dkms nvidia-dkms intel-ucode dunst grim slurp waybar zsh kitty vim wofi nemo htop papirus-icon-theme ttf-nerd-fonts-symbols ttf-fira-code ttf-font-awesome redshift neofetch ncspot pavucontrol firefox chromium libreoffice-fresh orchis-theme
 
 # Mover .config
 rm -r ~/.config
@@ -11,6 +11,8 @@ mv -f .config ~/
 mv -f .zshrc .zprofile wallpapers Scripts ~/
 
 # Dar permissões
+chmod -R 755 ~/.config/hypr/hyprland.conf
+chmod -R 755 ~/.config/wofi/config.conf
 chmod -R 755 ~/Scripts/changewp.sh
 
 #mouse
