@@ -1,98 +1,31 @@
-* {
-    font: "Fira Code 10";
+font = Font Awesome
+font-size = 11
 
-    nord0:     #000000;
-    nord1:     #242424;
-    nord2:     #2e2e2e;
-    nord3:     #383838;
+anchor = top
+width = 100%
+height = 28
+horizontal = true
 
-    nord4:     #c5c8c6;
-    nord5:     #d3d7cf;
-    nord6:     #d0d0d0;
+outline-width = 0
+border-width = 0
+min-input-width = 150
+result-spacing = 15
+padding-top = 5
+padding-bottom = 0
+padding-left = 0
+padding-right = 0
 
-    nord7:     #77a8a8;
-    nord8:     #e9ecef;
-    nord9:     #648c98;
-    nord10:    #4a7088;
-    nord11:    #a45757;
+prompt-text = " Run   "
 
-    nord12:    #d68a66;
-    nord13:    #e6c862;
-    nord14:    #91a474;
-    nord15:    #9b8fa7;
+background-color = #1a1b26
+text-color= #a7b3bc
 
-    background-color: transparent;
-    text-color:       @nord4;
-    accent-color:     @nord8;
+prompt-background = #414868
+prompt-background-padding = 1, 5, 1, 5
+prompt-background-corner-radius = 4
+prompt-color = #ffffff
 
-    margin:     0px;
-    padding:    0px;
-    spacing:    0px;
-}
-
-window {
-    width:               100%;
-    background-color:    @nord0;
-}
-
-listview {
-    border:              2px solid @nord1;
-    margin:              2px;
-    padding:             5px;
-    background-color:    @nord1;
-    children:            [ item ];
-}
-
-item {
-    padding:             5px 10px;
-    spacing:             5px;
-    background-color:    @nord2;
-    border-radius:       5px;
-    text-color:          @nord4;
-}
-
-item selected {
-    background-color:    @accent-color;
-    text-color:          @nord0;
-}
-
-item normal active {
-    background-color:    @nord7;
-    text-color:          @nord0;
-}
-
-item urgent {
-    background-color:    @nord13;
-    text-color:          @nord0;
-}
-
-item normal {
-    background-color:    @nord2;
-}
-
-inputbar {
-    width:               100%;
-    padding:             0px 10px;
-    spacing:             5px;
-    children:            [ prompt, entry ];
-}
-
-prompt {
-    text-color:          @accent-color;
-}
-
-entry {
-    width:               100%;
-    text-color:          @nord4;
-    background-color:    @nord2;
-    border:              1px solid @nord3;
-    border-radius:       5px;
-}
-
-element-icon {
-    size:                1.25em;
-}
-
-element-text {
-    text-color:          inherit;
-}
+selection-background = #414868
+selection-color = #ffffff
+selection-background-padding = 1, 5, 1, 5
+selection-background-corner-radius = 4
