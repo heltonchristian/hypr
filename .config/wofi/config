@@ -1,0 +1,98 @@
+* {
+    font: "Fira Code 10";
+
+    nord0:     #000000;
+    nord1:     #242424;
+    nord2:     #2e2e2e;
+    nord3:     #383838;
+
+    nord4:     #c5c8c6;
+    nord5:     #d3d7cf;
+    nord6:     #d0d0d0;
+
+    nord7:     #77a8a8;
+    nord8:     #e9ecef;
+    nord9:     #648c98;
+    nord10:    #4a7088;
+    nord11:    #a45757;
+
+    nord12:    #d68a66;
+    nord13:    #e6c862;
+    nord14:    #91a474;
+    nord15:    #9b8fa7;
+
+    background-color: transparent;
+    text-color:       @nord4;
+    accent-color:     @nord8;
+
+    margin:     0px;
+    padding:    0px;
+    spacing:    0px;
+}
+
+window {
+    width:               100%;
+    background-color:    @nord0;
+}
+
+listview {
+    border:              2px solid @nord1;
+    margin:              2px;
+    padding:             5px;
+    background-color:    @nord1;
+    children:            [ item ];
+}
+
+item {
+    padding:             5px 10px;
+    spacing:             5px;
+    background-color:    @nord2;
+    border-radius:       5px;
+    text-color:          @nord4;
+}
+
+item selected {
+    background-color:    @accent-color;
+    text-color:          @nord0;
+}
+
+item normal active {
+    background-color:    @nord7;
+    text-color:          @nord0;
+}
+
+item urgent {
+    background-color:    @nord13;
+    text-color:          @nord0;
+}
+
+item normal {
+    background-color:    @nord2;
+}
+
+inputbar {
+    width:               100%;
+    padding:             0px 10px;
+    spacing:             5px;
+    children:            [ prompt, entry ];
+}
+
+prompt {
+    text-color:          @accent-color;
+}
+
+entry {
+    width:               100%;
+    text-color:          @nord4;
+    background-color:    @nord2;
+    border:              1px solid @nord3;
+    border-radius:       5px;
+}
+
+element-icon {
+    size:                1.25em;
+}
+
+element-text {
+    text-color:          inherit;
+}
