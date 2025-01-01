@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Instalar programas
-sudo pacman -S --noconfirm git go hyprland qt5-wayland qt6-wayland desktop-portal-hyprland dkms nvidia-dkms intel-ucode dunst grim slurp waybar zsh kitty vim wofi nemo htop papirus-icon-theme ttf-nerd-fonts-symbols ttf-fira-code ttf-font-awesome redshift neofetch ncspot pavucontrol firefox chromium libreoffice-fresh orchis-theme
+sudo pacman -S --noconfirm git go hyprland qt5-wayland qt6-wayland wltools desktop-portal-hyprland dkms nvidia-dkms intel-ucode dunst grim slurp waybar zsh kitty vim wofi nemo htop papirus-icon-theme ttf-nerd-fonts-symbols ttf-fira-code ttf-font-awesome redshift neofetch ncspot pavucontrol firefox chromium libreoffice-fresh orchis-theme
 
 # Mover .config
 rm -r ~/.config
