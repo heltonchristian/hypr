@@ -11,9 +11,9 @@ mv -f .config ~/
 mv -f .zshrc .zprofile wallpapers Scripts ~/
 
 # Dar permissões
-chmod -R 755 ~/.config/hypr/hyprland.conf
-chmod -R 755 ~/.config/wofi/config.conf
-chmod -R 755 ~/Scripts/changewp.sh
+#chmod -R 755 ~/.config/hypr/hyprland.conf
+#chmod -R 755 ~/.config/wofi/config.conf
+#chmod -R 755 ~/Scripts/changewp.sh
 
 #trocar o shell para zsh
 chsh -s /bin/zsh
