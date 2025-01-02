@@ -21,14 +21,14 @@ alias rm='rm -r'
 alias cp='cp -r'
 alias vi='vim'
 alias fetch='clear && neofetch'
-
 alias hc='vim .config/hypr/hyprland.conf'
 alias hw='vim .config/hypr/hyprpaper.conf'
 alias kc='vim .config/wofi/config.conf'
 alias kc='vim .config/kitty/kitty.conf'
 alias zshrc='vim ~/.zshrc'
-alias waybarc='vim .config/waybar/config.json'
-alias waybarcss = 'vim .config/waybar/style.css'
+alias waybarc='vim .config/waybar/config.jsonc'
+alias waybarcss= 'vim .config/waybar/style.css'
+alias hexit= 'killall Hyprland'
 
 ############# COLORS #############
 LS_COLORS='rs=0:di=1;94:fi=1;37:ln=1;34'
