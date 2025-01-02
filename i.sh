@@ -8,7 +8,7 @@ rm -r ~/.config
 mv -f .config ~/
 
 # Mover arquivos .zshrc,.xinitrc, Scripts ...  para ~/
-mv -f .zshrc wallpapers scripts .gtkrc-2.0~/
+mv -f .zshrc wallpapers scripts .gtkrc-2.0 ~/
 
 # Dar permissões
 chmod -R 755 ~/scripts/changewp.sh
