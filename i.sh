@@ -32,3 +32,4 @@ papirus-folders -C white --theme Papirus
 cd
 rm -rf ~/ly
 rm -rf ~/yay
+cd
