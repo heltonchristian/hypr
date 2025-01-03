@@ -34,6 +34,7 @@ rm -rf ~/ly
 rm -rf ~/yay
 cd
 
+# Autologin
 sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
 echo "[Service]
 ExecStart=
