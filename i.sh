@@ -1,7 +1,6 @@
 #!/bin/sh
 
 # Instalar programas
-#sudo pacman -S --noconfirm git go vim hyprland egl-wayland hyprpaper polkit xorg-xwayland xorg-xlsclients qt5-wayland glfw-wayland qt5-wayland qt6-wayland wayland-utils xdg-desktop-portal xdg-desktop-portal-hyprland dkms nvidia-dkms libva-nvidia-driver lib32-nvidia-utils grim slurp waybar zsh kitty vim wofi nemo btop papirus-icon-theme ttf-nerd-fonts-symbols ttf-fira-code ttf-font-awesome neofetch pavucontrol firefox libreoffice-fresh orchis-theme nwg-look
 sudo pacman -S --noconfirm git go hyprland hyprpaper xdg-desktop-portal-hyprland waybar wofi kitty zsh vim
 
 sudo pacman -S --noconfirm linux-headers nvidia-dkms nvidia-utils libva libva-nvidia-driver lib32-nvidia-utils
