@@ -12,10 +12,10 @@ rm -r ~/.config
 mv -f .config ~/
 
 # Mover arquivos .zshrc,.xinitrc, Scripts ...  para ~/
-mv -f .zshrc .zprofile wallpapers scripts ~/
+mv -f .zshrc .zprofile .gtkrc-2.0 wallpapers scripts ~/
 
 # Dar permissões
-chmod -R 755 ~/scripts/changewp.sh
+chmod -R 755 ~/scripts/changewpH.sh
 
 #trocar o shell para zsh
 chsh -s /bin/zsh
@@ -34,7 +34,7 @@ yay -S --noconfirm papirus-folders hyprshot
 papirus-folders -C white --theme Papirus
 
 cd
-rm -rf ~/ly
+rm -rf ~/hypr
 rm -rf ~/yay
 cd
 
