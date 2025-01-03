@@ -24,7 +24,7 @@ makepkg -si
 cd
 
 #AUR programas
-yay -S --noconfirm papirus-folders
+yay -S --noconfirm papirus-folders hyprshot
 
 #icones, temas e fontes
 papirus-folders -C white --theme Papirus
