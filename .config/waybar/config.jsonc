@@ -41,8 +41,8 @@
     "format-icons": {
       "default": ["\uf026", "\uf027", "\uf028"]
     },
-    "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
-    "on-click-right": "pavucontrol",
+    "on-click": "pavucontrol",
+    "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toogle",
     "format-muted": "\uf00d {volume}%"
   },
 
