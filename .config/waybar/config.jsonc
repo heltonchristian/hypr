@@ -31,8 +31,8 @@
   "idle_inhibitor": {
     "format": "{icon}",
     "format-icons": {
-      "activated": "",
-      "deactivated": ""
+      "activated": "",
+      "deactivated": "󰾫"
     }
   },
 
@@ -41,7 +41,7 @@
     "format-icons": {
       "default": ["\uf026", "\uf027", "\uf028"]
     },
-    "on-click": "pavucontrol",
+    "on-click": "/home/ly/scripts/changeAudio.sh",
     "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toogle",
     "format-muted": "\uf00d {volume}%"
   },
