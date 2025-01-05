@@ -16,6 +16,7 @@ mv -f .zshrc .zprofile .gtkrc-2.0 wallpapers scripts ~/
 
 # Dar permissões
 chmod -R 755 ~/scripts/changewpH.sh
+chmod -R 755 ~/scripts/changeAudio.sh
 
 #trocar o shell para zsh
 chsh -s /bin/zsh
