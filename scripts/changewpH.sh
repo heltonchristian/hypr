@@ -12,10 +12,9 @@ sleep 1
 
 hyprctl hyprpaper unload unused
 
-WALLPAPERF="$HOME/wallpapers/$WALLPAPER"
 HYPRPAPER_CONF="$HOME/.config/hypr/hyprpaper.conf"
 echo " " > $HYPRPAPER_CONF
-echo "preload = $WALLPAPERF" >> $HYPRPAPER_CONF
-echo "wallpaper = DP-1, $WALLPAPERF" >> $HYPRPAPER_CONF
-echo "wallpaper = DVI-I-1, $WALLPAPERF" >> $HYPRPAPER_CONF
+echo "preload = $WALLPAPER" >> $HYPRPAPER_CONF
+echo "wallpaper = DP-1, $WALLPAPER" >> $HYPRPAPER_CONF
+echo "wallpaper = DVI-I-1, $WALLPAPER" >> $HYPRPAPER_CONF
 echo "splash = false" >> $HYPRPAPER_CONF
