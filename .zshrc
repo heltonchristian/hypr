@@ -43,7 +43,7 @@ alias zshrc='vim ~/.zshrc'
 alias wc='vim ~/.config/wofi/config'
 alias waybarc='vim .config/waybar/config.jsonc'
 alias waybarcss='vim .config/waybar/style.css'
-alias sexit='pkill -KILL -u $USER'
+alias hexit='pkill -KILL -u $USER'
 
 ############# COLORS #############
 LS_COLORS='rs=0:di=1;94:fi=1;37:ln=1;34'
