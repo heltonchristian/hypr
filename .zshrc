@@ -45,12 +45,6 @@ alias waybarc='vim .config/waybar/config.jsonc'
 alias waybarcss='vim .config/waybar/style.css'
 alias sexit='pkill -KILL -u $USER'
 
-############### void ##################
-alias xi='sudo xbps-install -S'
-alias xr='sudo xbps-remove -R'
-alias xu='sudo xbps-install -Su'
-alias xsearch='xbps-query -Rs'
-
 ############# COLORS #############
 LS_COLORS='rs=0:di=1;94:fi=1;37:ln=1;34'
 export LS_COLORS
