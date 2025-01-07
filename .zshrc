@@ -43,7 +43,7 @@ alias zshrc='vim ~/.zshrc'
 alias wc='vim ~/.config/wofi/config'
 alias waybarc='vim .config/waybar/config.jsonc'
 alias waybarcss='vim .config/waybar/style.css'
-alias exits='pkill -KILL -u $USER'
+alias sexit='pkill -KILL -u $USER'
 
 ############### void ##################
 alias xi='sudo xbps-install -S'
