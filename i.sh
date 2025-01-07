@@ -5,7 +5,7 @@ sudo pacman -S --noconfirm git go hyprland hyprpaper xdg-desktop-portal-hyprland
 
 sudo pacman -S --noconfirm linux-headers nvidia-dkms nvidia-utils libva libva-nvidia-driver lib32-nvidia-utils
 
-sudo pacman -S --noconfirm nemo nemo-fileroller pavucontrol grim slurp btop papirus-icon-theme neofetch pavucontrol firefox libreoffice-fresh orchis-theme
+sudo pacman -S --noconfirm nemo nemo-fileroller pavucontrol grim slurp btop papirus-icon-theme neofetch pavucontrol firefox chromium libreoffice-fresh orchis-theme
 
 # Mover .config
 rm -r ~/.config
