@@ -1,11 +1,11 @@
 {
   "layer": "bottom",
   "position": "top",
-  "height": 24,
+  "height": 22,
   "spacing": 5,
   "modules-left": ["hyprland/workspaces"],
   "modules-center": ["hyprland/window"],
-  "modules-right": ["idle_inhibitor", "backlight/slider", "pulseaudio", "tray", "clock"],
+  "modules-right": ["clock", "pulseaudio", "idle_inhibitor", "tray"],
 
   "hyprland/workspaces": {
     "format": "{name}",
@@ -25,7 +25,8 @@
   },
 
   "hyprland/window": {
-    "format": "{title}"
+    "format": "{title}",
+    "icon-size": 10
   },
 
   "idle_inhibitor": {
@@ -37,22 +38,23 @@
   },
 
   "pulseaudio": {
-    "format": "{icon} {volume}%",
-    "format-icons": {
-      "default": ["\uf026", "\uf027", "\uf028"]
-    },
-    "on-click": "/home/ly/scripts/changeAudio.sh",
-    "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toogle",
-    "format-muted": "\uf00d {volume}%"
+  "format": "{icon} {volume}%",
+  "format-icons": {
+    "default": ["\uf026", "\uf027", "\uf028"]
+  },
+  "on-click": "/home/ly/scripts/changeAudio.sh",
+  "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+  "format-muted": "\uf00d {volume}%",
+  "device": "default"
   },
 
-  "tray": {
-    "icon-size": 20,
-    "spacing": 10
+ "tray": {
+    "icon-size": 15,
+    "spacing": 8
   },
 
   "clock": {
-    "format": "{:%d/%m/%Y %H:%M}",
+    "format": "{:%H:%M - %d/%m/%y}",
     "tooltip-format": "<tt><big>{calendar}</big></tt>",
     "calendar": {
       "format": {
