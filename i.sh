@@ -5,14 +5,14 @@ sudo pacman -S --noconfirm git go hyprland hyprpaper xdg-desktop-portal-hyprland
 
 sudo pacman -S --noconfirm linux-headers nvidia-dkms nvidia-utils libva libva-nvidia-driver lib32-nvidia-utils
 
-sudo pacman -S --noconfirm nemo nemo-fileroller pavucontrol grim slurp btop papirus-icon-theme neofetch pavucontrol firefox chromium libreoffice-fresh orchis-theme ttf-font-awesome
+sudo pacman -S --noconfirm nemo nemo-fileroller grim slurp btop papirus-icon-theme neofetch pavucontrol firefox chromium libreoffice-fresh libreoffice-fresh-pt-br orchis-theme ttf-font-awesome steam spotify-launcher
 
 # Mover .config
 rm -r ~/.config
 mv -f .config ~/
 
 # Mover arquivos .zshrc,.xinitrc, Scripts ...  para ~/
-mv -f .zshrc .zprofile .gtkrc-2.0 wallpapers scripts ~/
+mv -f .zshrc .zprofile wallpapers scripts ~/
 
 # Dar permissões
 chmod -R 755 ~/scripts/changewpH.sh
