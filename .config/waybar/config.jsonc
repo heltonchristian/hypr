@@ -1,7 +1,7 @@
 {
   "layer": "bottom",
   "position": "top",
-  "height": 22,
+  "height": 24,
   "spacing": 5,
   "modules-left": ["hyprland/workspaces"],
   "modules-center": ["hyprland/window"],
@@ -32,8 +32,8 @@
   "idle_inhibitor": {
     "format": "{icon}",
     "format-icons": {
-      "activated": "",
-      "deactivated": "󰾫"
+      "activated": "",
+      "deactivated": ""
     }
   },
 
@@ -43,8 +43,7 @@
     "default": ["\uf026", "\uf027", "\uf028"]
   },
   "on-click": "/home/ly/scripts/changeAudio.sh",
-  "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
-  "format-muted": "\uf00d {volume}%",
+  "on-click-right": "pavucontrol",
   "device": "default"
   },
 
