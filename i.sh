@@ -1,9 +1,9 @@
 #!/bin/sh
 
 # Instalar programas
-sudo pacman -S --noconfirm git go hyprland hyprpaper xdg-desktop-portal-hyprland waybar rofi kitty zsh vim nwg-look remmina freerdp krita
+sudo pacman -S --noconfirm git go hyprland hyprpaper xorg-xwayland xdg-desktop-portal-hyprland waybar rofi kitty zsh vim nwg-look remmina freerdp krita
 
-sudo pacman -S --noconfirm linux-headers nvidia-dkms nvidia-utils libva libva-nvidia-driver lib32-nvidia-utils
+sudo pacman -S --noconfirm  dkms linux-headers nvidia-dkms nvidia-utils libva libva-nvidia-driver lib32-nvidia-utils xorg-server 
 
 sudo pacman -S --noconfirm nemo nemo-fileroller grim slurp papirus-icon-theme neofetch firefox orchis-theme ttf-font-awesome ttf-fira-code steam spotify-launcher
 
