@@ -1,11 +1,11 @@
 #!/bin/sh
 
 # Instalar programas
-sudo pacman -S --noconfirm git go hyprland hyprpaper xdg-desktop-portal-hyprland waybar rofi kitty zsh vim fuse nwg-look remmina freerdp 
+sudo pacman -S --noconfirm git go hyprland hyprpaper xdg-desktop-portal-hyprland waybar rofi kitty zsh vim fuse nwg-look remmina freerdp krita
 
 sudo pacman -S --noconfirm linux-headers nvidia-dkms nvidia-utils libva libva-nvidia-driver lib32-nvidia-utils
 
-sudo pacman -S --noconfirm nemo nemo-fileroller grim slurp btop papirus-icon-theme neofetch pavucontrol firefox chromium libreoffice-fresh libreoffice-fresh-pt-br orchis-theme ttf-font-awesome steam spotify-launcher
+sudo pacman -S --noconfirm nemo nemo-fileroller grim slurp btop papirus-icon-theme neofetch pavucontrol firefox chromium libreoffice-fresh libreoffice-fresh-pt-br orchis-theme ttf-font-awesome ttf-fira-code steam spotify-launcher
 
 # Mover .config
 rm -r ~/.config
