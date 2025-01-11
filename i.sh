@@ -18,9 +18,6 @@ mv -f .zshrc .zprofile wallpapers scripts ~/
 chmod -R 755 ~/scripts/changewpH.sh
 chmod -R 755 ~/scripts/changeAudio.sh
 
-#trocar o shell para zsh
-chsh -s /bin/zsh
-
 #AUR Helper
 cd
 git clone https://aur.archlinux.org/yay.git
@@ -44,3 +41,6 @@ sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
 echo "[Service]
 ExecStart=
 ExecStart=-/sbin/agetty -o '-p -f -- \\u' --noclear --autologin ly - \$TERM" | sudo tee /etc/systemd/system/getty@tty1.service.d/autologin.conf > /dev/null
+
+#trocar o shell para zsh
+chsh -s /bin/zsh
