@@ -1,9 +1,9 @@
 #!/bin/sh
 
 # Instalar programas
-sudo pacman -S --noconfirm git go hyprland hyprpaper xorg-xwayland xdg-desktop-portal-hyprland waybar rofi kitty zsh vim nwg-look remmina freerdp krita
+sudo pacman -S --noconfirm git go hyprland hyprpaper xdg-desktop-portal-hyprland waybar rofi kitty zsh vim nwg-look remmina freerdp krita
 
-sudo pacman -S --noconfirm  dkms linux-headers nvidia-dkms nvidia-utils libva libva-nvidia-driver lib32-nvidia-utils xorg-server 
+sudo pacman -S --noconfirm nvidia-dkms nvidia-utils libva libva-nvidia-driver lib32-nvidia-utils xorg-server 
 
 sudo pacman -S --noconfirm nemo nemo-fileroller grim slurp papirus-icon-theme neofetch firefox orchis-theme ttf-font-awesome ttf-fira-code steam spotify-launcher
 
@@ -21,7 +21,6 @@ chmod -R 755 ~/scripts/changewpH.sh
 chmod -R 755 ~/scripts/changeAudio.sh
 
 #AUR Helper
-cd
 git clone https://aur.archlinux.org/yay.git
 cd yay
 makepkg -si
@@ -31,7 +30,7 @@ cd
 yay -S --noconfirm papirus-folders hyprshot
 
 #icones, temas e fontes
-papirus-folders -C white --theme Papirus
+papirus-folders -C black --theme Papirus
 
 cd
 rm -rf ~/hypr
