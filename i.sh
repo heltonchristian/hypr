@@ -5,7 +5,7 @@ sudo pacman -S --noconfirm git go hyprland hyprpaper xdg-desktop-portal-hyprland
 
 sudo pacman -S --noconfirm nvidia-dkms nvidia-utils libva libva-nvidia-driver lib32-nvidia-utils
 
-sudo pacman -S --noconfirm grim slurp papirus-icon-theme neofetch firefox orchis-theme ttf-font-awesome ttf-nerd-fonts-symbols steam spotify-launcher
+sudo pacman -S --noconfirm grim slurp papirus-icon-theme neofetch orchis-theme ttf-font-awesome ttf-nerd-fonts-symbols steam
 
 # Mover .config
 rm -r ~/.config
