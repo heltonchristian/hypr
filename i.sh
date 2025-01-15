@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Instalar programas
-sudo pacman -S --noconfirm git go hyprland hyprpaper xdg-desktop-portal-hyprland waybar rofi kitty zsh vim remmina freerdp
+sudo pacman -S --noconfirm git go hyprland hyprpaper xdg-desktop-portal-hyprland waybar kitty zsh vim remmina freerdp
 
 sudo pacman -S --noconfirm nvidia-dkms nvidia-utils libva libva-nvidia-driver lib32-nvidia-utils
 
@@ -25,7 +25,7 @@ makepkg -si
 cd
 
 #AUR programas
-yay -S --noconfirm papirus-folders hyprshot librewolf-bin
+yay -S --noconfirm papirus-folders hyprshot librewolf-bin tofi
 
 #icones, temas e fontes
 papirus-folders -C black --theme Papirus
