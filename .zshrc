@@ -48,4 +48,3 @@ alias hexit='pkill -KILL -u $USER'
 ############# COLORS #############
 LS_COLORS='rs=0:di=1;94:fi=1;37:ln=1;34'
 export LS_COLORS
-export XDG_DATA_DIRS="$XDG_DATA_DIRS:$HOME/.icons/Papirus~white"
