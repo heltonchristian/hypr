@@ -1,0 +1,33 @@
+font = Font FreeSerif
+font-size = 10
+
+opacity = 0.8
+
+anchor = top
+width = 100%
+height = 24
+horizontal = true
+
+outline-width = 0
+border-width = 0
+min-input-width = 150
+result-spacing = 15
+padding-top = 5
+padding-bottom = 0
+padding-left = 0
+padding-right = 0
+
+prompt-text = "    "
+
+background-color = #2a2a2a
+text-color= #ffffff
+
+prompt-background = #2a2a2a
+prompt-background-padding = 1, 5, 1, 5
+prompt-background-corner-radius = 3
+prompt-color = #ffffff
+
+selection-background = #ffffff
+selection-color = #2a2a2a
+selection-background-padding = 1, 5, 1, 5
+selection-background-corner-radius = 3

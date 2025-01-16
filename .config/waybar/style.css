@@ -1,6 +1,5 @@
 *{
-	/*font-family: "FreeSans";*/
-	font-family: "Cantarell";
+	font-family: "System-ui";
 	font-weight: bold;
 	min-height: 0;	
 	font-size: 12;
@@ -11,11 +10,11 @@ window#waybar {
 	background:#2a2a2a;
 	border-radius: 1px;
 	color: whitesmoke;
-	opacity: 0.8;
+	opacity: 0.9;
 }
 	
 window#waybar.hidden {
-	opacity: 0.5;
+	opacity: 0.9;
 }
 
 window#waybar.empty	
