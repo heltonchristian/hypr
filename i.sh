@@ -25,7 +25,7 @@ makepkg -si
 cd
 
 #AUR programas
-yay -S --noconfirm papirus-folders hyprshot librewolf-bin tofi
+yay -S --removemake papirus-folders hyprshot librewolf-bin tofi
 
 #icones, temas e fontes
 papirus-folders -C black --theme Papirus
