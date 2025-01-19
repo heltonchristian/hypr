@@ -14,13 +14,12 @@
       "2": "2",
       "3": "3",
       "4": "4",
-      "5": "5",
       "active": "",
       "default": ""
     },
     "persistent-workspaces": {
-      "DP-1": [1, 2, 3],
-      "DVI-I-1": [4, 5]
+      "DP-1": [1, 2],
+      "DVI-I-1": [3, 4]
     }
   },
 
@@ -54,7 +53,7 @@
 
   "clock": {
     "format": "{:%H:%M - %d/%m/%y}",
-    "tooltip-format": "<tt><big>{calendar}</big></tt>",
+    "tooltip-format": "<tt><small>{calendar}</small></tt>",
     "calendar": {
       "format": {
         "months": "<span color='#ffead3'><b>{}</b></span>",
