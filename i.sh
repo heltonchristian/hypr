@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Instalar programas
-sudo pacman -S --noconfirm git go hyprland hyprpaper xdg-desktop-portal-hyprland waybar kitty zsh vim remmina freerdp
+sudo pacman -S --noconfirm git go hyprland hyprpaper xdg-desktop-portal-hyprland waybar kitty zsh vim remmina freerdp gammastep
 sudo pacman -S --noconfirm nvidia-dkms nvidia-utils libva libva-nvidia-driver lib32-nvidia-utils
 sudo pacman -S --noconfirm grim slurp papirus-icon-theme neofetch orchis-theme ttf-font-awesome ttf-nerd-fonts-symbols steam
 
@@ -23,7 +23,7 @@ makepkg -si
 cd
 
 #AUR programas
-yay -S --removemake papirus-folders hyprshot librewolf-bin tofi
+yay -S --removemake papirus-folders hyprshot librewolf-bin tofi wl-gammarelay 
 
 #icones, temas e fontes
 papirus-folders -C black --theme Papirus
