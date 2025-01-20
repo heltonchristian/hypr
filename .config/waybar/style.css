@@ -1,5 +1,5 @@
 * {
-	font-family: "Cantarel", sans-serif;
+	font-family: "System-ui";
 	font-weight: bold;
 	min-height: 0;	
 	font-size: 12px;
@@ -33,7 +33,7 @@ window#waybar.empty {
 	padding-right: 4px;
 	animation: gradient_f 20s ease-in infinite;
 	transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
-	font-size: 11px;
+	font-size: 12px;
 }
 
 #workspaces button.active {
@@ -71,7 +71,7 @@ window#waybar.empty {
 	padding-right: 6px;
 	padding-left: 6px;
 	color: whitesmoke;
-	font-size: 11px;
+	font-size: 12px;
 }
 
 #idle_inhibitor.activated {
@@ -99,4 +99,3 @@ window#waybar.empty {
 	border-radius: 5px;
 	background-color: wheat;
 }
-

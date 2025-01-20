@@ -3,9 +3,9 @@
   "position": "top",
   "height": 24,
   "spacing": 5,
-  "modules-left": ["hyprland/workspaces"],
-  "modules-center": ["hyprland/window"],
-  "modules-right": ["clock", "pulseaudio", "idle_inhibitor"],
+  "modules-left": ["idle_inhibitor", "hyprland/window"],
+  "modules-center": ["clock"],
+  "modules-right": ["pulseaudio"],
 
   "hyprland/workspaces": {
     "format": "{name}",
@@ -60,6 +60,5 @@
         "today": "<span color='#ff6699'><b>{}</b></span>"
       }
     }
-  }
+  } 
 }
-
