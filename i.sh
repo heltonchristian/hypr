@@ -23,7 +23,7 @@ makepkg -si
 cd
 
 #AUR programas
-yay -S --removemake --noconfirm papirus-folders hyprshot librewolf-bin tofi wl-gammarelay spotify-player-full
+yay -S --removemake --noconfirm papirus-folders hyprshot librewolf-bin tofi wl-gammarelay
 
 #icones, temas e fontes
 papirus-folders -C black --theme Papirus
