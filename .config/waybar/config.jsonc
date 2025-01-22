@@ -31,13 +31,13 @@
   "idle_inhibitor": {
     "format": "{icon}",
     "format-icons": {
-      "activated": "",
-      "deactivated": ""
+      "activated": "   ",
+      "deactivated": "   "
     }
   },
 
   "pulseaudio": {
-  "format": "{icon} {volume}%",
+  "format": "{icon} {volume}%     ",
   "format-icons": {
     "default": ["\uf026", "\uf027", "\uf028"]
   },
