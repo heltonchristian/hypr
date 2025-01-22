@@ -2,7 +2,7 @@
 
 # Instalar programas
 sudo pacman -S  git go xorg-server xorg-apps hyprland hyprpaper xorg-xwayland xdg-desktop-portal-hyprland polkit-kde-agent qt5-wayland qt6-wayland waybar kitty zsh vim remmina freerdp nwg-look gammastep
-sudo pacman -S  nvidia-dkms nvidia-utils libva libva-nvidia-driver lib32-nvidia-utils nvidia-settings
+sudo pacman -S  intel-ucode dkms nvidia-dkms nvidia-utils libva libva-nvidia-driver lib32-nvidia-utils nvidia-settings
 sudo pacman -S  grim slurp papirus-icon-theme neofetch orchis-theme ttf-font-awesome ttf-nerd-fonts-symbols steam
 
 # Mover .config
