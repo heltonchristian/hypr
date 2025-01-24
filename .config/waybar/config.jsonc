@@ -1,64 +1,120 @@
-{
-  "layer": "bottom",
-  "position": "top",
-  "height": 24,
-  "spacing": 5,
-  "modules-left": ["idle_inhibitor", "hyprland/window"],
-  "modules-center": ["clock"],
-  "modules-right": ["pulseaudio"],
-
-  "hyprland/workspaces": {
-    "format": "{name}",
-    "format-icons": {
-      "1": "1",
-      "2": "2",
-      "3": "3",
-      "4": "4",
-      "active": "",
-      "default": ""
+ [ 
+  {
+    "layer": "bottom",
+    "position": "top",
+    "height": 24,
+    "spacing": 5,
+    "modules-left": ["idle_inhibitor", "hyprland/window"],
+    "modules-center": ["clock"],
+    "modules-right": ["pulseaudio"],
+  
+    "hyprland/workspaces": {
+      "format": "{name}",
+      "format-icons": {
+        "1": "1",
+        "2": "2",
+        "3": "3",
+        "4": "4",
+        "active": "",
+        "default": ""
     },
-    "persistent-workspaces": {
-      "DP-1": [1, 2],
-      "DVI-I-1": [3, 4]
-    }
-  },
-
-  "hyprland/window": {
-    "format": "{title}",
-    "icon-size": 10
-  },
-
-  "idle_inhibitor": {
-    "format": "{icon}",
-    "format-icons": {
-      "activated": "   ",
-      "deactivated": "   "
-    }
-  },
-
-  "pulseaudio": {
-  "format": "{icon} {volume}%     ",
-  "format-icons": {
-    "default": ["\uf026", "\uf027", "\uf028"]
-  },
-  "on-click": "/home/ly/scripts/changeAudio.sh",
-  "on-click-right": "pavucontrol",
-  "device": "default"
-  },
-
- "tray": {
-    "icon-size": 15,
-    "spacing": 8
-  },
-
-  "clock": {
-    "format": "{:%H:%M - %d/%m/%y}",
-    "tooltip-format": "<tt><small>{calendar}</small></tt>",
-    "calendar": {
-      "format": {
-        "months": "<span color='#ffead3'><b>{}</b></span>",
-        "today": "<span color='#ff6699'><b>{}</b></span>"
+  
+    "hyprland/window": {
+      "format": "{title}",
+      "icon-size": 10
+    },
+  
+    "idle_inhibitor": {
+      "format": "{icon}",
+      "format-icons": {
+        "activated": "   ",
+        "deactivated": "   "
       }
-    }
-  } 
-}
+    },
+  
+    "pulseaudio": {
+    "format": "{icon} {volume}%     ",
+    "format-icons": {
+      "default": ["\uf026", "\uf027", "\uf028"]
+    },
+    "on-click": "/home/ly/scripts/changeAudio.sh",
+    "on-click-right": "pavucontrol",
+    "device": "default"
+    },
+  
+   "tray": {
+      "icon-size": 15,
+      "spacing": 8
+    },
+  
+    "clock": {
+      "format": "{:%H:%M - %d/%m/%y}",
+      "tooltip-format": "<tt><small>{calendar}</small></tt>",
+      "calendar": {
+        "format": {
+          "months": "<span color='#ffead3'><b>{}</b></span>",
+          "today": "<span color='#ff6699'><b>{}</b></span>"
+        }
+      }
+    } 
+  },
+ {
+    "layer": "bottom",
+    "position": "top",
+    "height": 24,
+    "spacing": 5,
+    "modules-left": ["idle_inhibitor", "hyprland/window"],
+    "modules-center": ["clock"],
+    "modules-right": ["pulseaudio"],
+  
+    "hyprland/workspaces": {
+      "format": "{name}",
+      "format-icons": {
+        "1": "1",
+        "2": "2",
+        "3": "3",
+        "4": "4",
+        "active": "",
+        "default": ""
+    },
+  
+    "hyprland/window": {
+      "format": "{title}",
+      "icon-size": 10
+    },
+  
+    "idle_inhibitor": {
+      "format": "{icon}",
+      "format-icons": {
+        "activated": "   ",
+        "deactivated": "   "
+      }
+    },
+  
+    "pulseaudio": {
+    "format": "{icon} {volume}%     ",
+    "format-icons": {
+      "default": ["\uf026", "\uf027", "\uf028"]
+    },
+    "on-click": "/home/ly/scripts/changeAudio.sh",
+    "on-click-right": "pavucontrol",
+    "device": "default"
+    },
+  
+   "tray": {
+      "icon-size": 15,
+      "spacing": 8
+    },
+  
+    "clock": {
+      "format": "{:%H:%M - %d/%m/%y}",
+      "tooltip-format": "<tt><small>{calendar}</small></tt>",
+      "calendar": {
+        "format": {
+          "months": "<span color='#ffead3'><b>{}</b></span>",
+          "today": "<span color='#ff6699'><b>{}</b></span>"
+        }
+      }
+    } 
+  }
+]
