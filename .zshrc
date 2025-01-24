@@ -10,7 +10,7 @@ setopt INC_APPEND_HISTORY
 setopt SHARE_HISTORY
 
 #------------ PATH ------------
-
+export PATH=$PATH:/usr/bin/wl-gammarelay-rs
 
 #------------ ALIAS ------------
 alias ls='ls --color=auto'
