@@ -1,12 +1,13 @@
- [ 
+[
   {
     "layer": "bottom",
     "position": "top",
+    "output": "DP-1",
     "height": 24,
     "spacing": 5,
     "modules-left": ["idle_inhibitor", "hyprland/window"],
     "modules-center": ["clock"],
-    "modules-right": ["pulseaudio"],
+    "modules-right": ["pulseaudio", "custom/wl-gammarelay-temperature"],
   
     "hyprland/workspaces": {
       "format": "{name}",
@@ -17,6 +18,7 @@
         "4": "4",
         "active": "",
         "default": ""
+      }
     },
   
     "hyprland/window": {
@@ -33,16 +35,16 @@
     },
   
     "pulseaudio": {
-    "format": "{icon} {volume}%     ",
-    "format-icons": {
-      "default": ["\uf026", "\uf027", "\uf028"]
-    },
-    "on-click": "/home/ly/scripts/changeAudio.sh",
-    "on-click-right": "pavucontrol",
-    "device": "default"
+      "format": "{icon} {volume}%     ",
+      "format-icons": {
+        "default": ["\uf026", "\uf027", "\uf028"]
+      },
+      "on-click": "/home/ly/scripts/changeAudio.sh",
+      "on-click-right": "/home/ly/scripts/changeAudio.sh",
+      "device": "default"
     },
   
-   "tray": {
+    "tray": {
       "icon-size": 15,
       "spacing": 8
     },
@@ -56,16 +58,25 @@
           "today": "<span color='#ff6699'><b>{}</b></span>"
         }
       }
-    } 
+    },
+
+    "custom/wl-gammarelay-temperature": {
+      "format": "  DP-1", 
+      "on-click": "busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Temperature q 4000 && busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Brightness d 0.7",
+      "on-click-right": "busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Temperature q 5500 && busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Brightness d 1",
+      "on-scroll-up": "busctl --user call rs.wl-gammarelay /outputs/DP_1 rs.wl.gammarelay UpdateBrightness d 0.1",
+      "on-scroll-down": "busctl --user call rs.wl-gammarelay /outputs/DP_1 rs.wl.gammarelay UpdateBrightness d -0.1"
+    }
   },
- {
+  {
     "layer": "bottom",
     "position": "top",
+    "output": "DVI-I-1",
     "height": 24,
     "spacing": 5,
     "modules-left": ["idle_inhibitor", "hyprland/window"],
     "modules-center": ["clock"],
-    "modules-right": ["pulseaudio"],
+    "modules-right": ["pulseaudio", "custom/wl-gammarelay-temperature"],
   
     "hyprland/workspaces": {
       "format": "{name}",
@@ -76,6 +87,7 @@
         "4": "4",
         "active": "",
         "default": ""
+      }
     },
   
     "hyprland/window": {
@@ -92,16 +104,16 @@
     },
   
     "pulseaudio": {
-    "format": "{icon} {volume}%     ",
-    "format-icons": {
-      "default": ["\uf026", "\uf027", "\uf028"]
-    },
-    "on-click": "/home/ly/scripts/changeAudio.sh",
-    "on-click-right": "pavucontrol",
-    "device": "default"
+      "format": "{icon} {volume}%     ",
+      "format-icons": {
+        "default": ["\uf026", "\uf027", "\uf028"]
+      },
+      "on-click": "/home/ly/scripts/changeAudio.sh",
+      "on-click-right": "/home/ly/scripts/changeAudio.sh",
+      "device": "default"
     },
   
-   "tray": {
+    "tray": {
       "icon-size": 15,
       "spacing": 8
     },
@@ -115,6 +127,14 @@
           "today": "<span color='#ff6699'><b>{}</b></span>"
         }
       }
-    } 
+    },
+    
+    "custom/wl-gammarelay-temperature": {
+      "format": "  DVI-I-1", 
+      "on-click": "busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Temperature q 4000 && busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Brightness d 0.7",
+      "on-click-right": "busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Temperature q 5500 && busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Brightness d 1",
+      "on-scroll-up": "busctl --user call rs.wl-gammarelay /outputs/DVI_I_1 rs.wl.gammarelay UpdateBrightness d 0.1",
+      "on-scroll-down": "busctl --user call rs.wl-gammarelay /outputs/DVI_I_1 rs.wl.gammarelay UpdateBrightness d -0.1"
+    }
   }
 ]
