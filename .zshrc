@@ -9,6 +9,9 @@ HISTFILE=~/.zsh_history
 setopt INC_APPEND_HISTORY
 setopt SHARE_HISTORY
 
+#------------ PATH ------------
+
+
 #------------ ALIAS ------------
 alias ls='ls --color=auto'
 alias la='ls -a'
