@@ -1,8 +1,9 @@
 #!/bin/sh
 
 # Instalar programas
-sudo pacman -S  --noconfirm git go hyprland hyprpaper waybar alacritty zsh neovide remmina freerdp nwg-look nemo nemo-fileroller
+sudo pacman -S  --noconfirm git go hyprland hyprpaper waybar alacritty zsh neovide remmina freerdp nwg-look
 sudo pacman -S  --noconfirm grim slurp papirus-icon-theme neofetch orchis-theme ttf-fira-code ttf-nerd-fonts-symbols steam spotify-launcher
+#sudo pacman -S --noconfirm remmina freerdp
 
 # Mover .config
 rm -r ~/.config
