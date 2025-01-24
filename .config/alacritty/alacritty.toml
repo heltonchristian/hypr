@@ -1,0 +1,22 @@
+[window]
+
+opacity = 1
+
+padding.x = 10
+padding.y = 10
+
+decorations = "Full"
+decorations_theme_variant = "Light" # "Dark"
+
+[font]
+
+normal.family = "Cascadia Code PL"
+bold.family = "Cascadia Code PL"
+italic.family = "Cascadia Code PL"
+bold_italic.family = "Cascadia Code PL"
+
+size = 10.0
+
+[colors]
+#foreground = "#ffffff"
+#background = "#2a2a2a"
