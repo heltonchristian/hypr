@@ -61,7 +61,7 @@
     },
 
     "custom/wl-gammarelay-temperature": {
-      "format": "  DP-1", 
+      "format": "DP-1     ", 
       "on-click": "busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Temperature q 4000 && busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Brightness d 0.7",
       "on-click-right": "busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Temperature q 5500 && busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Brightness d 1",
       "on-scroll-up": "busctl --user call rs.wl-gammarelay /outputs/DP_1 rs.wl.gammarelay UpdateBrightness d 0.1",
@@ -130,7 +130,7 @@
     },
     
     "custom/wl-gammarelay-temperature": {
-      "format": "  DVI-I-1", 
+      "format": "DVI-I-1     ", 
       "on-click": "busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Temperature q 4000 && busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Brightness d 0.7",
       "on-click-right": "busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Temperature q 5500 && busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Brightness d 1",
       "on-scroll-up": "busctl --user call rs.wl-gammarelay /outputs/DVI_I_1 rs.wl.gammarelay UpdateBrightness d 0.1",

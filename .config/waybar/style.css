@@ -2,7 +2,7 @@
 	font-family: "System-ui";
 	font-weight: bold;
 	min-height: 0;	
-	font-size: 12px;
+	font-size: 11px;
 	font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 }
 
@@ -10,12 +10,12 @@ window#waybar {
 	background: #2a2a2a;
 	border-radius: 1px;
 	color: whitesmoke;
-	opacity: 0.8;
+	opacity: 0.95;
 	font-size: 12px;
 }
 
 window#waybar.hidden {
-	opacity: 0.8;
+	opacity: 0.95;
 }
 
 window#waybar.empty {
