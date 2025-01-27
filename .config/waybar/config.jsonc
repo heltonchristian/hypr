@@ -5,9 +5,9 @@
     "output": "DP-1",
     "height": 24,
     "spacing": 5,
-    "modules-left": ["custom/wl-gammarelay-temperature", "hyprland/workspaces"],
-    "modules-center": ["hyprland/window"],
-    "modules-right": ["idle_inhibitor", "pulseaudio", "clock"],
+    "modules-left": ["hyprland/workspaces", "hyprland/window"],
+    "modules-center": ["clock"],
+    "modules-right": ["pulseaudio", "idle_inhibitor", "custom/temperature", "custom/brightness", "custom/gamma"],
   
     "hyprland/workspaces": {
       "format": "{icon}",
@@ -64,12 +64,20 @@
       }
     },
 
-    "custom/wl-gammarelay-temperature": {
-      "format": "DP-1", 
-      "on-click": "/home/ly/scripts/screen.sh", 
-      "on-click-right": "busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Temperature q 5500 && busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Brightness d 1",
-      "on-scroll-up": "busctl --user call rs.wl-gammarelay /outputs/DP_1 rs.wl.gammarelay UpdateBrightness d 0.1",
-      "on-scroll-down": "busctl --user call rs.wl-gammarelay /outputs/DP_1 rs.wl.gammarelay UpdateBrightness d -0.1"
+    "custom/temperature": {
+      "format": "    ",
+      "on-scroll-up": "busctl --user -- call rs.wl-gammarelay /outputs/DP_1 rs.wl.gammarelay UpdateTemperature n +100",
+      "on-scroll-down": "busctl --user -- call rs.wl-gammarelay /outputs/DP_1 rs.wl.gammarelay UpdateTemperature n -100"
+    },
+    "custom/brightness": {
+      "format": "    ",
+      "on-scroll-up": "busctl --user -- call rs.wl-gammarelay /outputs/DP_1 rs.wl.gammarelay UpdateBrightness d +0.02",
+      "on-scroll-down": "busctl --user -- call rs.wl-gammarelay /outputs/DP_1 rs.wl.gammarelay UpdateBrightness d -0.02"
+    },
+    "custom/gamma": {
+      "format": "     ",
+      "on-scroll-up": "busctl --user -- call rs.wl-gammarelay /outputs/DP_1 rs.wl.gammarelay UpdateGamma d +0.02",
+      "on-scroll-down": "busctl --user -- call rs.wl-gammarelay /outputs/DP_1 rs.wl.gammarelay UpdateGamma d -0.02"
     }
   },
   {
@@ -78,9 +86,9 @@
     "output": "DVI-I-1",
     "height": 24,
     "spacing": 5,
-    "modules-left": ["custom/wl-gammarelay-temperature", "hyprland/workspaces"],
-    "modules-center": ["hyprland/window"],
-    "modules-right": ["idle_inhibitor", "pulseaudio", "clock"],
+    "modules-left": ["hyprland/workspaces", "hyprland/window"],
+    "modules-center": ["clock"],
+    "modules-right": ["pulseaudio", "idle_inhibitor", "custom/temperature", "custom/brightness", "custom/gamma"],
 
     "hyprland/workspaces": {
       "format": "{icon}",
@@ -137,12 +145,20 @@
       }
     },
     
-    "custom/wl-gammarelay-temperature": {
-      "format": "DVI-I-1", 
-      "on-click": "busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Temperature q 4000 && busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Brightness d 0.7",
-      "on-click-right": "busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Temperature q 5500 && busctl --user set-property rs.wl-gammarelay /rs.wl.gammarelay Brightness d 1",
-      "on-scroll-up": "busctl --user call rs.wl-gammarelay /outputs/DVI_I_1 rs.wl.gammarelay UpdateBrightness d 0.1",
-      "on-scroll-down": "busctl --user call rs.wl-gammarelay /outputs/DVI_I_1 rs.wl.gammarelay UpdateBrightness d -0.1"
+    "custom/temperature": {
+      "format": "    ",
+      "on-scroll-up": "busctl --user -- call rs.wl-gammarelay /outputs/DVI_I_1 rs.wl.gammarelay UpdateTemperature n +100",
+      "on-scroll-down": "busctl --user -- call rs.wl-gammarelay /outputs/DVI_I_1 rs.wl.gammarelay UpdateTemperature n -100"
+    },
+    "custom/brightness": {
+      "format": "    ",
+      "on-scroll-up": "busctl --user -- call rs.wl-gammarelay /outputs/DVI_I_1 rs.wl.gammarelay UpdateBrightness d +0.02",
+      "on-scroll-down": "busctl --user -- call rs.wl-gammarelay /outputs/DVI_I_1 rs.wl.gammarelay UpdateBrightness d -0.02"
+    },
+    "custom/gamma": {
+      "format": "     ",
+      "on-scroll-up": "busctl --user -- call rs.wl-gammarelay /outputs/DVI_I_1 rs.wl.gammarelay UpdateGamma d +0.02",
+      "on-scroll-down": "busctl --user -- call rs.wl-gammarelay /outputs/DVI_I_1 rs.wl.gammarelay UpdateGamma d -0.02"
     }
   }
 ]

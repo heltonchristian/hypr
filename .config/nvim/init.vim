@@ -94,5 +94,6 @@ set mouse=a
 highlight clear StatusLine
 
 set ignorecase
+set clipboard=unnamedplus
 
 au VimLeave,VimSuspend * set guicursor=a:ver90:block-blinkon0
