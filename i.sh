@@ -23,7 +23,7 @@ makepkg -si
 cd
 
 #AUR programas
-yay -S --noconfirm --quiet --needed ttf-ms-win11-auto hyprshot librewolf-bin tofi wl-gammarelay-rs
+yay -S --noconfirm --quiet --needed ttf-ms-win11-auto nordzy-cursors hyprshot librewolf-bin tofi wl-gammarelay-rs
 
 cd
 rm -rf ~/hypr
