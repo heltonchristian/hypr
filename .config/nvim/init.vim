@@ -1,6 +1,6 @@
 set background=dark
 highlight clear
-syntax reset
+syntax on
 
 let g:colors_name='tokyo'
 
