@@ -11,9 +11,7 @@ setopt SHARE_HISTORY
 
 #------------ PATH ------------
 export PATH=$PATH:/usr/bin/wl-gammarelay-rs
-
-#------------ MONITOR ----------
-busctl --user set-property rs.wl-gammarelay /outputs/DVI_I_1 rs.wl.gammarelay Gamma d 0.6
+export PATH=$PATH:/home/ly/.spicetify
 
 #------------ ALIAS ------------
 alias ls='ls --color=auto'
@@ -23,11 +21,10 @@ alias lla='ls -al'
 alias rm='rm -r'
 alias cp='cp -r'
 alias vi='nvim'
-alias vim='nvim'
 alias fetch='clear && neofetch'
 alias zshrc='nvim ~/.zshrc'
 alias ac='nvim ~/.config/alacritty/alacritty.toml'
-alias vimrc='nvim ~/.config/nvim/init.lua'
+alias vimrc='nvim ~/.config/nvim/init.vim'
 
 #------------ HYPRLAND ------------
 alias hc='nvim ~/.config/hypr/hyprland.conf'
