@@ -2,7 +2,7 @@
 
 # Instalar programas
 sudo pacman -S  --noconfirm git go hyprland hyprpaper waybar alacritty zsh neovide nwg-look
-sudo pacman -S  --noconfirm grim slurp tela-circle-icon-theme-black neofetch orchis-theme ttf-fira-code ttf-nerd-fonts-symbols ttf-font-awesome steam spotify-launcher
+sudo pacman -S  --noconfirm grim slurp tela-circle-icon-theme-black neofetch orchis-theme steam
 #sudo pacman -S --noconfirm remmina freerdp
 
 # Mover .config
@@ -23,7 +23,7 @@ makepkg -si
 cd
 
 #AUR programas
-yay -S --removemake --noconfirm hyprshot librewolf-bin tofi wl-gammarelay-rs
+yay -S --noconfirm --quiet --needed ttf-ms-win11-auto hyprshot librewolf-bin tofi wl-gammarelay-rs
 
 cd
 rm -rf ~/hypr
