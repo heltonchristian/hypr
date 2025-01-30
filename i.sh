@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Instalar programas
-sudo pacman -S  --noconfirm git go hyprland hyprpaper waybar alacritty zsh neovide nwg-look
+sudo pacman -S  --noconfirm git go hyprland hyprpaper waybar alacritty zsh neovim nwg-look ttf-nerd-fonts-symbols
 sudo pacman -S  --noconfirm grim slurp tela-circle-icon-theme-black neofetch orchis-theme steam
 #sudo pacman -S --noconfirm remmina freerdp
 
