@@ -13,8 +13,8 @@ mv -f .config ~/
 mv -f .zshrc .zprofile wallpapers scripts ~/
 
 # Dar permissões
-chmod -R 755 ~/scripts/changewpH.sh
-chmod -R 755 ~/scripts/changeAudio.sh
+chmod +x ~/scripts/changewpH.sh
+chmod +x ~/scripts/changeAudio.sh
 
 #AUR Helper
 git clone https://aur.archlinux.org/yay.git
@@ -23,7 +23,7 @@ makepkg -si
 cd
 
 #AUR programas
-yay -S --noconfirm --quiet --needed hyprshot tofi wl-gammarelay-rs
+yay -S --noconfirm --quiet --needed hyprshot tofi wl-gammarelay-rs cava
 
 cd
 rm -rf ~/hypr
