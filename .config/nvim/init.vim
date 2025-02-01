@@ -12,7 +12,7 @@ hi Condtional         guibg=NONE         guifg=#ffffff
 hi Constant           guibg=NONE         guifg=#ffffff
 hi CursorColumn       guibg=NONE         guifg=#ffffff
 hi Cursor             guibg=NONE         guifg=#ffffff
-hi CursorLine         guibg=#16161E      guifg=#ffffff     gui=bold
+hi CursorLine         guibg=#2C2C2C      guifg=#af99ff     gui=bold
 hi CursorLineNr       guibg=NONE         guifg=#ffffff     gui=bold gui=bold
 hi Debug              guibg=NONE         guifg=#ffffff
 hi Define             guibg=NONE         guifg=#ffffff
@@ -61,7 +61,7 @@ hi SpellCap           guibg=NONE         guifg=#bcbcbc
 hi SpellLocal         guibg=NONE         guifg=#bcbcbc
 hi SpellRare          guibg=NONE         guifg=#bcbcbc
 hi Statement          guibg=NONE         guifg=#ffffff
-hi StatusLine         guibg=#b4f9f8      guifg=#1a1b26
+hi StatusLine         guibg=NONE         guifg=#1a1b26
 hi StatusLineNC       guibg=NONE         guifg=#bcbcbc
 hi StorageClass       guibg=NONE         guifg=#bcbcbc
 hi String             guibg=NONE         guifg=#b4f9f8
