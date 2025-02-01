@@ -1,6 +1,3 @@
-#----------- sets -------------
-xrandr --output DP-1 --primary --mode 1920x1080 --rotate normal --rate 240 --output DVI-I-1 --right-of DP-1  --mode 1920x1080 --rotate normal --rate 144
-
 #------------ ZSHRC ------------
 PROMPT='%F{#888888}%1~%f %F{White}%f  '
 autoload -U compinit
@@ -23,7 +20,8 @@ alias lla='ls -al'
 alias rm='rm -r'
 alias cp='cp -r'
 alias vi='nvim'
-alias vim ='nvim'
+alias vim='nvim'
+alias fc='nvim ~/.config/neofetch/config.conf'
 alias fetch='clear && neofetch'
 alias zshrc='nvim ~/.zshrc'
 alias ac='nvim ~/.config/alacritty/alacritty.toml'

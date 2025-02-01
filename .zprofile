@@ -1,3 +1,3 @@
 if [[ "$TTY" = "/dev/tty1" ]];then
-	Hyprland
+	Hyprland	
 fi
