@@ -1,3 +1,6 @@
+#----------- sets -------------
+xrandr --output DP-1 --primary --mode 1920x1080 --rotate normal --rate 240 --output DVI-I-1 --right-of DP-1  --mode 1920x1080 --rotate normal --rate 144
+
 #------------ ZSHRC ------------
 PROMPT='%F{#888888}%1~%f %F{White}%f  '
 autoload -U compinit
@@ -11,7 +14,6 @@ setopt SHARE_HISTORY
 
 #------------ PATH ------------
 export PATH=$PATH:/usr/bin/wl-gammarelay-rs
-export PATH=$PATH:/home/ly/.spicetify
 
 #------------ ALIAS ------------
 alias ls='ls --color=auto'
@@ -21,6 +23,7 @@ alias lla='ls -al'
 alias rm='rm -r'
 alias cp='cp -r'
 alias vi='nvim'
+alias vim ='nvim'
 alias fetch='clear && neofetch'
 alias zshrc='nvim ~/.zshrc'
 alias ac='nvim ~/.config/alacritty/alacritty.toml'
