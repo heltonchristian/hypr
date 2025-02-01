@@ -1,8 +1,7 @@
 * {
-    font-family: "System-ui";
     font-weight: bold;
     min-height: 0;
-    font-size: 11px;
+    font-size: 10px;
     font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 }
 
@@ -11,7 +10,7 @@ window#waybar {
     border-radius: 1px;
     color: whitesmoke;
     opacity: 0.95;
-    font-size: 11px;
+    font-size: 10px;
 }
 
 window#waybar.hidden {
@@ -29,7 +28,7 @@ window#waybar.empty {
     text-shadow: none;
     padding: 0px 1px;
     border-radius: 50%;
-    font-size: 11px;
+    font-size: 10px;
     transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
     background: transparent;
 }
@@ -37,21 +36,21 @@ window#waybar.empty {
 #workspaces button.active {
     color: #ffffff;
     background: transparent;
-    border-radius: 50%;
+    border-radius: 25%;
     padding-left: 1px;
     padding-right: 1px;
-    font-size: 11px;
+    font-size: 10px;
     transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 #workspaces button.focused {
     color: #ffffff;
-    font-size: 11px;
+    font-size: 10px;
 }
 
 #workspaces button.urgent {
     color: #11111b;
-    border-radius: 11px;
+    border-radius: 10px;
 }
 
 #workspaces button:hover {
@@ -69,7 +68,7 @@ window#waybar.empty {
     padding-right: 6px;
     padding-left: 6px;
     color: whitesmoke;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: bold;
 }
 
@@ -113,6 +112,6 @@ window#waybar.empty {
 #custom-wl-gammarelay-temperature {
     padding-left: 12px;
     padding-right: 12px;
-    font-size: 11px;
+    font-size: 10px;
     color: whitesmoke;
 }

@@ -41,7 +41,7 @@ normal.family = "Fira Code"
 bold.family = "Fira Code"
 italic.family = "Fira Code"
 bold_italic.family = "Fira Code"
-size = 10.0
+size = 9.0
 
 [[keyboard.bindings]]
 action = "Copy"
