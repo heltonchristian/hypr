@@ -23,7 +23,7 @@ makepkg -si
 cd
 
 #AUR programas
-yay -S --noconfirm --quiet --needed hyprshot tofi wl-gammarelay-rs cava
+yay -S --noconfirm --quiet --needed hyprshot tofi wl-gammarelay-rs cava librewolf-bin
 
 cd
 rm -rf ~/hypr
