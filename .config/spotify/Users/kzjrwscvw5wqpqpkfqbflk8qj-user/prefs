@@ -1,0 +1,11 @@
+audio.allow_downgrade=false
+audio.sync_bitrate_enumeration=4
+audio.play_bitrate_non_metered_migrated=true
+connect.dial_devices="[]"
+connect.mdns_devices="[]"
+audio.normalize_v2=false
+ui.track_notifications_enabled=false
+audio.play_bitrate_non_metered_enumeration=4
+audio.play_bitrate_enumeration=4
+ui.hide_hpto=true
+app.browser.zoom-level=-200

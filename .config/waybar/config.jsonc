@@ -7,7 +7,7 @@
     "output": "DP-1",
     "height": 20,
     "spacing": 5,
-    "modules-left": ["hyprland/workspaces"],
+    "modules-left": ["hyprland/window"],
     "modules-center": ["clock"],
     "modules-right": ["pulseaudio", "idle_inhibitor", "custom/temperature", "custom/brightness", "custom/gamma", "tray"],
   
@@ -20,10 +20,6 @@
         "4": "",
         "active": "",
         "default": ""
-      },
-      "persistent-workspaces": {
-        "DP-1": [1, 2],
-        "DVI-I-1": [5]
       }
     },
   
@@ -45,8 +41,8 @@
       "format-icons": {
         "default": ["\uf026", "\uf027", "\uf028"]
       },
-      "on-click": "/home/ly/scripts/changeAudio.sh",
-      "on-click-right": "/home/ly/scripts/changeAudio.sh",
+      "on-click": "/home/ly/.scripts/changeAudio.sh",
+      "on-click-right": "/home/ly/.scripts/changeAudio.sh",
       "device": "default"
     },
   
@@ -88,7 +84,7 @@
     "output": "DVI-I-1",
     "height": 20,
     "spacing": 5,
-    "modules-left": ["hyprland/workspaces"],
+    "modules-left": ["hyprland/window"],
     "modules-center": ["clock"],
     "modules-right": ["pulseaudio", "idle_inhibitor", "custom/temperature", "custom/brightness", "custom/gamma", "tray"],
 
@@ -101,10 +97,6 @@
         "4": "",
         "active": "",
         "default": ""
-      },
-      "persistent-workspaces": {
-        "DP-1": [1, 2],
-        "DVI-I-1": [5]
       }
     },
   
@@ -126,8 +118,8 @@
       "format-icons": {
         "default": ["\uf026", "\uf027", "\uf028"]
       },
-      "on-click": "/home/ly/scripts/changeAudio.sh",
-      "on-click-right": "/home/ly/scripts/changeAudio.sh",
+      "on-click": "/home/ly/.scripts/changeAudio.sh",
+      "on-click-right": "/home/ly/.scripts/changeAudio.sh",
       "device": "default"
     },
   
