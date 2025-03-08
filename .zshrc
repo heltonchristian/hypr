@@ -26,7 +26,7 @@ alias fetch='clear && neofetch'
 alias zshrc='nvim ~/.zshrc'
 alias ac='nvim ~/.config/alacritty/alacritty.toml'
 alias vimrc='nvim ~/.config/nvim/init.vim'
-alias spotify='spotify_player'
+alias win='/home/ly/.scripts/openwindows.sh'
 
 #------------ HYPRLAND ------------
 alias hc='nvim ~/.config/hypr/hyprland.conf'
@@ -35,3 +35,5 @@ alias tc='nvim ~/.config/tofi/config'
 alias waybarc='nvim .config/waybar/config.jsonc'
 alias waybarcss='nvim .config/waybar/style.css'
 alias hexit='pkill -KILL -u $USER'
+
+export PATH=$PATH:/home/ly/.spicetify
