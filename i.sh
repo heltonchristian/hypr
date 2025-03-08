@@ -2,14 +2,14 @@
 
 # Instalar programas
 sudo pacman -S  --noconfirm git go hyprland hyprpaper waybar alacritty zsh neovim ttf-nerd-fonts-symbols nemo nemo-fileroller vlc
-sudo pacman -S  --noconfirm grim slurp tela-circle-icon-theme-black neofetch steam ttf-fira-code freerdp xdg-desktop-portal-wlr obs-studio
+sudo pacman -S  --noconfirm grim slurp tela-circle-icon-theme-black neofetch ttf-fira-code xdg-desktop-portal-wlr firefox
 
 # Mover .config
 rm -r ~/.config
 mv -f .config ~/
 
 # Mover arquivos .zshrc,.xinitrc, Scripts ...  para ~/
-mv -f .zshrc .zprofile wallpapers scripts ~/
+mv -f .zshrc .zprofile scripts ~/
 
 # Dar permissões
 chmod +x ~/scripts/changewpH.sh
@@ -22,7 +22,9 @@ makepkg -si
 cd
 
 #AUR programas
-yay -S --noconfirm --quiet --needed hyprshot tofi wl-gammarelay-rs cava librewolf-bin bibata-cursor-theme flat-remix-gtk
+yay -S --noconfirm --quiet --needed hyprshot tofi wl-gammarelay-rs cava bibata-cursor-theme 
+#flat-remix-gtk
+
 cd
 rm -rf ~/hypr
 rm -rf ~/yay
