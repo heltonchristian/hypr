@@ -31,10 +31,7 @@ alias spotify='spotify_player'
 #------------ HYPRLAND ------------
 alias hc='nvim ~/.config/hypr/hyprland.conf'
 alias hw='nvim ~/.config/hypr/hyprpaper.conf'
-alias zshrc='nvim ~/.zshrc'
 alias tc='nvim ~/.config/tofi/config'
 alias waybarc='nvim .config/waybar/config.jsonc'
 alias waybarcss='nvim .config/waybar/style.css'
 alias hexit='pkill -KILL -u $USER'
-
-export PATH=$PATH:/home/ly/.spicetify
