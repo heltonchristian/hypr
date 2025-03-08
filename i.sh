@@ -9,7 +9,7 @@ rm -r ~/.config
 mv -f .config ~/
 
 # Mover arquivos .zshrc,.xinitrc, Scripts ...  para ~/
-mv -f .zshrc .zprofile scripts ~/
+mv -f .zshrc .zprofile scripts wallpapers ~/
 
 # Dar permissões
 chmod +x ~/scripts/changewpH.sh
