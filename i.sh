@@ -2,7 +2,7 @@
 
 # Instalar programas
 sudo pacman -S  --noconfirm git go hyprland hyprpaper waybar alacritty zsh neovim ttf-nerd-fonts-symbols nemo nemo-fileroller vlc
-sudo pacman -S  --noconfirm grim slurp orchis-theme tela-circle-icon-theme-black neofetch ttf-fira-code firefox
+sudo pacman -S  --noconfirm grim slurp orchis-theme tela-circle-icon-theme-black neofetch ttf-fira-code firefox btop
 
 # Mover .config
 rm -r ~/.config
