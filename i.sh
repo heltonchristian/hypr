@@ -2,7 +2,7 @@
 
 # Instalar programas
 sudo pacman -S  --noconfirm git go hyprland hyprpaper waybar alacritty zsh neovim ttf-nerd-fonts-symbols nemo nemo-fileroller vlc
-sudo pacman -S  --noconfirm grim slurp tela-circle-icon-theme-black neofetch ttf-fira-code firefox
+sudo pacman -S  --noconfirm grim slurp orchis-theme tela-circle-icon-theme-black neofetch ttf-fira-code firefox
 
 # Mover .config
 rm -r ~/.config
@@ -34,6 +34,4 @@ chsh -s /bin/zsh
 
 #autologin
 sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
-echo -e "[Service]
-ExecStart=
-ExecStart=-/sbin/agetty -o '-p -f -- \\\\u' --noclear --autologin ly - \$TERM" | sudo tee /etc/systemd/system/getty@tty1.service.d/autologin.conf > /dev/null
+sudo mv -f autologin.conf /etc/systemd/system/getty@tty1.service.d
