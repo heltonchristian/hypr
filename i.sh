@@ -32,3 +32,11 @@ cd
 
 #trocar o shell para zsh
 chsh -s /bin/zsh
+
+#Autologin
+mkdir -p /etc/systemd/system/getty@tty1.service.d
+cat > /etc/systemd/system/getty@tty1.service.d/override.conf <<EOF
+[Service]
+ExecStart=
+ExecStart=-/usr/bin/agetty --autologin ly --noclear %I \$TERM
+EOF
