@@ -2,7 +2,8 @@
 
 # Instalar programas
 sudo pacman -S  --noconfirm git go hyprland hyprpaper waybar alacritty zsh neovim ttf-nerd-fonts-symbols nemo nemo-fileroller vlc
-sudo pacman -S  --noconfirm grim slurp orchis-theme tela-circle-icon-theme-black neofetch ttf-fira-code btop
+sudo pacman -S  --noconfirm grim slurp orchis-theme papirus-icon-theme neofetch ttf-fira-code btop
+sudo pacman -Syu --noconfirm --needed -y curl dialog freerdp git iproute2 libnotify gnu-netcat
 
 # Mover .config
 rm -r ~/.config
@@ -31,7 +32,3 @@ cd
 
 #trocar o shell para zsh
 chsh -s /bin/zsh
-
-#autologin
-sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
-sudo mv -f autologin.conf /etc/systemd/system/getty@tty1.service.d
