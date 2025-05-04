@@ -41,8 +41,8 @@
       "format-icons": {
         "default": ["\uf026", "\uf027", "\uf028"]
       },
-      "on-click": "/home/ly/.scripts/changeAudio.sh",
-      "on-click-right": "/home/ly/.scripts/changeAudio.sh",
+      "on-click": "/home/ly/scripts/changeAudio.sh",
+      "on-click-right": "/home/ly/scripts/changeAudio.sh",
       "device": "default"
     },
   
@@ -118,8 +118,8 @@
       "format-icons": {
         "default": ["\uf026", "\uf027", "\uf028"]
       },
-      "on-click": "/home/ly/.scripts/changeAudio.sh",
-      "on-click-right": "/home/ly/.scripts/changeAudio.sh",
+      "on-click": "/home/ly/scripts/changeAudio.sh",
+      "on-click-right": "/home/ly/scripts/changeAudio.sh",
       "device": "default"
     },
   
