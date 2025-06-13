@@ -1,7 +1,8 @@
 * {
+    font-family: "Cantarell", sans-serif;
     font-weight: bold;
     min-height: 0;
-    font-size: 10px;
+    font-size: 9px;
     font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 }
 
@@ -28,7 +29,7 @@ window#waybar.empty {
     text-shadow: none;
     padding: 0px 1px;
     border-radius: 50%;
-    font-size: 10px;
+    font-size: 8px;
     transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
     background: transparent;
 }
@@ -39,18 +40,18 @@ window#waybar.empty {
     border-radius: 25%;
     padding-left: 1px;
     padding-right: 1px;
-    font-size: 10px;
+    font-size: 8px;
     transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 #workspaces button.focused {
     color: #ffffff;
-    font-size: 10px;
+    font-size: 8px;
 }
 
 #workspaces button.urgent {
     color: #11111b;
-    border-radius: 10px;
+    border-radius: 8px;
 }
 
 #workspaces button:hover {
@@ -68,7 +69,7 @@ window#waybar.empty {
     padding-right: 6px;
     padding-left: 6px;
     color: whitesmoke;
-    font-size: 10px;
+    font-size: 8px;
     font-weight: bold;
 }
 
@@ -112,6 +113,6 @@ window#waybar.empty {
 #custom-wl-gammarelay-temperature {
     padding-left: 12px;
     padding-right: 12px;
-    font-size: 10px;
+    font-size: 8px;
     color: whitesmoke;
 }
