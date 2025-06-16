@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Instalar programas
-sudo pacman -S  --noconfirm git go hyprland hyprpaper waybar alacritty zsh neovim ttf-nerd-fonts-symbols nemo nemo-fileroller vlc
-sudo pacman -S  --noconfirm grim slurp orchis-theme papirus-icon-theme neofetch ttf-fira-code btop
+sudo pacman -Syu --noconfirm --needed git go hyprland hyprpaper waybar alacritty zsh neovim ttf-nerd-fonts-symbols nemo nemo-fileroller vlc
+sudo pacman -Syu --noconfirm --needed grim slurp orchis-theme papirus-icon-theme neofetch ttf-fira-code btop
 sudo pacman -Syu --noconfirm --needed -y curl dialog freerdp git iproute2 libnotify gnu-netcat
 
 # Mover .config
