@@ -1,38 +1,38 @@
 #!/bin/sh
+set -e
 
-# Instalar programas
-sudo pacman -Syu --noconfirm --needed git go hyprland hyprpaper waybar alacritty zsh neovim ttf-nerd-fonts-symbols noto-fonts-extra nemo nemo-fileroller vlc
-sudo pacman -Syu --noconfirm --needed grim slurp orchis-theme papirus-icon-theme fastfetch ttf-fira-code btop
-sudo pacman -Syu --noconfirm --needed curl dialog freerdp git iproute2 libnotify gnu-netcat
+# Atualizar sistema
+sudo pacman -Syu --noconfirm
 
-# Mover .config
-rm -r ~/.config
-mv -f .config ~/
+# Pacotes oficiais
+sudo pacman -S --noconfirm --needed \
+  hyprland hyprpaper waybar alacritty grim slurp \
+  noto-fonts-extra ttf-nerd-fonts-symbols ttf-fira-code \
+  papirus-icon-theme orchis-theme libnotify \
+  nemo nemo-fileroller vlc fastfetch btop \
+  curl dialog freerdp iproute2 gnu-netcat \
+  git go neovim zsh
 
-# Mover arquivos .zshrc,.xinitrc, Scripts ...  para ~/
-mv -f .zshrc .zprofile scripts wallpapers ~/
+# Backup e mover configs
+mv ~/.config ~/.config.bak.$(date +%s) || true
+cp -r .config ~/
+cp -f .zshrc .zprofile -t ~/
+cp -r scripts wallpapers -t ~/
+chmod +x ~/scripts/*.sh
 
-# Dar permissões
-chmod +x ~/scripts/changewpH.sh
-chmod +x ~/scripts/changeAudio.sh
-
-#AUR Helper
+# AUR helper (yay)
 git clone https://aur.archlinux.org/yay.git
 cd yay
-makepkg -si
-cd
+makepkg -si --noconfirm
+cd ..
+rm -rf yay
 
-#AUR programas
-yay -S --noconfirm --quiet --needed librewolf-bin hyprshot tofi wl-gammarelay-rs cava bibata-cursor-theme
+# AUR pacotes (somente os necessários/estáveis)
+yay -S --noconfirm --needed librewolf-bin wl-gammarelay-rs cava bibata-cursor-theme
 
-#Autologin
+# Autologin
 sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
-sudo mv -f override.conf /etc/systemd/system/getty@tty1.service.d
+sudo cp -f override.conf /etc/systemd/system/getty@tty1.service.d/
 
-cd
-rm -rf ~/hypr
-rm -rf ~/yay
-cd
-
-#trocar o shell para zsh
+# Trocar shell para zsh
 chsh -s /bin/zsh
