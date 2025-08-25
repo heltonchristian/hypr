@@ -39,7 +39,7 @@ chsh -s /bin/zsh
 
 echo "==> Instalando pacotes de jogos"
 sudo pacman -S --noconfirm --needed \
-  steam lutris goverlay \
+  steam goverlay \
   mangohud gamemode \
   mesa lib32-mesa vulkan-radeon lib32-vulkan-radeon \
   vulkan-icd-loader lib32-vulkan-icd-loader \
