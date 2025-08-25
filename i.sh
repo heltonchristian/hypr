@@ -28,7 +28,7 @@ cd ..
 rm -rf yay
 
 echo "==> Instalando pacotes AUR estáveis"
-yay -S --noconfirm --needed librewolf-bin wl-gammarelay-rs cava bibata-cursor-theme protonup-qt
+yay -S --noconfirm --needed librewolf-bin wl-gammarelay-rs cava bibata-cursor-theme tofi
 
 echo "==> Configurando autologin no tty1"
 sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
