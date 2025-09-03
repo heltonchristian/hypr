@@ -21,7 +21,7 @@ makepkg -si
 cd
 
 # AUR programas
-yay -S --noconfirm --quiet --needed hyprshot tofi wl-gammarelay-rs cava bibata-cursor-theme 
+yay -S --noconfirm --quiet --needed hyprshot tofi wl-gammarelay-rs cava bibata-cursor-theme librewolf-bin
 
 cd
 rm -rf ~/hypr
