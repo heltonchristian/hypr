@@ -6,7 +6,7 @@ sudo pacman -Syu --noconfirm
 
 echo "==> Instalando pacotes básicos do sistema e Hyprland"
 sudo pacman -S --noconfirm --needed \
-  hyprland hyprpaper waybar alacritty grim slurp \
+  hyprland hyprpaper waybar alacritty grim slurp firefox\
   noto-fonts-extra ttf-nerd-fonts-symbols ttf-fira-code \
   papirus-icon-theme orchis-theme libnotify \
   dolphin vlc fastfetch btop \
@@ -28,7 +28,7 @@ cd ..
 rm -rf yay
 
 echo "==> Instalando pacotes AUR estáveis"
-yay -S --noconfirm --needed librewolf-bin wl-gammarelay-rs cava bibata-cursor-theme tofi
+yay -S --noconfirm --needed wl-gammarelay-rs cava bibata-cursor-theme tofi
 
 echo "==> Configurando autologin no tty1"
 sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
