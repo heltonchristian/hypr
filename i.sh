@@ -15,7 +15,7 @@ cd yay
 makepkg -si
 cd
 
-yay -S --noconfirm --quiet --needed hyprshot tofi wl-gammarelay-rs cava bibata-cursor-theme librewolf-bin
+yay -S --quiet hyprshot tofi wl-gammarelay-rs cava bibata-cursor-theme librewolf-bin
 
 cd
 rm -rf ~/hypr
