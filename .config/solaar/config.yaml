@@ -1,0 +1,16 @@
+- 1.1.18
+- _NAME: PRO X 2 DEX
+  _absent: [hi-res-scroll, lowres-scroll-mode, hires-smooth-invert, hires-smooth-resolution, hires-scroll-mode, scroll-ratchet, scroll-ratchet-torque, smart-shift,
+    thumb-scroll-invert, thumb-scroll-mode, report_rate, pointer_speed, dpi, speed-change, backlight, backlight_level, backlight_duration_hands_out, backlight_duration_hands_in,
+    backlight_duration_powered, backlight-timed, led_control, led_zone_, rgb_control, rgb_zone_, brightness_control, per-key-lighting, fn-swap, reprogrammable-keys,
+    persistent-remappable-keys, divert-keys, disable-keyboard-keys, force-sensing, crown-smooth, divert-crown, divert-gkeys, m-key-leds, mr-key-led, multiplatform,
+    change-host, gesture2-gestures, gesture2-divert, gesture2-params, haptic-level, haptic-play, sidetone, equalizer, adc_power_management]
+  _battery: 4100
+  _modelId: 40B8C0A00000
+  _sensitive: {dpi_extended: false, report_rate_extended: false}
+  _serial: 34E35CD4
+  _unitId: 34E35CD4
+  _wpid: 40B8
+  dpi_extended: {0: 800, 1: 800, 2: 2}
+  onboard_profiles: 1
+  report_rate_extended: 6
