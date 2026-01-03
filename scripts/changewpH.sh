@@ -15,8 +15,8 @@ WALLPAPER="$WALLPAPER_DIRECTORY/${WALLPAPERS[$INDEX]}"
 
 echo " " > $HYPRPAPER_CONF
 echo "preload = $WALLPAPER" >> $HYPRPAPER_CONF
-echo "wallpaper = DP-1, $WALLPAPER" >> $HYPRPAPER_CONF
-echo "wallpaper = DVI-I-1, $WALLPAPER" >> $HYPRPAPER_CONF
+echo "wallpaper = DP-3, $WALLPAPER" >> $HYPRPAPER_CONF
+echo "wallpaper = HDMI-A-1, $WALLPAPER" >> $HYPRPAPER_CONF
 echo "splash = false" >> $HYPRPAPER_CONF
 
 killall hyprpaper
