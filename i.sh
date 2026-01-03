@@ -1,7 +1,6 @@
 #!/bin/sh
 
-sudo pacman -S --noconfirm git go hyprland hyprpaper waybar alacritty zsh neovim ttf-nerd-fonts-symbols nemo nemo-fileroller vlc papirus-icon-theme ttf-fira-code orchis-theme
-sudo pacman -S --noconfirm qemu virt-manager libvirt edk2-ovmf bridge-utils dnsmasq vde2 openbsd-netcat virt-viewer spice-server spice-gtk freerdp
+sudo pacman -S --noconfirm git go hyprland hyprpaper waybar alacritty zsh neovim ttf-nerd-fonts-symbols nemo nemo-fileroller vlc papirus-icon-theme ttf-fira-code orchis-theme spotify-launcher
 
 rm -r ~/.config
 mv -f .config ~/
