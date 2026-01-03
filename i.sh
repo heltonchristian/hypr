@@ -5,7 +5,7 @@ sudo pacman -S --noconfirm git go hyprland xdg-desktop-portal-hyprland hyprpaper
 rm -r ~/.config
 mv -f .config ~/
 
-mv -f .zshrc .zprofile scripts ~/
+mv -f .zshrc .zprofile scripts wallpapers ~/
 
 chmod +x ~/scripts/changewpH.sh
 chmod +x ~/scripts/changeAudio.sh
