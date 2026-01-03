@@ -1,6 +1,6 @@
 #!/bin/sh
 
-sudo pacman -S --noconfirm git go hyprland xdg-desktop-portal-hyprland hyprpaper waybar alacritty zsh neovim ttf-nerd-fonts-symbols nemo nemo-fileroller vlc papirus-icon-theme ttf-fira-code orchis-theme spotify-launcher
+sudo pacman -S --noconfirm git go hyprland xdg-desktop-portal-hyprland hyprpaper waybar alacritty zsh neovim ttf-nerd-fonts-symbols nemo nemo-fileroller vlc papirus-icon-theme ttf-fira-code orchis-theme spotify-launcher solaar libayatana-appindicator
 
 rm -r ~/.config
 mv -f .config ~/
@@ -16,6 +16,19 @@ makepkg -si
 cd
 
 yay -S --quiet hyprshot tofi wl-gammarelay-rs cava bibata-cursor-theme librewolf-bin
+
+cd /usr/share/applications/
+sudo rm -rf btop.desktop qv4l2.desktop qvidcap.desktop xgpsspeed.desktop bssh.desktop xgps.desktop avahi-discover.desktop bvnc.desktop nvim.desktop
+
+sudo groupadd -f plugdev
+sudo usermod -aG plugdev $USER
+ls /usr/lib/udev/rules.d/42-logitech-unify-permissions.rules
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+sudo tee /etc/udev/rules.d/99-logitech-mouse.rules <<'EOF'
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="046d", GROUP="plugdev", MODE="0660"
+SUBSYSTEMS=="hid", ATTRS{idVendor}=="046d", GROUP="plugdev", MODE="0660"
+EOF
 
 cd
 rm -rf ~/hypr
