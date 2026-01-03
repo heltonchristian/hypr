@@ -30,6 +30,13 @@ SUBSYSTEMS=="usb", ATTRS{idVendor}=="046d", GROUP="plugdev", MODE="0660"
 SUBSYSTEMS=="hid", ATTRS{idVendor}=="046d", GROUP="plugdev", MODE="0660"
 EOF
 
+sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
+sudo tee /etc/systemd/system/getty@tty1.service.d/autologin.conf <<EOF
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty -o '-p -f -- \\u' --noclear --autologin ly - \$TERM
+EOF
+
 cd
 rm -rf ~/hypr
 rm -rf ~/yay
