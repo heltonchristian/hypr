@@ -1,6 +1,6 @@
 #!/bin/sh
 
-sudo pacman -S --noconfirm git go hyprland xdg-desktop-portal-hyprland hyprpaper fuzzel waybar foot zsh neovim ttf-nerd-fonts-symbols thunar thunar-archive-plugin unzip p7zip unrar tar gzip bzip2 xz vlc papirus-icon-theme ttf-jetbrains-mono-nerd orchis-theme spotify-launcher solaar libayatana-appindicator hyprpolkitagent
+sudo pacman -S --noconfirm git go hyprland xdg-desktop-portal-hyprland hyprpaper waybar foot zsh neovim ttf-nerd-fonts-symbols thunar thunar-archive-plugin unzip p7zip unrar tar gzip bzip2 xz vlc papirus-icon-theme ttf-jetbrains-mono-nerd orchis-theme spotify-launcher solaar libayatana-appindicator hyprpolkitagent
 obs-studio fastfetch btop
 
 rm -r ~/.config
@@ -16,7 +16,7 @@ cd yay
 makepkg -si
 cd
 
-yay -S --quiet hyprshot wl-gammarelay-rs cava bibata-cursor-theme librewolf-bin
+yay -S --quiet hyprshot wl-gammarelay-rs cava bibata-cursor-theme librewolf-bin tofi
 
 cd /usr/share/applications/
 sudo rm -rf btop.desktop qv4l2.desktop qvidcap.desktop xgpsspeed.desktop bssh.desktop xgps.desktop avahi-discover.desktop bvnc.desktop nvim.desktop
