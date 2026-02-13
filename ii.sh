@@ -13,7 +13,7 @@ sudo pacman -S --noconfirm \
     git go \
     hyprland xdg-desktop-portal-hyprland hyprpaper hyprpolkitagent \
     waybar alacritty \
-    zsh neovim fastfetch\
+    zsh neovim fastfetch btop\
     thunar thunar-archive-plugin \
     unzip p7zip unrar tar gzip bzip2 xz \
     vlc obs-studio spotify-launcher \
