@@ -12,8 +12,8 @@ sudo pacman -Syu --noconfirm
 sudo pacman -S --noconfirm \
     git go \
     hyprland xdg-desktop-portal-hyprland hyprpaper hyprpolkitagent \
-    waybar foot \
-    zsh neovim \
+    waybar alacritty \
+    zsh neovim fastfetch\
     thunar thunar-archive-plugin \
     unzip p7zip unrar tar gzip bzip2 xz \
     vlc obs-studio spotify-launcher \
