@@ -11,18 +11,6 @@
     "modules-center": ["clock"],
     "modules-right": ["pulseaudio", "idle_inhibitor", "custom/temperature", "custom/brightness", "custom/gamma", "tray"],
   
-    "hyprland/workspaces": {
-      "format": "{icon}",
-      "format-icons": {
-        "1": "",
-        "2": "",
-        "3": "",
-        "4": "",
-        "active": "",
-        "default": ""
-      }
-    },
-  
     "hyprland/window": {
       "format": "{title}",
       "icon-size": 10
@@ -87,18 +75,6 @@
     "modules-left": ["hyprland/window"],
     "modules-center": ["clock"],
     "modules-right": ["pulseaudio", "idle_inhibitor", "custom/temperature", "custom/brightness", "custom/gamma", "tray"],
-
-    "hyprland/workspaces": {
-      "format": "{icon}",
-      "format-icons": {
-        "1": "",
-        "2": "",
-        "3": "",
-        "4": "",
-        "active": "",
-        "default": ""
-      }
-    },
   
     "hyprland/window": {
       "format": "{title}",
