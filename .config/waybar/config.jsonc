@@ -7,9 +7,9 @@
     "output": "DP-3",
     "height": 20,
     "spacing": 5,
-    "modules-left": ["hyprland/window"],
-    "modules-center": ["clock"],
-    "modules-right": ["pulseaudio", "idle_inhibitor", "custom/temperature", "custom/brightness", "custom/gamma", "tray"],
+    "modules-left": ["idle_inhibitor", "custom/temperature", "custom/brightness", "custom/gamma"],
+    "modules-center": ["hyprland/window"],
+    "modules-right": ["clock", "pulseaudio", "tray"],
   
     "hyprland/window": {
       "format": "{title}",
@@ -72,10 +72,10 @@
     "output": "HDMI-A-1",
     "height": 20,
     "spacing": 5,
-    "modules-left": ["hyprland/window"],
-    "modules-center": ["clock"],
-    "modules-right": ["pulseaudio", "idle_inhibitor", "custom/temperature", "custom/brightness", "custom/gamma", "tray"],
-  
+    "modules-left": ["idle_inhibitor", "custom/temperature", "custom/brightness", "custom/gamma"],
+    "modules-center": ["hyprland/window"],
+    "modules-right": ["clock", "pulseaudio", "tray"],
+
     "hyprland/window": {
       "format": "{title}",
       "icon-size": 10
