@@ -26,7 +26,6 @@ alias fetch='clear && fastfetch --logo none | sed "s/^/  /"'
 alias zshrc='nvim ~/.zshrc'
 alias ac='nvim ~/.config/alacritty/alacritty.toml'
 alias vimrc='nvim ~/.config/nvim/init.vim'
-alias win='/home/ly/.scripts/openwindows.sh'
 
 #------------ HYPRLAND ------------
 alias hc='nvim ~/.config/hypr/hyprland.conf'
