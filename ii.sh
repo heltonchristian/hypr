@@ -11,7 +11,7 @@ ORIGINAL_USER="${SUDO_USER:-$USER}"
 sudo pacman -Syu --noconfirm
 sudo pacman -S --noconfirm \
     git go \
-    hyprland xdg-desktop-portal-hyprland hyprpaper hyprpolkitagent \
+    hyprland xdg-desktop-portal-hyprland hyprpaper hyprpolkitagent mako\
     waybar alacritty \
     zsh neovim fastfetch btop\
     thunar thunar-archive-plugin \
