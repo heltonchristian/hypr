@@ -8,14 +8,12 @@ fi
 ORIGINAL_USER="${SUDO_USER:-$USER}"
 
 #===== SYSTEM UPDATE AND CORE PACKAGE INSTALLATION =====#
-sudo pacman -Syu --noconfirm
-sudo pacman -S --noconfirm \
+sudo pacman -Syu --noconfirm \
     git go \
     hyprland xdg-desktop-portal-hyprland hyprpaper hyprpolkitagent mako\
     waybar alacritty \
     zsh neovim fastfetch btop\
-    thunar thunar-archive-plugin \
-    unzip p7zip unrar tar gzip bzip2 xz \
+    nemo nemo-fileroller nemo-terminal\
     vlc obs-studio spotify-launcher \
     fastfetch btop solaar libayatana-appindicator \
     papirus-icon-theme orchis-theme \
