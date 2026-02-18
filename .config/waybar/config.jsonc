@@ -1,0 +1,134 @@
+
+/*----------------                       WAYBAR SETTINGS                      -----------------*/
+[
+  {
+    "layer": "bottom",
+    "position": "top",
+    "output": "DP-3",
+    "height": 20,
+    "spacing": 5,
+    "modules-left": ["idle_inhibitor", "custom/temperature", "custom/brightness", "custom/gamma"],
+    "modules-center": ["hyprland/window"],
+    "modules-right": ["clock", "pulseaudio", "tray"],
+  
+    "hyprland/window": {
+      "format": "{title}",
+      "icon-size": 10
+    },
+  
+    "idle_inhibitor": {
+      "format": "{icon}",
+      "format-icons": {
+        "activated": " ",
+        "deactivated": " "
+      }
+    },
+  
+    "pulseaudio": {
+      "format": "{icon} {volume}%",
+      "format-icons": {
+        "default": ["\uf026", "\uf027", "\uf028"]
+      },
+      "on-click": "/home/ly/scripts/changeAudio.sh",
+      "on-click-right": "/home/ly/scripts/changeAudio.sh",
+      "device": "default"
+    },
+  
+    "tray": {
+      "icon-size": 15,
+      "spacing": 8
+    },
+  
+    "clock": {
+      "format": "{:%H:%M - %d/%m/%y}",
+      "tooltip-format": "<tt><small>{calendar}</small></tt>",
+      "calendar": {
+        "format": {
+          "months": "<span color='#ffead3'><b>{}</b></span>",
+          "today": "<span color='#ff6699'><b>{}</b></span>"
+        }
+      }
+    },
+
+    "custom/temperature": {
+      "format": "    ",
+      "on-scroll-up": "busctl --user -- call rs.wl-gammarelay /outputs/DP_3 rs.wl.gammarelay UpdateTemperature n +100",
+      "on-scroll-down": "busctl --user -- call rs.wl-gammarelay /outputs/DP_3 rs.wl.gammarelay UpdateTemperature n -100"
+    },
+    "custom/brightness": {
+      "format": "    ",
+      "on-scroll-up": "busctl --user -- call rs.wl-gammarelay /outputs/DP_3 rs.wl.gammarelay UpdateBrightness d +0.02",
+      "on-scroll-down": "busctl --user -- call rs.wl-gammarelay /outputs/DP_3 rs.wl.gammarelay UpdateBrightness d -0.02"
+    },
+    "custom/gamma": {
+      "format": "     ",
+      "on-scroll-up": "busctl --user -- call rs.wl-gammarelay /outputs/DP_3 rs.wl.gammarelay UpdateGamma d +0.02",
+      "on-scroll-down": "busctl --user -- call rs.wl-gammarelay /outputs/DP_3 rs.wl.gammarelay UpdateGamma d -0.02"
+    }
+  },
+  {
+    "layer": "bottom",
+    "position": "top",
+    "output": "HDMI-A-1",
+    "height": 20,
+    "spacing": 5,
+    "modules-left": ["idle_inhibitor", "custom/temperature", "custom/brightness", "custom/gamma"],
+    "modules-center": ["hyprland/window"],
+    "modules-right": ["clock", "pulseaudio", "tray"],
+
+    "hyprland/window": {
+      "format": "{title}",
+      "icon-size": 10
+    },
+  
+    "idle_inhibitor": {
+      "format": "{icon}",
+      "format-icons": {
+        "activated": " ",
+        "deactivated": " "
+      }
+    },
+  
+    "pulseaudio": {
+      "format": "{icon} {volume}%",
+      "format-icons": {
+        "default": ["\uf026", "\uf027", "\uf028"]
+      },
+      "on-click": "/home/ly/scripts/changeAudio.sh",
+      "on-click-right": "/home/ly/scripts/changeAudio.sh",
+      "device": "default"
+    },
+  
+    "tray": {
+      "icon-size": 15,
+      "spacing": 8
+    },
+  
+    "clock": {
+      "format": "{:%H:%M - %d/%m/%y}",
+      "tooltip-format": "<tt><small>{calendar}</small></tt>",
+      "calendar": {
+        "format": {
+          "months": "<span color='#ffead3'><b>{}</b></span>",
+          "today": "<span color='#ff6699'><b>{}</b></span>"
+        }
+      }
+    },
+    
+    "custom/temperature": {
+      "format": "    ",
+      "on-scroll-up": "busctl --user -- call rs.wl-gammarelay /outputs/HDMI_A_1 rs.wl.gammarelay UpdateTemperature n +100",
+      "on-scroll-down": "busctl --user -- call rs.wl-gammarelay /outputs/HDMI_A_1 rs.wl.gammarelay UpdateTemperature n -100"
+    },
+    "custom/brightness": {
+      "format": "    ",
+      "on-scroll-up": "busctl --user -- call rs.wl-gammarelay /outputs/HDMI_A_1 rs.wl.gammarelay UpdateBrightness d +0.02",
+      "on-scroll-down": "busctl --user -- call rs.wl-gammarelay /outputs/HDMI_A_1 rs.wl.gammarelay UpdateBrightness d -0.02"
+    },
+    "custom/gamma": {
+      "format": "     ",
+      "on-scroll-up": "busctl --user -- call rs.wl-gammarelay /outputs/HDMI_A_1 rs.wl.gammarelay UpdateGamma d +0.02",
+      "on-scroll-down": "busctl --user -- call rs.wl-gammarelay /outputs/HDMI_A_1 rs.wl.gammarelay UpdateGamma d -0.02"
+    }
+  }
+]
