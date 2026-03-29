@@ -11,7 +11,7 @@ ORIGINAL_USER="${SUDO_USER:-$USER}"
 sudo pacman -Syu --noconfirm \
     git go \
     hyprland xdg-desktop-portal-hyprland hyprpaper hyprpolkitagent mako\
-    waybar alacritty \
+    waybar kitty \
     zsh neovim fastfetch btop\
     nemo nemo-fileroller nemo-terminal\
     vlc obs-studio spotify-launcher \
