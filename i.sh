@@ -23,7 +23,7 @@ PACMAN_PACKAGES=(
     pciutils
     zsh
     neovim
-    foot
+    kitty
     fastfetch
     btop
     hyprland
@@ -46,6 +46,9 @@ PACMAN_PACKAGES=(
     wl-clipboard
     playerctl
     brightnessctl
+    pavucontrol
+    grim
+    slurp
     obs-studio
     gamemode
     lib32-gamemode
@@ -215,10 +218,14 @@ exec-once = hyprpaper
 exec-once = hyprpolkitagent
 
 bind = $mainMod, RETURN, exec, kitty
-bind = $mainMod, SPACE, exec, fuzzel --dmenu
-bind = $mainMod, k, killactive,
-bind = $mainMod SHIFT, k, exit,
+bind = $mainMod, D, exec, fuzzel
+bind = $mainMod, Q, killactive,
+bind = $mainMod SHIFT, Q, exit,
 bind = $mainMod, F, fullscreen, 0
+bind = $mainMod, V, togglefloating,
+bind = $mainMod, SPACE, togglefloating,
+bind = $mainMod, P, pseudo,
+bind = $mainMod, J, togglesplit,
 
 bind = $mainMod, LEFT, movefocus, l
 bind = $mainMod, RIGHT, movefocus, r
@@ -252,7 +259,10 @@ bind = $mainMod SHIFT, 8, movetoworkspace, 8
 bind = $mainMod SHIFT, 9, movetoworkspace, 9
 bind = $mainMod SHIFT, 0, movetoworkspace, 10
 
+bind = $mainMod, S, exec, bash -lc 'grim -g "$(slurp)" - | wl-copy'
 bind = $mainMod SHIFT, S, exec, hyprshot -m region
+bind = $mainMod, R, exec, fuzzel
+bind = $mainMod SHIFT, R, exec, fuzzel --dmenu
 
 bindm = $mainMod, mouse:272, movewindow
 bindm = $mainMod, mouse:273, resizewindow
@@ -495,7 +505,7 @@ configure_fuzzel() {
 
     cat > "$FUZZEL_DIR/fuzzel.ini" <<'EOF'
 [main]
-terminal=foot
+terminal=kitty
 font=JetBrainsMono Nerd Font:size=12
 dpi-aware=no
 width=40
