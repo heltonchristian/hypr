@@ -19,14 +19,15 @@ if [[ -z "$HOME_DIR" || ! -d "$HOME_DIR" ]]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Paleta Matrix
+# Themes
 # ---------------------------------------------------------------------------
+# dark
 MX_BG="000000"
 MX_GREEN="00ff41"
 MX_GREEN_DIM="0a3d17"
 MX_GREEN_MUTED="4d9e6a"
 
-# Versão clara da mesma paleta matrix (fundo claro, texto verde escuro)
+# light
 LT_BG="f4f4ef"
 LT_GREEN="0b6e2c"
 LT_GREEN_DIM="a9d9b8"
@@ -36,23 +37,19 @@ LT_GREEN_MUTED="3f8a5c"
 # Pacotes (repositórios oficiais — preferidos sobre AUR)
 # ---------------------------------------------------------------------------
 PACMAN_PACKAGES=(
-  # Kernel (linux-zen: scheduler mais agressivo p/ desktop/gaming, oficial)
-  linux-zen linux-zen-headers amd-ucode
 
   # Base
-  base-devel git fish neovim fastfetch btop lm_sensors cpupower
+  amd-ucode base-devel git fish neovim fastfetch btop lm_sensors cpupower
   reflector pacman-contrib
 
   # Hyprland / Wayland core
-  # (sem xdg-desktop-portal-gtk: o portal-hyprland já cobre screenshot/screencast,
-  # e evitamos puxar o backend GTK à toa — reduz a pegada GTK do sistema)
   hyprland xdg-desktop-portal-hyprland
   hyprpaper hypridle hyprlock hyprpolkitagent
   waybar fuzzel fnott foot
   qt5-wayland qt6-wayland xorg-xwayland
 
   # Arquivos / área de trabalho mínima
-  dolphin gvfs
+  dolphin gvfs obs-studio
 
   # Áudio (PipeWire — nativo Wayland/moderno)
   pipewire pipewire-pulse pipewire-alsa pipewire-jack wireplumber
@@ -70,9 +67,6 @@ PACMAN_PACKAGES=(
 
   # Gaming / performance
   steam gamescope gamemode lib32-gamemode mangohud lib32-mangohud
-
-  # Streaming
-  obs-studio
 
   # Btrfs / snapshots (estabilidade)
   btrfs-progs snapper snap-pac
@@ -94,7 +88,9 @@ MANGOHUD_DIR="$HOME_DIR/.config/MangoHud"
 HYPR_DIR="$HOME_DIR/.config/hypr"
 FOOT_DIR="$HOME_DIR/.config/foot"
 FISH_DIR="$HOME_DIR/.config/fish"
-GAMEMODE_DIR="/etc/gamemode.ini"
+FNOTT_DIR="$HOME_DIR/.config/fnott"
+LOCAL_BIN_DIR="$HOME_DIR/.local/bin"
+GAMEMODE_FILE="/etc/gamemode.ini"
 
 enable_multilib() {
   if ! grep -q '^\[multilib\]' /etc/pacman.conf; then
@@ -178,9 +174,6 @@ configure_hyprland() {
   mkdir -p "$HYPR_DIR"
   cat > "$HYPR_DIR/hyprland.conf" <<EOF
 #----------------- MONITORS ---------------------------------------------
-# Ajuste os nomes de conector (DP-1, HDMI-A-1 etc.) com 'hyprctl monitors'
-# após o primeiro login. Exemplo abaixo: Dell 320Hz como principal (0x0) e
-# Acer 144Hz ao lado (1920x0).
 monitor = DP-1,1920x1080@320,0x0,auto
 monitor = HDMI-A-1,1920x1080@144,1920x0,auto
 
@@ -319,14 +312,11 @@ bind = \$mainMod, F10, exec, \$fileManager
 bind = \$mainMod, F11, exec, steam
 bind = \$mainMod, B, exec, \$browser
 bind = \$mainMod, E, exec, \$fileManager
-bind = \$mainMod, Q, killactive,
 bind = \$mainMod, K, killactive,
-bind = \$mainMod SHIFT, Q, exit,
+bind = \$mainMod SHIFT, K, exit,
 bind = \$mainMod, F, fullscreen, 0
 bind = \$mainMod, V, togglefloating,
 bind = \$mainMod, SPACE, exec, \$menu
-bind = \$mainMod, P, pseudo,
-bind = \$mainMod, J, togglesplit,
 bind = \$mainMod, L, exec, hyprlock
 bind = \$mainMod, W, exec, killall waybar || waybar
 
@@ -364,7 +354,7 @@ bind = \$mainMod SHIFT, 0, movetoworkspace, 10
 bind = \$mainMod, GRAVE, togglespecialworkspace, special
 bind = \$mainMod SHIFT, GRAVE, movetoworkspace, special
 
-# Screenshot: clipboard 
+# Screenshot: clipboard
 bind = \$mainMod, S, exec, bash -lc 'grim -g "\$(slurp)" - | wl-copy'
 bind = \$mainMod SHIFT, S, exec, bash -lc 'grim - | wl-copy'
 
@@ -525,9 +515,7 @@ END { if (max != "") printf "%.0f", max }
 EOF
   chmod +x "$WAYBAR_SCRIPTS_DIR/temperature.sh"
 
-  # Bateria e polling rate do G Pro X Superlight 2, lidos via solaar (é o
-  # que fala o protocolo HID++ da Logitech por trás do receptor Lightspeed —
-  # sem ele o mouse funciona normal como HID genérico, mas sem essas leituras).
+  # Bateria e polling rate do G Pro X Superlight 2
   cat > "$WAYBAR_SCRIPTS_DIR/mouse-battery.sh" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
@@ -552,8 +540,7 @@ EOF
 
 configure_fuzzel() {
   mkdir -p "$FUZZEL_DIR"
-  # Formato dmenu clássico: barra fina ancorada no topo, largura total da tela,
-  # em vez da caixa flutuante centralizada padrão do fuzzel.
+  # Formato dmenu clássico
   cat > "$FUZZEL_DIR/fuzzel.ini" <<EOF
 [main]
 terminal=foot
@@ -601,10 +588,10 @@ EOF
 }
 
 configure_fnott() {
-  mkdir -p "$HOME_DIR/.config/fnott"
+  mkdir -p "$FNOTT_DIR"
   # fnott: notificador Wayland-nativo sem dependência de GTK (mesmo autor do
   # foot e do fuzzel) — troca direta do mako pra reduzir a pegada GTK do sistema.
-  cat > "$HOME_DIR/.config/fnott/fnott.ini" <<EOF
+  cat > "$FNOTT_DIR/fnott.ini" <<EOF
 [main]
 anchor=top-right
 max-icon-size=32
@@ -628,6 +615,110 @@ border-color=${MX_GREEN}ff
 EOF
 }
 
+configure_mangohud() {
+  mkdir -p "$MANGOHUD_DIR"
+  cat > "$MANGOHUD_DIR/MangoHud.conf" <<EOF
+legacy_layout=false
+gpu_stats
+cpu_stats
+gpu_temp
+cpu_temp
+ram
+vram
+fps
+frametime=0
+gpu_color=${MX_GREEN}
+cpu_color=${MX_GREEN}
+background_alpha=0.4
+font_size=18
+position=top-left
+toggle_hud=Shift_R+F12
+EOF
+}
+
+configure_gamemode() {
+  cat > "$GAMEMODE_FILE" <<EOF
+[general]
+renice=10
+softrealtime=auto
+ioprio=0
+
+[gpu]
+apply_gpu_optimisations=accept-responsibility
+gpu_device=0
+amd_performance_level=high
+
+[custom]
+start=notify-send "GameMode" "Ativado"
+end=notify-send "GameMode" "Desativado"
+EOF
+}
+
+configure_scripts() {
+  mkdir -p "$LOCAL_BIN_DIR"
+
+  cat > "$LOCAL_BIN_DIR/theme-toggle.sh" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+THEMES_DIR="$HOME/.config/hypr/themes"
+STATE_FILE="$THEMES_DIR/current"
+WAYBAR_DIR="$HOME/.config/waybar"
+FUZZEL_DIR="$HOME/.config/fuzzel"
+FOOT_DIR="$HOME/.config/foot"
+FNOTT_DIR="$HOME/.config/fnott"
+
+current="dark"
+[[ -f "$STATE_FILE" ]] && current="$(cat "$STATE_FILE")"
+
+if [[ "$current" == "dark" ]]; then
+  next="light"
+else
+  next="dark"
+fi
+
+cp "$THEMES_DIR/$next/waybar.css" "$WAYBAR_DIR/style.css"
+cp "$THEMES_DIR/$next/fuzzel.ini" "$FUZZEL_DIR/fuzzel.ini"
+cp "$THEMES_DIR/$next/foot.ini" "$FOOT_DIR/foot.ini"
+cp "$THEMES_DIR/$next/fnott.ini" "$FNOTT_DIR/fnott.ini"
+
+# shellcheck disable=SC1090
+source "$THEMES_DIR/$next/borders.conf"
+hyprctl keyword general:col.active_border "rgba(${active_border#rgba(}" >/dev/null 2>&1 || true
+hyprctl keyword general:col.inactive_border "rgba(${inactive_border#rgba(}" >/dev/null 2>&1 || true
+
+echo "$next" > "$STATE_FILE"
+
+killall -SIGUSR2 waybar 2>/dev/null || (killall waybar 2>/dev/null; setsid waybar >/dev/null 2>&1 &)
+killall fnott 2>/dev/null || true
+setsid fnott >/dev/null 2>&1 &
+
+command -v notify-send >/dev/null 2>&1 && notify-send "Tema" "Alterado para: $next"
+EOF
+  chmod +x "$LOCAL_BIN_DIR/theme-toggle.sh"
+
+  cat > "$LOCAL_BIN_DIR/gpu-perf-toggle.sh" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+STATE_FILE="$HOME/.cache/gpu-perf-mode"
+mkdir -p "$(dirname "$STATE_FILE")"
+
+mode="performance"
+[[ -f "$STATE_FILE" ]] && mode="$(cat "$STATE_FILE")"
+
+if [[ "$mode" == "performance" ]]; then
+  next="balanced"
+else
+  next="performance"
+fi
+
+echo "$next" > "$STATE_FILE"
+command -v notify-send >/dev/null 2>&1 && notify-send "Modo de performance" "$next"
+EOF
+  chmod +x "$LOCAL_BIN_DIR/gpu-perf-toggle.sh"
+}
+
 configure_theme_toggle() {
   local themes_dir="$HYPR_DIR/themes"
   mkdir -p "$themes_dir/dark" "$themes_dir/light"
@@ -637,7 +728,7 @@ configure_theme_toggle() {
   cp "$WAYBAR_DIR/style.css" "$themes_dir/dark/waybar.css"
   cp "$FUZZEL_DIR/fuzzel.ini" "$themes_dir/dark/fuzzel.ini"
   cp "$FOOT_DIR/foot.ini" "$themes_dir/dark/foot.ini"
-  cp "$HOME_DIR/.config/fnott/fnott.ini" "$themes_dir/dark/fnott.ini"
+  cp "$FNOTT_DIR/fnott.ini" "$themes_dir/dark/fnott.ini"
   cat > "$themes_dir/dark/borders.conf" <<EOF
 active_border=rgba(${MX_GREEN}ff)
 inactive_border=rgba(${MX_GREEN_DIM}cc)
@@ -667,7 +758,7 @@ window#waybar {
     color: #${LT_BG};
     background: #${LT_GREEN};
 }
-#window, #clock, #cpu, #memory, #custom-temperature, #wireplumber, #tray {
+#window, #clock, #cpu, #memory, #custom-temperature, #custom-mouse-battery, #custom-mouse-pollrate, #wireplumber, #tray {
     padding: 0 10px;
     color: #${LT_GREEN};
 }
@@ -676,4 +767,113 @@ tooltip {
     border: 1px solid #${LT_GREEN};
 }
 tooltip label { color: #${LT_GREEN}; }
-EO
+EOF
+
+  cat > "$themes_dir/light/fuzzel.ini" <<EOF
+[main]
+terminal=foot
+font=JetBrainsMono Nerd Font:size=13
+anchor=top
+width=100
+lines=8
+horizontal-pad=14
+vertical-pad=6
+inner-pad=6
+layer=overlay
+prompt="\$ "
+icons-enabled=no
+match-mode=fuzzy
+exit-on-keyboard-focus-loss=yes
+
+[border]
+radius=0
+width=0
+
+[colors]
+background=${LT_BG}f2
+text=${LT_GREEN}ff
+match=${LT_GREEN}ff
+selection=${LT_GREEN}ff
+selection-text=${LT_BG}ff
+border=${LT_GREEN}ff
+EOF
+
+  cat > "$themes_dir/light/foot.ini" <<EOF
+font=JetBrainsMono Nerd Font:size=11
+pad=8x8
+[colors]
+background=${LT_BG}
+foreground=${LT_GREEN}
+regular0=ffffff
+regular2=${LT_GREEN}
+bright2=${LT_GREEN}
+selection-background=${LT_GREEN_DIM}
+selection-foreground=${LT_BG}
+EOF
+
+  cat > "$themes_dir/light/fnott.ini" <<EOF
+[main]
+anchor=top-right
+max-icon-size=32
+border-radius=0
+border-size=1
+background=${LT_BG}ee
+border-color=${LT_GREEN}ff
+title-color=${LT_GREEN}ff
+summary-color=${LT_GREEN}ff
+body-color=${LT_GREEN_MUTED}ff
+title-font=JetBrainsMono Nerd Font:size=10:weight=bold
+summary-font=JetBrainsMono Nerd Font:size=10
+body-font=JetBrainsMono Nerd Font:size=10
+
+[low]
+timeout=4
+
+[critical]
+timeout=0
+border-color=${LT_GREEN}ff
+EOF
+
+  cat > "$themes_dir/light/borders.conf" <<EOF
+active_border=rgba(${LT_GREEN}ff)
+inactive_border=rgba(${LT_GREEN_DIM}cc)
+EOF
+
+  echo "dark" > "$themes_dir/current"
+}
+
+fix_ownership() {
+  chown -R "$ORIGINAL_USER:$ORIGINAL_USER" \
+    "$HOME_DIR/.config/waybar" \
+    "$HOME_DIR/.config/fuzzel" \
+    "$HOME_DIR/.config/MangoHud" \
+    "$HOME_DIR/.config/hypr" \
+    "$HOME_DIR/.config/foot" \
+    "$HOME_DIR/.config/fish" \
+    "$HOME_DIR/.config/fnott" \
+    "$HOME_DIR/.local/bin" 2>/dev/null || true
+}
+
+main() {
+  install_system_packages
+  install_paru
+  install_aur_packages
+
+  configure_fish
+  configure_hyprland
+  configure_hypridle_hyprlock
+  configure_waybar
+  configure_fuzzel
+  configure_foot
+  configure_fnott
+  configure_mangohud
+  configure_gamemode
+  configure_scripts
+  configure_theme_toggle
+
+  fix_ownership
+
+  echo "Instalação concluída. Reinicie a sessão e selecione Hyprland no display manager."
+}
+
+main "$@"
