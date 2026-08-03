@@ -145,14 +145,12 @@ config.xwayland = {
 }
 
 --------------------------------------------------------------------------------
--- INPUT (Configurado para precisão de mouse estilo Windows)
+-- INPUT
 --------------------------------------------------------------------------------
 config.input = {
     kb_layout = "us",
     kb_variant = "intl",
     follow_mouse = 0,
-    
-    -- Estas duas opções desativam a aceleração, igual ao Windows:
     accel_profile = "flat", 
     sensitivity = 0,
     
