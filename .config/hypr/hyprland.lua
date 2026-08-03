@@ -181,7 +181,8 @@ config.bind = {
     { mainMod, "P", "exec", "~/scripts/changewpH.sh" },
     { mainMod, "K", "killactive" },
     { mainMod, "SPACE", "exec", menu },
-    { mainMod, "F", "fullscreen" },
+    { mainMod, "F", "fullscreen", "1" },
+    { mainMod .. " SHIFT", "F", "fullscreen", "0" },
     { mainMod .. " SHIFT", "S", "exec", "hyprshot -m region" },
     { mainMod, "W", "exec", "killall waybar || waybar" },
 
