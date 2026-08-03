@@ -4,7 +4,7 @@ local config = {}
 -- MY PROGRAMS
 --------------------------------------------------------------------------------
 local terminal = "kitty"
-local fileManager = "thunar"
+local fileManager = "nautilus"
 local browser = "librewolf"
 local menu = "tofi-drun --drun-launch=true"
 local mainMod = "SUPER"
