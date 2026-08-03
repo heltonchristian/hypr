@@ -21,7 +21,13 @@ config.workspaces = {
     "1, monitor:DP-3",
     "2, monitor:DP-3",
     "3, monitor:HDMI-A-1",
-    "4, monitor:HDMI-A-1"
+    "4, monitor:HDMI-A-1",
+        "special:gaming, monitor:DP-3"
+}
+
+config.windowrulev2 = {
+    "workspace special:gaming, class:^(steam_app_.*)$",
+    "fullscreen 1, class:^(steam_app_.*)$"
 }
 
 --------------------------------------------------------------------------------
