@@ -107,7 +107,7 @@ EOF
     
     sudo -u ly tee /home/ly/.zprofile > /dev/null 2>>"$ERROR_LOG" << 'EOF'
 if [ -z "${DISPLAY}" ] && [ "${XDG_VTNR}" -eq 1 ]; then
-    exec Hyprland
+    exec start-hyprland
 fi
 EOF
     
