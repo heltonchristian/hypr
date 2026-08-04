@@ -1,6 +1,7 @@
 #!/bin/bash
 # arch-hypr-gamer.sh - Instalação completa do Arch Linux para Gaming/Streaming
-# Uso: ./arch-hypr-gamer.sh [--skip-packages] [--help] 
+# Uso: ./arch-hypr-gamer.sh [--skip-packages] [--help]
+# Kernels já instalados: linux-zen (principal) + linux (backup)
 
 set -euo pipefail
 IFS=$'\n\t'
@@ -107,7 +108,7 @@ EOF
     
     sudo -u ly tee /home/ly/.zprofile > /dev/null 2>>"$ERROR_LOG" << 'EOF'
 if [ -z "${DISPLAY}" ] && [ "${XDG_VTNR}" -eq 1 ]; then
-    exec start-hyprland
+    exec Hyprland
 fi
 EOF
     
@@ -157,13 +158,14 @@ install_packages() {
 }
 
 # ============================================================================
-# PACOTES
+# PACOTES - Kernels já instalados (linux-zen + linux)
 # ============================================================================
 install_official_packages() {
     log_section "INSTALANDO PACOTES OFICIAIS"
     
     local packages=(
-        base-devel linux linux-headers linux-firmware amd-ucode git sudo openssh zsh neovim
+        base-devel git sudo openssh zsh neovim
+        amd-ucode
         hyprland wayland-protocols
         xdg-desktop-portal xdg-desktop-portal-hyprland xdg-desktop-portal-gtk xdg-desktop-portal-wlr
         waybar grim slurp wl-clipboard wf-recorder
@@ -179,16 +181,15 @@ install_official_packages() {
         vulkan-radeon vulkan-tools vulkan-headers vulkan-icd-loader
         lib32-vulkan-icd-loader lib32-vulkan-radeon
         libva-mesa-driver libva-utils lib32-libva-mesa-driver
-        mesa-vdpau lib32-mesa-vdpau
         opencl-mesa opencl-headers clinfo lib32-opencl-mesa
-        linux-firmware radeontop
+        linux-firmware
         gst-plugins-bad gst-plugins-good gst-plugins-ugly gst-plugins-base gst-libav ffmpeg
         lib32-mesa lib32-mesa-utils
         lib32-alsa-lib lib32-alsa-plugins lib32-libpulse lib32-pipewire
         lib32-libx11 lib32-libxext lib32-libxcb lib32-libxdamage lib32-libxfixes
         lib32-libxrandr lib32-libxshmfence lib32-libxxf86vm lib32-libdrm
         lib32-libgl lib32-libglvnd lib32-libunwind lib32-llvm-libs
-        lib32-zlib lib32-gcc-libs lib32-glibc lib32-libstdc++5
+        lib32-zlib lib32-gcc-libs lib32-glibc
         lib32-freetype2 lib32-fontconfig lib32-libpng lib32-libjpeg-turbo
         lib32-harfbuzz lib32-libxss lib32-libxcomposite lib32-libxinerama
         lib32-libxcursor lib32-libxi lib32-libxtst lib32-libpciaccess
@@ -356,7 +357,6 @@ hl.workspace_rule({ workspace = "special:gaming", monitor = "DP-3" })
 
 hl.window_rule({ name = "steam-gaming", match = { class = "^(steam_app_.*)$" }, workspace = "special:gaming" })
 hl.window_rule({ name = "steam-fullscreen", match = { class = "^(steam_app_.*)$" }, fullscreen = true })
-hl.window_rule({ name = "obs-screencast", match = { class = "obs" }, screencast = true })
 
 hl.on("hyprland.start", function()
     hl.exec_cmd("waybar & hyprpaper")
