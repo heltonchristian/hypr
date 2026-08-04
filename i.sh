@@ -1,6 +1,6 @@
 #!/bin/bash
 # arch-hypr-gamer.sh - Instalação completa do Arch Linux para Gaming/Streaming
-# Uso: ./arch-hypr-gamer.sh [--skip-packages] [--help]
+# Uso: ./arch-hypr-gamer.sh [--skip-packages] [--help] 
 
 set -euo pipefail
 IFS=$'\n\t'
