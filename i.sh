@@ -1,6 +1,4 @@
 #!/bin/bash
-# arch-hypr-gamer.sh - Instalação completa do Arch Linux para Gaming/Streaming
-# Uso: ./arch-hypr-gamer.sh [--skip-packages] [--help]
 # Hyprland no TTY1 | Niri no TTY2
 
 set -euo pipefail
