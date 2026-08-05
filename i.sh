@@ -87,7 +87,6 @@ setup_autologin() {
         echo "ly ALL=(ALL) ALL" | sudo tee /etc/sudoers.d/ly > /dev/null
     fi
     
-    # TTY1 - Hyprland
     sudo mkdir -p /etc/systemd/system/getty@tty1.service.d/
     sudo tee /etc/systemd/system/getty@tty1.service.d/autologin.conf > /dev/null << 'EOF'
 [Service]
@@ -96,7 +95,6 @@ ExecStart=-/usr/bin/agetty --autologin ly --noclear --skip-login %I $TERM
 Type=simple
 EOF
     
-    # TTY2 - Niri
     sudo mkdir -p /etc/systemd/system/getty@tty2.service.d/
     sudo tee /etc/systemd/system/getty@tty2.service.d/autologin.conf > /dev/null << 'EOF'
 [Service]
@@ -105,7 +103,6 @@ ExecStart=-/usr/bin/agetty --autologin ly --noclear --skip-login %I $TERM
 Type=simple
 EOF
     
-    # .zprofile
     sudo -u ly tee /home/ly/.zprofile > /dev/null << 'EOF'
 if [ -z "${DISPLAY}" ] && [ -z "${WAYLAND_DISPLAY}" ]; then
     case "${XDG_VTNR}" in
@@ -167,7 +164,7 @@ install_official_packages() {
     
     local packages=(
         base-devel git sudo openssh zsh neovim amd-ucode linux-firmware
-        hyprland wayland-protocols xwayland
+        hyprland wayland-protocols xorg-xwayland
         niri xwayland-satellite
         waybar grim slurp wl-clipboard
         fuzzel nemo nemo-fileroller
@@ -197,7 +194,7 @@ install_official_packages() {
         lib32-libelf lib32-libxdmcp lib32-libxau lib32-expat
         qt5ct qt6ct kvantum
         xdg-desktop-portal xdg-desktop-portal-hyprland xdg-desktop-portal-gtk
-        matugen
+        orchis-theme matugen
     )
     
     install_packages "official" "${packages[@]}"
@@ -208,9 +205,9 @@ install_aur_packages() {
     log_section "PACOTES AUR"
     local packages=(
         librewolf-bin
-        orchis-theme-git
         qs
         wps-office
+        bibata-cursor-theme-bin
     )
     install_packages "aur" "${packages[@]}"
     return 0
@@ -273,7 +270,6 @@ setup_scripts() {
     
     mkdir -p "$SCRIPTS_DIR" || return 1
     
-    # Steam com performance automática
     cat > "$SCRIPTS_DIR/steam-performance.sh" << 'EOF'
 #!/bin/bash
 powerprofilesctl set performance
@@ -285,14 +281,12 @@ powerprofilesctl set balanced
 EOF
     chmod +x "$SCRIPTS_DIR/steam-performance.sh"
     
-    # Screenshot
     cat > "$SCRIPTS_DIR/screenshot.sh" << 'EOF'
 #!/bin/bash
 grim -g "$(slurp)" - | wl-copy
 EOF
     chmod +x "$SCRIPTS_DIR/screenshot.sh"
     
-    # Wallpaper com matugen
     cat > "$SCRIPTS_DIR/change-wallpaper.sh" << 'EOF'
 #!/bin/bash
 WALLPAPER_DIR="$HOME/Pictures/Wallpapers"
@@ -323,29 +317,6 @@ fi
 notify-send "Wallpaper" "Alterado!" -i "$WALLPAPER" 2>/dev/null || true
 EOF
     chmod +x "$SCRIPTS_DIR/change-wallpaper.sh"
-    
-    # Config matugen
-    mkdir -p "$CONFIG_DIR/matugen"
-    cat > "$CONFIG_DIR/matugen/config.toml" << 'EOF'
-[general]
-mode = "dark"
-scheme = "tonal-spot"
-
-[gtk]
-enabled = true
-
-[qt]
-enabled = true
-
-[waybar]
-enabled = true
-
-[hyprland]
-enabled = true
-
-[fuzzel]
-enabled = true
-EOF
     
     mkdir -p "$HOME/Pictures/Wallpapers" "$HOME/Pictures/Screenshots"
     return 0
@@ -387,8 +358,9 @@ end)
 
 hl.env("GTK_THEME", "Orchis-Dark-Compact")
 hl.env("ICON_THEME", "Tela-circle-black")
-hl.env("XCURSOR_THEME", "Bibata-Original-Ice")
+hl.env("XCURSOR_THEME", "Bibata-Modern-Ice")
 hl.env("XCURSOR_SIZE", "22")
+hl.env("HYPRCURSOR_THEME", "Bibata-Modern-Ice")
 hl.env("HYPRCURSOR_SIZE", "22")
 hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
 hl.env("XDG_SESSION_TYPE", "wayland")
@@ -663,42 +635,49 @@ EOF
 }
 
 # ============================================================================
-# GTK/QT DARK THEME
+# GTK/QT DARK THEME + WPS OFFICE DARK
 # ============================================================================
 setup_gtk_theme() {
     log_section "TEMA GTK/QT DARK"
     
     mkdir -p "$CONFIG_DIR/gtk-3.0" "$CONFIG_DIR/gtk-4.0" "$CONFIG_DIR/qt5ct" "$CONFIG_DIR/qt6ct"
+    mkdir -p "$CONFIG_DIR/Kingsoft/Office6"
     
+    # GTK 3.0 Dark com cursor Bibata
     cat > "$CONFIG_DIR/gtk-3.0/settings.ini" << 'EOF'
 [Settings]
 gtk-theme-name=Orchis-Dark-Compact
 gtk-icon-theme-name=Tela-circle-black
 gtk-font-name=JetBrains Mono 11
-gtk-cursor-theme-name=Bibata-Original-Ice
+gtk-cursor-theme-name=Bibata-Modern-Ice
 gtk-cursor-theme-size=22
 gtk-application-prefer-dark-theme=1
 gtk-enable-animations=0
 EOF
     
+    # GTK 4.0 Dark com cursor Bibata
     cat > "$CONFIG_DIR/gtk-4.0/settings.ini" << 'EOF'
 [Settings]
 gtk-theme-name=Orchis-Dark-Compact
 gtk-icon-theme-name=Tela-circle-black
 gtk-font-name=JetBrains Mono 11
-gtk-cursor-theme-name=Bibata-Original-Ice
+gtk-cursor-theme-name=Bibata-Modern-Ice
 gtk-cursor-theme-size=22
 gtk-application-prefer-dark-theme=1
 gtk-enable-animations=0
 EOF
     
+    # GTK 2.0 Dark
     cat > "$HOME/.gtkrc-2.0" << 'EOF'
 gtk-theme-name="Orchis-Dark-Compact"
 gtk-icon-theme-name="Tela-circle-black"
 gtk-font-name="JetBrains Mono 11"
+gtk-cursor-theme-name="Bibata-Modern-Ice"
+gtk-cursor-theme-size=22
 gtk-application-prefer-dark-theme=1
 EOF
     
+    # QT Dark
     cat > "$CONFIG_DIR/qt5ct/qt5ct.conf" << 'EOF'
 [Appearance]
 style=kvantum-dark
@@ -715,6 +694,21 @@ color_scheme_path=/usr/share/qt6ct/colors/darker.conf
 icon_theme=Tela-circle-black
 EOF
     
+    # WPS Office modo escuro
+    cat > "$CONFIG_DIR/Kingsoft/Office6/wpsconfig.ini" << 'EOF'
+[General]
+Theme=dark
+UIMode=ribbon
+EOF
+    
+    # Configuração global de cursores
+    sudo mkdir -p /usr/share/icons/default
+    sudo tee /usr/share/icons/default/index.theme > /dev/null << 'EOF'
+[Icon Theme]
+Inherits=Bibata-Modern-Ice
+EOF
+    
+    # XDG Portal para OBS
     sudo mkdir -p /etc/xdg
     sudo tee /etc/xdg/xdg-desktop-portal-hyprland.conf > /dev/null << 'EOF'
 [preferred]
@@ -783,7 +777,7 @@ main() {
         "setup_fuzzel|Fuzzel"
         "setup_kitty|Kitty"
         "setup_zsh|ZSH"
-        "setup_gtk_theme|Tema GTK/QT Dark"
+        "setup_gtk_theme|Tema GTK/QT Dark + WPS Dark + Bibata"
     )
     
     for func_entry in "${functions[@]}"; do
