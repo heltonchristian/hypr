@@ -92,7 +92,8 @@ setup_autologin() {
     sudo tee /etc/systemd/system/getty@tty1.service.d/autologin.conf > /dev/null << 'EOF'
 [Service]
 ExecStart=
-ExecStart=-/usr/bin/agetty --autologin ly --noclear %I $TERM
+ExecStart=-/usr/bin/agetty --autologin ly --noclear --skip-login %I $TERM
+Type=simple
 EOF
     
     # TTY2 - Niri
@@ -100,10 +101,11 @@ EOF
     sudo tee /etc/systemd/system/getty@tty2.service.d/autologin.conf > /dev/null << 'EOF'
 [Service]
 ExecStart=
-ExecStart=-/usr/bin/agetty --autologin ly --noclear %I $TERM
+ExecStart=-/usr/bin/agetty --autologin ly --noclear --skip-login %I $TERM
+Type=simple
 EOF
     
-    # .zprofile - Iniciar WM conforme TTY
+    # .zprofile
     sudo -u ly tee /home/ly/.zprofile > /dev/null << 'EOF'
 if [ -z "${DISPLAY}" ] && [ -z "${WAYLAND_DISPLAY}" ]; then
     case "${XDG_VTNR}" in
@@ -164,51 +166,24 @@ install_official_packages() {
     log_section "PACOTES OFICIAIS"
     
     local packages=(
-        # Base
         base-devel git sudo openssh zsh neovim amd-ucode linux-firmware
-        
-        # Hyprland + Niri
         hyprland wayland-protocols xwayland
         niri xwayland-satellite
-        
-        # Interface
         waybar grim slurp wl-clipboard
         fuzzel nemo nemo-fileroller
-        
-        # Terminal
         kitty starship zoxide fzf zsh-syntax-highlighting zsh-autosuggestions eza
-        
-        # Audio
-        pipewire pipewire-pulse wireplumber pipewire-alsa
-        pamixer pavucontrol playerctl
-        
-        # Gaming
+        pipewire pipewire-pulse wireplumber pipewire-alsa pamixer pavucontrol playerctl
         steam gamescope gamemode mangohud
-        
-        # Streaming
         obs-studio
-        
-        # Monitoramento
-        btop lm_sensors nvtop amdgpu_top
-        
-        # Utilitários
-        htop tlp
+        btop lm_sensors nvtop amdgpu_top htop tlp
         ttf-jetbrains-mono ttf-font-awesome adobe-source-code-pro-fonts
         solaar power-profiles-daemon swaync hyprpaper spotify-launcher fastfetch
-        
-        # ====================================================================
-        # DRIVERS AMD - VULKAN
-        # ====================================================================
         mesa mesa-utils
         vulkan-radeon vulkan-tools vulkan-headers vulkan-icd-loader
         lib32-vulkan-icd-loader lib32-vulkan-radeon
         libva-mesa-driver libva-utils lib32-libva-mesa-driver
         opencl-mesa opencl-headers clinfo lib32-opencl-mesa
-        
-        # Codecs
         gst-plugins-bad gst-plugins-good gst-plugins-ugly gst-plugins-base gst-libav ffmpeg
-        
-        # 32-bit para Steam
         lib32-mesa lib32-mesa-utils
         lib32-alsa-lib lib32-alsa-plugins lib32-libpulse lib32-pipewire
         lib32-systemd lib32-gcc-libs lib32-glibc lib32-zlib
@@ -220,6 +195,9 @@ install_official_packages() {
         lib32-libxcomposite lib32-libxinerama lib32-libxcursor
         lib32-libxi lib32-libxtst lib32-libpciaccess
         lib32-libelf lib32-libxdmcp lib32-libxau lib32-expat
+        qt5ct qt6ct kvantum
+        xdg-desktop-portal xdg-desktop-portal-hyprland xdg-desktop-portal-gtk
+        matugen
     )
     
     install_packages "official" "${packages[@]}"
@@ -250,7 +228,7 @@ setup_services() {
         sudo systemctl start "$service" 2>>"$ERROR_LOG" || true
     done
     
-    local user_services=(pipewire pipewire-pulse wireplumber)
+    local user_services=(pipewire pipewire-pulse wireplumber xdg-desktop-portal xdg-desktop-portal-hyprland)
     for service in "${user_services[@]}"; do
         systemctl --user enable "$service" 2>/dev/null || true
         systemctl --user start "$service" 2>/dev/null || true
@@ -284,11 +262,6 @@ desiredgov=performance
 apply_gpu_optimisations=accept-responsibility
 amd_performance_level=high
 EOF
-    
-    sudo mkdir -p /etc/vulkan/
-    sudo tee /etc/vulkan/vk_radv.conf > /dev/null << 'EOF'
-RADV_PERFTEST=aco
-EOF
     return 0
 }
 
@@ -300,35 +273,79 @@ setup_scripts() {
     
     mkdir -p "$SCRIPTS_DIR" || return 1
     
+    # Steam com performance automática
     cat > "$SCRIPTS_DIR/steam-performance.sh" << 'EOF'
 #!/bin/bash
 powerprofilesctl set performance
 export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/radeon_icd.x86_64.json:/usr/share/vulkan/icd.d/radeon_icd.i686.json
 export AMD_VULKAN_ICD=RADV
-export RADV_PERFTEST=aco
 export DISABLE_LAYER_AMD_SWITCHABLE_GRAPHICS_1=1
 gamemoderun steam "$@"
 powerprofilesctl set balanced
 EOF
     chmod +x "$SCRIPTS_DIR/steam-performance.sh"
     
+    # Screenshot
     cat > "$SCRIPTS_DIR/screenshot.sh" << 'EOF'
 #!/bin/bash
 grim -g "$(slurp)" - | wl-copy
 EOF
     chmod +x "$SCRIPTS_DIR/screenshot.sh"
     
+    # Wallpaper com matugen
     cat > "$SCRIPTS_DIR/change-wallpaper.sh" << 'EOF'
 #!/bin/bash
 WALLPAPER_DIR="$HOME/Pictures/Wallpapers"
 mkdir -p "$WALLPAPER_DIR"
-WALLPAPER=$(find "$WALLPAPER_DIR" -type f \( -name "*.jpg" -o -name "*.png" \) | shuf -n1)
+
+if [ ! "$(ls -A $WALLPAPER_DIR 2>/dev/null)" ]; then
+    curl -s "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=1920&q=80" -o "$WALLPAPER_DIR/default.jpg"
+fi
+
+if [ "$1" = "next" ]; then
+    CURRENT=$(hyprctl hyprpaper listactive 2>/dev/null | head -1 | cut -d'=' -f2 | xargs)
+    WALLPAPER=$(find "$WALLPAPER_DIR" -type f \( -name "*.jpg" -o -name "*.png" \) | sort | grep -A1 "$CURRENT" | tail -1)
+    [ -z "$WALLPAPER" ] && WALLPAPER=$(find "$WALLPAPER_DIR" -type f \( -name "*.jpg" -o -name "*.png" \) | shuf -n1)
+else
+    WALLPAPER=$(find "$WALLPAPER_DIR" -type f \( -name "*.jpg" -o -name "*.png" \) | shuf -n1)
+fi
+
 [ -z "$WALLPAPER" ] && exit 1
+
 hyprctl hyprpaper unload all
 hyprctl hyprpaper preload "$WALLPAPER"
 hyprctl hyprpaper wallpaper ",$WALLPAPER"
+
+if command -v matugen &> /dev/null; then
+    matugen image "$WALLPAPER" --mode dark --type scheme-tonal-spot
+fi
+
+notify-send "Wallpaper" "Alterado!" -i "$WALLPAPER" 2>/dev/null || true
 EOF
     chmod +x "$SCRIPTS_DIR/change-wallpaper.sh"
+    
+    # Config matugen
+    mkdir -p "$CONFIG_DIR/matugen"
+    cat > "$CONFIG_DIR/matugen/config.toml" << 'EOF'
+[general]
+mode = "dark"
+scheme = "tonal-spot"
+
+[gtk]
+enabled = true
+
+[qt]
+enabled = true
+
+[waybar]
+enabled = true
+
+[hyprland]
+enabled = true
+
+[fuzzel]
+enabled = true
+EOF
     
     mkdir -p "$HOME/Pictures/Wallpapers" "$HOME/Pictures/Screenshots"
     return 0
@@ -379,13 +396,7 @@ hl.env("GDK_BACKEND", "wayland,x11,*")
 hl.env("QT_QPA_PLATFORM", "wayland;xcb")
 hl.env("SDL_VIDEODRIVER", "wayland")
 hl.env("MOZ_ENABLE_WAYLAND", "1")
-hl.env("LIBGL_ALWAYS_SOFTWARE", "0")
-hl.env("AMD_VULKAN_ICD", "radeon")
-hl.env("RADV_PERFTEST", "aco")
-hl.env("VK_ICD_FILENAMES", "/usr/share/vulkan/icd.d/radeon_icd.x86_64.json:/usr/share/vulkan/icd.d/radeon_icd.i686.json")
-hl.env("LIBVA_DRIVER_NAME", "radeonsi")
-hl.env("PIPEWIRE_LATENCY", "64/48000")
-hl.env("PIPEWIRE_QUANTUM", "64")
+hl.env("QT_STYLE_OVERRIDE", "kvantum-dark")
 
 hl.config({
     general = {
@@ -420,11 +431,11 @@ hl.bind(mainMod .. " + F10", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + F11", hl.dsp.exec_cmd("~/scripts/steam-performance.sh"))
 hl.bind(mainMod .. " + F12", hl.dsp.exec_cmd("spotify-launcher"))
 hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("~/scripts/change-wallpaper.sh"))
+hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("~/scripts/change-wallpaper.sh next"))
 hl.bind(mainMod .. " + K", hl.dsp.window.close())
 hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ action = "toggle" }))
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("~/scripts/screenshot.sh"))
-hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("killall waybar || waybar"))
 hl.bind(mainMod .. " + Q", hl.dsp.exit())
 hl.bind(mainMod .. " + left", hl.dsp.focus({ direction = "left" }))
 hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "right" }))
@@ -469,185 +480,63 @@ setup_niri() {
     mkdir -p "$NIRI_DIR" || return 1
     
     cat > "$NIRI_DIR/config.kdl" << 'EOF'
-// Niri Configuration - Gaming/Streaming
-
 spawn-sh-at-startup "qs -c noctalia-shell"
 spawn-at-startup "xwayland-satellite"
 spawn-at-startup "waybar"
 
-hotkey-overlay {
-    skip-at-startup
-}
+hotkey-overlay { skip-at-startup }
 
 input {
     focus-follows-mouse
-
-    keyboard {
-        xkb {
-            layout "us,br"
-            options "grp:ralt_toggle"
-        }
-    }
-
-    mouse {
-        accel-profile "flat"
-        accel-speed 0.0
-    }
-
-    trackpoint {
-        accel-profile "flat"
-    }
+    keyboard { xkb { layout "us,br" options "grp:ralt_toggle" } }
+    mouse { accel-profile "flat" accel-speed 0.0 }
 }
 
-output "DP-3" {
-    mode "1920x1080@319.976"
-    scale 1
-    position x=0 y=0
-}
-
-output "HDMI-A-1" {
-    mode "1920x1080@60.000"
-    scale 1
-    position x=1920 y=0
-}
+output "DP-3" { mode "1920x1080@319.976" scale 1 position x=0 y=0 }
+output "HDMI-A-1" { mode "1920x1080@60.000" scale 1 position x=1920 y=0 }
 
 layout {
     gaps 10
-
     center-focused-column "never"
-
-    preset-column-widths {
-        proportion 0.33333
-        proportion 0.5
-        proportion 0.66667
-    }
-
-    default-column-width { proportion 0.5; }
-
-    focus-ring {
-        width 4
-        active-color "#ffffff"
-        inactive-color "#808080"
-    }
-
-    border {
-        off
-        width 2
-        active-color "#ffffff"
-        inactive-color "#808080"
-        urgent-color "#9b0000"
-    }
-
-    shadow {
-        softness 30
-        spread 5
-        offset x=0 y=5
-        color "#0007"
-    }
+    default-column-width { proportion 0.5 }
+    focus-ring { width 4 active-color "#ffffff" inactive-color "#808080" }
+    border { off }
 }
 
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
-
-animations {
-}
-
+animations {}
 prefer-no-csd
-
-window-rule {
-    match app-id=r#"^org\.wezfurlong\.wezterm$"#
-    default-column-width {}
-}
-
-window-rule {
-    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
-    open-floating true
-}
 
 binds {
     Print { screenshot; }
-    Ctrl+Print { screenshot-screen; }
-    Alt+Print { screenshot-window; }
-
-    Mod+F1 { switch-layout "next"; }
-
-    Mod+Shift+Slash { show-hotkey-overlay; }
-
     Mod+RETURN { spawn "kitty"; }
     Mod+SPACE { spawn "fuzzel"; }
     Mod+F10 { spawn "nemo"; }
     Mod+F9 { spawn "librewolf"; }
     Mod+F11 { spawn "~/scripts/steam-performance.sh"; }
     Mod+F12 { spawn "spotify-launcher"; }
-
-    Super+Alt+L { spawn "swaylock"; }
-
     XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
-    XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
-    XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
-
-    XF86AudioPlay        allow-when-locked=true { spawn-sh "playerctl play-pause"; }
-    XF86AudioStop        allow-when-locked=true { spawn-sh "playerctl stop"; }
-    XF86AudioPrev        allow-when-locked=true { spawn-sh "playerctl previous"; }
-    XF86AudioNext        allow-when-locked=true { spawn-sh "playerctl next"; }
-
-    Mod+O repeat=false { toggle-overview; }
-    Mod+K repeat=false { close-window; }
-
+    XF86AudioMute allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
+    XF86AudioPlay allow-when-locked=true { spawn-sh "playerctl play-pause"; }
+    XF86AudioNext allow-when-locked=true { spawn-sh "playerctl next"; }
+    XF86AudioPrev allow-when-locked=true { spawn-sh "playerctl previous"; }
+    Mod+O { toggle-overview; }
+    Mod+K { close-window; }
     Mod+F { maximize-column; }
     Mod+Shift+F { fullscreen-window; }
-
-    Mod+Left  { focus-column-left; }
-    Mod+Down  { focus-window-down; }
-    Mod+Up    { focus-window-up; }
+    Mod+Left { focus-column-left; }
     Mod+Right { focus-column-right; }
-
-    Mod+Ctrl+Left  { move-column-left; }
-    Mod+Ctrl+Down  { move-window-down; }
-    Mod+Ctrl+Up    { move-window-up; }
-    Mod+Ctrl+Right { move-column-right; }
-
-    Mod+Home { focus-column-first; }
-    Mod+End  { focus-column-last; }
-    Mod+Ctrl+Home { move-column-to-first; }
-    Mod+Ctrl+End  { move-column-to-last; }
-
-    Mod+Shift+Left  { focus-monitor-left; }
-    Mod+Shift+Down  { focus-monitor-down; }
-    Mod+Shift+Up    { focus-monitor-up; }
-    Mod+Shift+Right { focus-monitor-right; }
-
-    Mod+Shift+Ctrl+Left  { move-column-to-monitor-left; }
-    Mod+Shift+Ctrl+Down  { move-column-to-monitor-down; }
-    Mod+Shift+Ctrl+Up    { move-column-to-monitor-up; }
-    Mod+Shift+Ctrl+Right { move-column-to-monitor-right; }
-
-    Mod+Page_Down      { focus-workspace-down; }
-    Mod+Page_Up        { focus-workspace-up; }
-    Mod+Ctrl+Page_Down { move-column-to-workspace-down; }
-    Mod+Ctrl+Page_Up   { move-column-to-workspace-up; }
-
-    Mod+Shift+Page_Down { move-workspace-down; }
-    Mod+Shift+Page_Up   { move-workspace-up; }
-
+    Mod+Up { focus-window-up; }
+    Mod+Down { focus-window-down; }
     Mod+1 { focus-workspace 1; }
     Mod+2 { focus-workspace 2; }
     Mod+3 { focus-workspace 3; }
     Mod+4 { focus-workspace 4; }
-    Mod+5 { focus-workspace 5; }
-    Mod+6 { focus-workspace 6; }
-    Mod+7 { focus-workspace 7; }
-    Mod+8 { focus-workspace 8; }
-    Mod+9 { focus-workspace 9; }
     Mod+Shift+1 { move-column-to-workspace 1; }
     Mod+Shift+2 { move-column-to-workspace 2; }
     Mod+Shift+3 { move-column-to-workspace 3; }
     Mod+Shift+4 { move-column-to-workspace 4; }
-    Mod+Shift+5 { move-column-to-workspace 5; }
-    Mod+Shift+6 { move-column-to-workspace 6; }
-    Mod+Shift+7 { move-column-to-workspace 7; }
-    Mod+Shift+8 { move-column-to-workspace 8; }
-    Mod+Shift+9 { move-column-to-workspace 9; }
 }
 EOF
     
@@ -656,124 +545,33 @@ EOF
 }
 
 # ============================================================================
-# WAYBAR (Hyprland + Niri)
+# WAYBAR
 # ============================================================================
 setup_waybar() {
     log_section "WAYBAR"
-    
     mkdir -p "$CONFIG_DIR/waybar" || return 1
     
-    # Config para Hyprland
-    cat > "$CONFIG_DIR/waybar/config-hyprland" << 'EOF'
+    cat > "$CONFIG_DIR/waybar/config" << 'EOF'
 {
-    "layer": "top",
-    "position": "top",
-    "height": 24,
-    "modules-left": ["hyprland/workspaces"],
-    "modules-center": ["clock"],
-    "modules-right": ["cpu", "memory", "pulseaudio"],
-    "hyprland/workspaces": {
-        "format": "{icon}",
-        "on-click": "activate",
-        "persistent_workspaces": {
-            "1": [], "2": [], "3": [], "4": [], "special:gaming": []
-        }
-    },
-    "clock": {
-        "format": "{:%H:%M}",
-        "interval": 1
-    },
-    "cpu": {
-        "format": "CPU {usage}%",
-        "interval": 1
-    },
-    "memory": {
-        "format": "RAM {}%",
-        "interval": 1
-    },
-    "pulseaudio": {
-        "format": "VOL {volume}%",
-        "format-muted": "MUTE",
-        "on-click": "pavucontrol"
-    }
-}
-EOF
-    
-    # Config para Niri
-    cat > "$CONFIG_DIR/waybar/config-niri" << 'EOF'
-{
-    "layer": "top",
-    "position": "top",
-    "height": 24,
+    "layer": "top", "position": "top", "height": 24,
     "modules-left": ["wlr/workspaces"],
     "modules-center": ["clock"],
     "modules-right": ["cpu", "memory", "pulseaudio"],
-    "wlr/workspaces": {
-        "format": "{icon}",
-        "on-click": "activate",
-        "all-outputs": false
-    },
-    "clock": {
-        "format": "{:%H:%M}",
-        "interval": 1
-    },
-    "cpu": {
-        "format": "CPU {usage}%",
-        "interval": 1
-    },
-    "memory": {
-        "format": "RAM {}%",
-        "interval": 1
-    },
-    "pulseaudio": {
-        "format": "VOL {volume}%",
-        "format-muted": "MUTE",
-        "on-click": "pavucontrol"
-    }
+    "wlr/workspaces": { "format": "{icon}" },
+    "clock": { "format": "{:%H:%M}", "interval": 1 },
+    "cpu": { "format": "CPU {usage}%", "interval": 1 },
+    "memory": { "format": "RAM {}%", "interval": 1 },
+    "pulseaudio": { "format": "VOL {volume}%", "format-muted": "MUTE" }
 }
 EOF
     
-    # Style comum
     cat > "$CONFIG_DIR/waybar/style.css" << 'EOF'
-* {
-    border: none;
-    border-radius: 0;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 11px;
-    min-height: 0;
-}
-window#waybar {
-    background: rgba(0, 0, 0, 0.85);
-    color: #ffffff;
-}
-#workspaces button {
-    padding: 0 5px;
-    color: #666666;
-}
-#workspaces button.active {
-    color: #ffffff;
-}
-#workspaces button.visible {
-    color: #aaaaaa;
-}
-#clock, #cpu, #memory, #pulseaudio {
-    padding: 0 10px;
-}
+* { border: none; border-radius: 0; font-family: "JetBrains Mono"; font-size: 11px; }
+window#waybar { background: rgba(0, 0, 0, 0.85); color: #ffffff; }
+#workspaces button { padding: 0 5px; color: #666666; }
+#workspaces button.active { color: #ffffff; }
+#clock, #cpu, #memory, #pulseaudio { padding: 0 10px; }
 EOF
-    
-    # Script para iniciar waybar com config correta
-    cat > "$SCRIPTS_DIR/start-waybar.sh" << 'EOF'
-#!/bin/bash
-if pgrep -x Hyprland > /dev/null; then
-    killall waybar 2>/dev/null
-    waybar -c ~/.config/waybar/config-hyprland &
-elif pgrep -x niri > /dev/null; then
-    killall waybar 2>/dev/null
-    waybar -c ~/.config/waybar/config-niri &
-fi
-EOF
-    chmod +x "$SCRIPTS_DIR/start-waybar.sh"
-    
     return 0
 }
 
@@ -809,7 +607,6 @@ font_size 11.0
 font_family JetBrains Mono
 linux_display_server wayland
 background_opacity 0.95
-confirm_os_window_close 0
 EOF
     return 0
 }
@@ -829,7 +626,6 @@ setopt HIST_IGNORE_ALL_DUPS INC_APPEND_HISTORY
 autoload -Uz compinit && compinit
 
 alias ls='ls --color=auto'
-alias la='ls -a'
 alias ll='ls -l'
 alias vi='nvim'
 alias vim='nvim'
@@ -841,7 +637,6 @@ alias steam='~/scripts/steam-performance.sh'
 alias wallpaper='~/scripts/change-wallpaper.sh'
 alias screenshot='~/scripts/screenshot.sh'
 alias perf='powerprofilesctl set performance'
-alias balanced='powerprofilesctl set balanced'
 alias fetch='clear && fastfetch --logo none'
 alias l='eza --icons'
 
@@ -868,15 +663,14 @@ EOF
 }
 
 # ============================================================================
-# GTK THEME
+# GTK/QT DARK THEME
 # ============================================================================
 setup_gtk_theme() {
-    log_section "TEMA GTK"
+    log_section "TEMA GTK/QT DARK"
     
-    mkdir -p "$CONFIG_DIR/gtk-3.0" "$CONFIG_DIR/gtk-4.0"
+    mkdir -p "$CONFIG_DIR/gtk-3.0" "$CONFIG_DIR/gtk-4.0" "$CONFIG_DIR/qt5ct" "$CONFIG_DIR/qt6ct"
     
-    for version in 3.0 4.0; do
-        cat > "$CONFIG_DIR/gtk-$version/settings.ini" << 'EOF'
+    cat > "$CONFIG_DIR/gtk-3.0/settings.ini" << 'EOF'
 [Settings]
 gtk-theme-name=Orchis-Dark-Compact
 gtk-icon-theme-name=Tela-circle-black
@@ -884,55 +678,42 @@ gtk-font-name=JetBrains Mono 11
 gtk-cursor-theme-name=Bibata-Original-Ice
 gtk-cursor-theme-size=22
 gtk-application-prefer-dark-theme=1
+gtk-enable-animations=0
 EOF
-    done
+    
+    cat > "$CONFIG_DIR/gtk-4.0/settings.ini" << 'EOF'
+[Settings]
+gtk-theme-name=Orchis-Dark-Compact
+gtk-icon-theme-name=Tela-circle-black
+gtk-font-name=JetBrains Mono 11
+gtk-cursor-theme-name=Bibata-Original-Ice
+gtk-cursor-theme-size=22
+gtk-application-prefer-dark-theme=1
+gtk-enable-animations=0
+EOF
     
     cat > "$HOME/.gtkrc-2.0" << 'EOF'
 gtk-theme-name="Orchis-Dark-Compact"
 gtk-icon-theme-name="Tela-circle-black"
 gtk-font-name="JetBrains Mono 11"
+gtk-application-prefer-dark-theme=1
 EOF
     
-    gsettings set org.gnome.desktop.interface gtk-theme "Orchis-Dark-Compact" 2>/dev/null || true
-    gsettings set org.gnome.desktop.interface icon-theme "Tela-circle-black" 2>/dev/null || true
-    
-    return 0
-}
-
-# ============================================================================
-# PIPEWIRE
-# ============================================================================
-setup_pipewire() {
-    log_section "PIPEWIRE"
-    sudo mkdir -p /etc/pipewire/pipewire.conf.d/
-    sudo tee /etc/pipewire/pipewire.conf.d/99-gaming.conf > /dev/null << 'EOF'
-context.properties = { default.clock.rate = 48000, default.clock.quantum = 64 }
+    cat > "$CONFIG_DIR/qt5ct/qt5ct.conf" << 'EOF'
+[Appearance]
+style=kvantum-dark
+custom_palette=true
+color_scheme_path=/usr/share/qt5ct/colors/darker.conf
+icon_theme=Tela-circle-black
 EOF
-    return 0
-}
-
-# ============================================================================
-# OBS
-# ============================================================================
-setup_obs() {
-    log_section "OBS STUDIO"
-    mkdir -p "$CONFIG_DIR/obs-studio/basic/profiles" "$CONFIG_DIR/obs-studio/plugin_config/obs-xdg-portal"
     
-    cat > "$CONFIG_DIR/obs-studio/plugin_config/obs-xdg-portal/config.ini" << 'EOF'
-[General]
-PortalEnabled=true
-PortalRestoreSession=true
-PipeWireEnabled=true
-RememberSourceSelection=true
+    cat > "$CONFIG_DIR/qt6ct/qt6ct.conf" << 'EOF'
+[Appearance]
+style=kvantum-dark
+custom_palette=true
+color_scheme_path=/usr/share/qt6ct/colors/darker.conf
+icon_theme=Tela-circle-black
 EOF
-    return 0
-}
-
-# ============================================================================
-# XDG PORTAL
-# ============================================================================
-setup_xdg_portal() {
-    log_section "XDG PORTAL"
     
     sudo mkdir -p /etc/xdg
     sudo tee /etc/xdg/xdg-desktop-portal-hyprland.conf > /dev/null << 'EOF'
@@ -940,6 +721,8 @@ setup_xdg_portal() {
 default=hyprland
 org.freedesktop.impl.portal.ScreenCast=hyprland
 org.freedesktop.impl.portal.Screenshot=hyprland
+[screencast]
+enable=true
 EOF
     
     sudo tee /etc/xdg/xdg-desktop-portal.conf > /dev/null << 'EOF'
@@ -950,6 +733,7 @@ EOF
     
     systemctl --user restart xdg-desktop-portal 2>/dev/null || true
     systemctl --user restart xdg-desktop-portal-hyprland 2>/dev/null || true
+    
     return 0
 }
 
@@ -959,31 +743,12 @@ EOF
 report_results() {
     echo ""
     echo -e "${CYAN}=========================================${NC}"
-    echo -e "${CYAN}         RELATÓRIO FINAL                ${NC}"
-    echo -e "${CYAN}=========================================${NC}"
-    echo ""
     echo -e "Pacotes: ${GREEN}${#INSTALLED_PACKAGES[@]} ok${NC} / ${RED}${#FAILED_PACKAGES[@]} falha${NC}"
     if [[ ${#FAILED_PACKAGES[@]} -gt 0 ]]; then
-        for pkg in "${FAILED_PACKAGES[@]}"; do
-            echo -e "  ${RED}x${NC} $pkg"
-        done
+        for pkg in "${FAILED_PACKAGES[@]}"; do echo -e "  ${RED}x${NC} $pkg"; done
     fi
-    echo ""
     echo -e "Funções: ${GREEN}${#SUCCESS_FUNCTIONS[@]} ok${NC} / ${RED}${#FAILED_FUNCTIONS[@]} falha${NC}"
-    if [[ ${#FAILED_FUNCTIONS[@]} -gt 0 ]]; then
-        for func in "${FAILED_FUNCTIONS[@]}"; do
-            echo -e "  ${RED}x${NC} $func"
-        done
-    fi
-    echo ""
-    if [[ ${#FAILED_FUNCTIONS[@]} -eq 0 ]] && [[ ${#FAILED_PACKAGES[@]} -eq 0 ]]; then
-        echo -e "${GREEN}Tudo instalado com sucesso!${NC}"
-    else
-        echo -e "${YELLOW}Instalação parcial. Verifique os logs.${NC}"
-    fi
-    echo ""
-    echo -e "TTY1: Hyprland | TTY2: Niri"
-    echo -e "Log: ${LOG_FILE}"
+    echo -e "TTY1: Hyprland | TTY2: Niri | Log: ${LOG_FILE}"
     echo ""
 }
 
@@ -1018,10 +783,7 @@ main() {
         "setup_fuzzel|Fuzzel"
         "setup_kitty|Kitty"
         "setup_zsh|ZSH"
-        "setup_gtk_theme|Tema GTK"
-        "setup_pipewire|PipeWire"
-        "setup_obs|OBS Studio"
-        "setup_xdg_portal|XDG Portal"
+        "setup_gtk_theme|Tema GTK/QT Dark"
     )
     
     for func_entry in "${functions[@]}"; do
