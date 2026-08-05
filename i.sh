@@ -1,4 +1,6 @@
 #!/bin/bash
+# arch-hypr-gamer.sh - Instalação completa do Arch Linux para Gaming/Streaming
+# Uso: ./arch-hypr-gamer.sh [--skip-packages] [--help]
 # Hyprland no TTY1 | Niri no TTY2
 
 set -euo pipefail
@@ -340,7 +342,7 @@ EOF
 }
 
 # ============================================================================
-# HYPRLAND CONFIG - Corrigido
+# HYPRLAND CONFIG
 # ============================================================================
 setup_hyprland() {
     log_section "HYPRLAND CONFIG"
@@ -368,7 +370,7 @@ hl.window_rule({ name = "steam-gaming", match = { class = "^(steam_app_.*)$" }, 
 hl.window_rule({ name = "steam-fullscreen", match = { class = "^(steam_app_.*)$" }, fullscreen = true })
 
 hl.on("hyprland.start", function()
-    hl.exec_cmd("waybar -c ~/.config/waybar/config -s ~/.config/waybar/style.css &")
+    hl.exec_cmd("waybar &")
     hl.exec_cmd("hyprpaper")
     hl.exec_cmd("fnott &")
     hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
@@ -574,41 +576,77 @@ EOF
 }
 
 # ============================================================================
-# WAYBAR
+# WAYBAR - CORRIGIDO
 # ============================================================================
 setup_waybar() {
     log_section "WAYBAR"
     mkdir -p "$CONFIG_DIR/waybar" || return 1
     
+    # Config para Hyprland
     cat > "$CONFIG_DIR/waybar/config" << 'EOF'
 {
     "layer": "top",
     "position": "top",
-    "height": 24,
+    "height": 30,
+    "spacing": 4,
+    "modules-left": ["hyprland/workspaces"],
+    "modules-center": ["clock"],
+    "modules-right": ["cpu", "memory", "pulseaudio"],
+    "hyprland/workspaces": {
+        "format": "{name}",
+        "on-click": "activate",
+        "sort-by-number": true
+    },
+    "clock": {
+        "format": "{:%H:%M}",
+        "interval": 1
+    },
+    "cpu": {
+        "format": "{usage}%",
+        "interval": 2
+    },
+    "memory": {
+        "format": "{}%",
+        "interval": 2
+    },
+    "pulseaudio": {
+        "format": "{volume}%",
+        "format-muted": "MUTE",
+        "on-click": "pavucontrol"
+    }
+}
+EOF
+    
+    # Config para Niri (wlr/workspaces)
+    cat > "$CONFIG_DIR/waybar/config-niri" << 'EOF'
+{
+    "layer": "top",
+    "position": "top",
+    "height": 30,
+    "spacing": 4,
     "modules-left": ["wlr/workspaces"],
     "modules-center": ["clock"],
     "modules-right": ["cpu", "memory", "pulseaudio"],
     "wlr/workspaces": {
-        "format": "{icon}",
-        "all-outputs": false,
-        "active-only": false,
-        "on-click": "activate"
+        "format": "{name}",
+        "on-click": "activate",
+        "sort-by-number": true,
+        "all-outputs": false
     },
     "clock": {
         "format": "{:%H:%M}",
-        "interval": 1,
-        "tooltip": false
+        "interval": 1
     },
     "cpu": {
-        "format": "CPU {usage}%",
+        "format": "{usage}%",
         "interval": 2
     },
     "memory": {
-        "format": "RAM {}%",
+        "format": "{}%",
         "interval": 2
     },
     "pulseaudio": {
-        "format": "VOL {volume}%",
+        "format": "{volume}%",
         "format-muted": "MUTE",
         "on-click": "pavucontrol"
     }
@@ -620,7 +658,7 @@ EOF
     border: none;
     border-radius: 0;
     font-family: "JetBrains Mono", monospace;
-    font-size: 11px;
+    font-size: 12px;
     min-height: 0;
 }
 
@@ -629,23 +667,54 @@ window#waybar {
     color: #ffffff;
 }
 
+#workspaces {
+    margin-left: 8px;
+}
+
 #workspaces button {
-    padding: 0 5px;
-    color: #666666;
+    padding: 0 6px;
+    color: #888888;
+    background: transparent;
 }
 
 #workspaces button.active {
     color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
 }
 
-#workspaces button.visible {
-    color: #aaaaaa;
+#workspaces button:hover {
+    background: rgba(255, 255, 255, 0.05);
 }
 
-#clock, #cpu, #memory, #pulseaudio {
+#clock {
+    font-weight: bold;
+}
+
+#cpu, #memory, #pulseaudio, #clock {
     padding: 0 10px;
 }
+
+#pulseaudio.muted {
+    color: #ff5555;
+}
 EOF
+    
+    # Script para escolher config correta
+    cat > "$SCRIPTS_DIR/start-waybar.sh" << 'EOF'
+#!/bin/bash
+killall waybar 2>/dev/null
+sleep 0.5
+
+if pgrep -x Hyprland > /dev/null; then
+    waybar -c ~/.config/waybar/config &
+elif pgrep -x niri > /dev/null; then
+    waybar -c ~/.config/waybar/config-niri &
+else
+    waybar &
+fi
+EOF
+    chmod +x "$SCRIPTS_DIR/start-waybar.sh"
+    
     return 0
 }
 
@@ -764,7 +833,7 @@ alias wallpaper='~/scripts/change-wallpaper.sh'
 alias screenshot='~/scripts/screenshot.sh'
 alias perf='powerprofilesctl set performance'
 alias fetch='clear && fastfetch --logo none'
-alias hexit="hyprctl eval 'hl.dispatch(hl.dsp.exit())'"
+alias hexit='hyprctl dispatch exit'
 alias l='eza --icons'
 
 eval "$(starship init zsh)"
