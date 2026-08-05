@@ -1,4 +1,6 @@
 #!/bin/bash
+# arch-hypr-gamer.sh - Instalação completa do Arch Linux para Gaming/Streaming
+# Uso: ./arch-hypr-gamer.sh [--skip-packages] [--help]
 # Hyprland no TTY1 | Niri no TTY2
 
 set -euo pipefail
@@ -233,8 +235,13 @@ setup_performance() {
     
     sudo tee /etc/sysctl.d/99-performance.conf > /dev/null << 'EOF'
 vm.swappiness=10
+vm.vfs_cache_pressure=50
 vm.max_map_count=1048576
 fs.inotify.max_user_watches=524288
+fs.file-max=2097152
+kernel.numa_balancing=0
+kernel.sched_child_runs_first=1
+kernel.sched_autogroup_enabled=0
 EOF
     
     sudo tee /etc/modprobe.d/amdgpu.conf > /dev/null << 'EOF'
@@ -251,6 +258,15 @@ desiredgov=performance
 apply_gpu_optimisations=accept-responsibility
 amd_performance_level=high
 EOF
+    
+    mkdir -p "$CONFIG_DIR/gtk-3.0"
+    cat > "$CONFIG_DIR/gtk-3.0/settings.ini" << 'EOF'
+[Settings]
+gtk-enable-animations=0
+gtk-overlay-scrolling=0
+gtk-primary-button-warps-slider=0
+EOF
+    
     return 0
 }
 
@@ -262,7 +278,6 @@ setup_scripts() {
     
     mkdir -p "$SCRIPTS_DIR" || return 1
     
-    # Steam: performance apenas ao iniciar
     cat > "$SCRIPTS_DIR/steam-performance.sh" << 'EOF'
 #!/bin/bash
 powerprofilesctl set performance
@@ -274,7 +289,6 @@ powerprofilesctl set balanced
 EOF
     chmod +x "$SCRIPTS_DIR/steam-performance.sh"
     
-    # Screenshot
     cat > "$SCRIPTS_DIR/screenshot.sh" << 'EOF'
 #!/bin/bash
 grim -g "$(slurp)" - | wl-copy
@@ -304,10 +318,8 @@ hyprctl hyprpaper unload all
 hyprctl hyprpaper preload "$WALLPAPER"
 hyprctl hyprpaper wallpaper ",$WALLPAPER"
 
-# Aplicar cores do matugen
 if command -v matugen &> /dev/null; then
     matugen image "$WALLPAPER" --mode dark --type scheme-tonal-spot
-    # Recarregar waybar com novas cores
     pkill -USR1 waybar 2>/dev/null || true
 fi
 
@@ -315,7 +327,6 @@ notify-send "Wallpaper" "Alterado!" 2>/dev/null || true
 EOF
     chmod +x "$SCRIPTS_DIR/change-wallpaper.sh"
     
-    # Toggle waybar
     cat > "$SCRIPTS_DIR/toggle-waybar.sh" << 'EOF'
 #!/bin/bash
 if pgrep waybar > /dev/null; then
@@ -355,7 +366,6 @@ hl.workspace_rule({ workspace = "3", monitor = "HDMI-A-1" })
 hl.workspace_rule({ workspace = "4", monitor = "HDMI-A-1" })
 hl.workspace_rule({ workspace = "special:gaming", monitor = "DP-3" })
 
--- Jogos vão para special:gaming
 hl.window_rule({ name = "steam-gaming", match = { class = "^(steam_app_.*)$" }, workspace = "special:gaming" })
 hl.window_rule({ name = "steam-fullscreen", match = { class = "^(steam_app_.*)$" }, fullscreen = true })
 
@@ -395,9 +405,18 @@ hl.config({
         shadow = { enabled = false }, blur = { enabled = false },
     },
     animations = { enabled = false },
-    dwindle = { preserve_split = true },
+    dwindle = { preserve_split = true, no_gaps_when_only = true },
     master = { new_status = "master" },
-    misc = { force_default_wallpaper = -1, disable_hyprland_logo = true },
+    misc = { 
+        force_default_wallpaper = -1, 
+        disable_hyprland_logo = true,
+        animate_manual_resizes = false,
+        animate_mouse_windowdragging = false,
+        enable_swallow = false,
+        focus_on_activate = true,
+        mouse_move_enables_dpms = true,
+        key_press_enables_dpms = true,
+    },
     xwayland = { force_zero_scaling = true, use_nearest_neighbor = true },
 })
 
@@ -584,11 +603,11 @@ setup_waybar() {
     },
     "cpu": {
         "format": "CPU {usage}%",
-        "interval": 1
+        "interval": 2
     },
     "memory": {
         "format": "RAM {}%",
-        "interval": 1
+        "interval": 2
     },
     "pulseaudio": {
         "format": "VOL {volume}%",
@@ -599,8 +618,6 @@ setup_waybar() {
 EOF
     
     cat > "$CONFIG_DIR/waybar/style.css" << 'EOF'
-@import "../matugen/waybar.css";
-
 * {
     border: none;
     border-radius: 0;
@@ -610,30 +627,25 @@ EOF
 }
 
 window#waybar {
-    background: alpha(@surface, 0.85);
-    color: @on_surface;
+    background: rgba(0, 0, 0, 0.85);
+    color: #ffffff;
 }
 
 #workspaces button {
     padding: 0 5px;
-    color: alpha(@on_surface, 0.4);
+    color: #666666;
 }
 
 #workspaces button.active {
-    color: @primary;
+    color: #ffffff;
 }
 
 #workspaces button.visible {
-    color: alpha(@on_surface, 0.7);
+    color: #aaaaaa;
 }
 
 #clock, #cpu, #memory, #pulseaudio {
     padding: 0 10px;
-    color: @on_surface;
-}
-
-#pulseaudio.muted {
-    color: @error;
 }
 EOF
     return 0
@@ -676,7 +688,7 @@ EOF
 }
 
 # ============================================================================
-# NEOVIM COM MATUGEN
+# NEOVIM
 # ============================================================================
 setup_neovim() {
     log_section "NEOVIM"
@@ -696,21 +708,11 @@ set tabstop=4
 set shiftwidth=4
 set expandtab
 
-" Importar cores do matugen
 lua require("matugen-colors")
 EOF
     
     mkdir -p "$CONFIG_DIR/nvim/lua"
     cat > "$CONFIG_DIR/nvim/lua/matugen-colors.lua" << 'EOF'
-local function hex_to_rgb(hex)
-    hex = hex:gsub("#", "")
-    return {
-        tonumber(hex:sub(1, 2), 16),
-        tonumber(hex:sub(3, 4), 16),
-        tonumber(hex:sub(5, 6), 16)
-    }
-end
-
 local function apply_colors()
     local file = io.open(vim.fn.expand("~/.config/matugen/colors.css"), "r")
     if not file then return end
@@ -718,21 +720,16 @@ local function apply_colors()
     local colors = {}
     for line in file:lines() do
         local name, value = line:match("%-%-([%w_]+):%s*(#[%x]+);")
-        if name and value then
-            colors[name] = value
-        end
+        if name and value then colors[name] = value end
     end
     file:close()
     
     if colors.background and colors.on_background then
         vim.cmd("highlight Normal guibg=" .. colors.background .. " guifg=" .. colors.on_background)
     end
-    if colors.surface and colors.on_surface then
-        vim.cmd("highlight LineNr guibg=" .. colors.surface .. " guifg=" .. colors.outline or colors.on_surface)
+    if colors.surface then
+        vim.cmd("highlight LineNr guibg=" .. colors.surface .. " guifg=" .. (colors.outline or "#666666"))
         vim.cmd("highlight CursorLine guibg=" .. colors.surface)
-    end
-    if colors.primary then
-        vim.cmd("highlight Cursor guifg=" .. colors.on_primary .. " guibg=" .. colors.primary)
     end
 end
 
@@ -769,8 +766,8 @@ alias wallpaper='~/scripts/change-wallpaper.sh'
 alias screenshot='~/scripts/screenshot.sh'
 alias perf='powerprofilesctl set performance'
 alias fetch='clear && fastfetch --logo none'
-alias l='eza --icons'
 alias hexit='hyprctl dispatch exit'
+alias l='eza --icons'
 
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
@@ -795,7 +792,7 @@ EOF
 }
 
 # ============================================================================
-# TEMAS DARK ALINHADOS COM MATUGEN
+# TEMAS DARK
 # ============================================================================
 setup_gtk_theme() {
     log_section "TEMAS DARK + MATUGEN"
@@ -803,7 +800,6 @@ setup_gtk_theme() {
     mkdir -p "$CONFIG_DIR/gtk-3.0" "$CONFIG_DIR/gtk-4.0" "$CONFIG_DIR/qt5ct" "$CONFIG_DIR/qt6ct"
     mkdir -p "$CONFIG_DIR/Kingsoft/Office6" "$CONFIG_DIR/fnott"
     
-    # GTK
     for version in 3.0 4.0; do
         cat > "$CONFIG_DIR/gtk-$version/settings.ini" << 'EOF'
 [Settings]
@@ -826,7 +822,6 @@ gtk-cursor-theme-size=22
 gtk-application-prefer-dark-theme=1
 EOF
     
-    # QT
     cat > "$CONFIG_DIR/qt5ct/qt5ct.conf" << 'EOF'
 [Appearance]
 style=kvantum-dark
@@ -841,21 +836,18 @@ custom_palette=true
 icon_theme=Tela-circle-black
 EOF
     
-    # WPS Office dark
     cat > "$CONFIG_DIR/Kingsoft/Office6/wpsconfig.ini" << 'EOF'
 [General]
 Theme=dark
 UIMode=ribbon
 EOF
     
-    # Cursor global
     sudo mkdir -p /usr/share/icons/default
     sudo tee /usr/share/icons/default/index.theme > /dev/null << 'EOF'
 [Icon Theme]
 Inherits=Bibata-Modern-Ice
 EOF
     
-    # Fnott
     cat > "$CONFIG_DIR/fnott/fnott.ini" << 'EOF'
 [main]
 timeout=3
@@ -865,7 +857,6 @@ max-width=400
 font=JetBrains Mono:size=11
 EOF
     
-    # XDG Portal OBS
     sudo mkdir -p /etc/xdg
     sudo tee /etc/xdg/xdg-desktop-portal-hyprland.conf > /dev/null << 'EOF'
 [preferred]
@@ -927,13 +918,13 @@ main() {
         "install_aur_packages|Pacotes AUR"
         "setup_services|Serviços"
         "setup_performance|Performance"
-        "setup_scripts|Scripts (gatilhos)"
+        "setup_scripts|Scripts"
         "setup_hyprland|Hyprland"
         "setup_niri|Niri"
         "setup_waybar|Waybar"
         "setup_fuzzel|Fuzzel"
         "setup_kitty|Kitty"
-        "setup_neovim|Neovim + Matugen"
+        "setup_neovim|Neovim"
         "setup_zsh|ZSH"
         "setup_gtk_theme|Temas Dark + Fnott"
     )
