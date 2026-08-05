@@ -228,7 +228,12 @@ install_official_packages() {
 
 install_aur_packages() {
     log_section "PACOTES AUR"
-    local packages=(librewolf-bin orchis-theme-git qs)
+    local packages=(
+        librewolf-bin
+        orchis-theme-git
+        qs
+        wps-office
+    )
     install_packages "aur" "${packages[@]}"
     return 0
 }
