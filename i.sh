@@ -1,6 +1,4 @@
 #!/bin/bash
-# arch-hypr-gamer.sh - Instalação completa do Arch Linux para Gaming/Streaming
-# Uso: ./arch-hypr-gamer.sh [--skip-packages] [--help]
 # Hyprland no TTY1 | Niri no TTY2
 
 set -euo pipefail
@@ -342,7 +340,7 @@ EOF
 }
 
 # ============================================================================
-# HYPRLAND CONFIG
+# HYPRLAND CONFIG - Corrigido
 # ============================================================================
 setup_hyprland() {
     log_section "HYPRLAND CONFIG"
@@ -405,7 +403,7 @@ hl.config({
         shadow = { enabled = false }, blur = { enabled = false },
     },
     animations = { enabled = false },
-    dwindle = { preserve_split = true, no_gaps_when_only = true },
+    dwindle = { preserve_split = true },
     master = { new_status = "master" },
     misc = { 
         force_default_wallpaper = -1, 
