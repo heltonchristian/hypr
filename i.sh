@@ -72,7 +72,7 @@ check_dependencies() {
 }
 
 # ============================================================================
-# AUTOLOGIN - Hyprland TTY1 | Niri TTY2
+# AUTOLOGIN
 # ============================================================================
 setup_autologin() {
     log_section "AUTOLOGIN"
@@ -106,7 +106,7 @@ EOF
     sudo -u ly tee /home/ly/.zprofile > /dev/null << 'EOF'
 if [ -z "${DISPLAY}" ] && [ -z "${WAYLAND_DISPLAY}" ]; then
     case "${XDG_VTNR}" in
-        1) exec Hyprland ;;
+        1) exec start-hyprland ;;
         2) exec niri-session ;;
     esac
 fi
@@ -169,7 +169,7 @@ install_official_packages() {
         waybar grim slurp wl-clipboard
         fuzzel nemo nemo-fileroller
         kitty starship zoxide fzf zsh-syntax-highlighting zsh-autosuggestions eza
-        pipewire pipewire-pulse wireplumber pipewire-alsa pamixer pavucontrol playerctl
+        pamixer pavucontrol playerctl
         steam gamescope gamemode mangohud
         obs-studio
         btop lm_sensors nvtop amdgpu_top htop tlp
@@ -182,7 +182,7 @@ install_official_packages() {
         opencl-mesa opencl-headers clinfo lib32-opencl-mesa
         gst-plugins-bad gst-plugins-good gst-plugins-ugly gst-plugins-base gst-libav ffmpeg
         lib32-mesa lib32-mesa-utils
-        lib32-alsa-lib lib32-alsa-plugins lib32-libpulse lib32-pipewire
+        lib32-alsa-lib lib32-alsa-plugins lib32-libpulse
         lib32-systemd lib32-gcc-libs lib32-glibc lib32-zlib
         lib32-freetype2 lib32-fontconfig lib32-libpng
         lib32-libx11 lib32-libxext lib32-libxcb lib32-libdrm
@@ -194,7 +194,7 @@ install_official_packages() {
         lib32-libelf lib32-libxdmcp lib32-libxau lib32-expat
         qt5ct qt6ct kvantum
         xdg-desktop-portal xdg-desktop-portal-hyprland xdg-desktop-portal-gtk
-        orchis-theme matugen
+        orchis-theme matugen fnott
     )
     
     install_packages "official" "${packages[@]}"
@@ -223,12 +223,6 @@ setup_services() {
     for service in "${services[@]}"; do
         sudo systemctl enable "$service" 2>>"$ERROR_LOG" || true
         sudo systemctl start "$service" 2>>"$ERROR_LOG" || true
-    done
-    
-    local user_services=(pipewire pipewire-pulse wireplumber xdg-desktop-portal xdg-desktop-portal-hyprland)
-    for service in "${user_services[@]}"; do
-        systemctl --user enable "$service" 2>/dev/null || true
-        systemctl --user start "$service" 2>/dev/null || true
     done
     return 0
 }
@@ -270,17 +264,19 @@ setup_scripts() {
     
     mkdir -p "$SCRIPTS_DIR" || return 1
     
+    # Steam: performance apenas ao iniciar
     cat > "$SCRIPTS_DIR/steam-performance.sh" << 'EOF'
 #!/bin/bash
 powerprofilesctl set performance
 export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/radeon_icd.x86_64.json:/usr/share/vulkan/icd.d/radeon_icd.i686.json
 export AMD_VULKAN_ICD=RADV
 export DISABLE_LAYER_AMD_SWITCHABLE_GRAPHICS_1=1
-gamemoderun steam "$@"
+gamemoderun steam
 powerprofilesctl set balanced
 EOF
     chmod +x "$SCRIPTS_DIR/steam-performance.sh"
     
+    # Screenshot
     cat > "$SCRIPTS_DIR/screenshot.sh" << 'EOF'
 #!/bin/bash
 grim -g "$(slurp)" - | wl-copy
@@ -310,13 +306,27 @@ hyprctl hyprpaper unload all
 hyprctl hyprpaper preload "$WALLPAPER"
 hyprctl hyprpaper wallpaper ",$WALLPAPER"
 
+# Aplicar cores do matugen
 if command -v matugen &> /dev/null; then
     matugen image "$WALLPAPER" --mode dark --type scheme-tonal-spot
+    # Recarregar waybar com novas cores
+    pkill -USR1 waybar 2>/dev/null || true
 fi
 
-notify-send "Wallpaper" "Alterado!" -i "$WALLPAPER" 2>/dev/null || true
+notify-send "Wallpaper" "Alterado!" 2>/dev/null || true
 EOF
     chmod +x "$SCRIPTS_DIR/change-wallpaper.sh"
+    
+    # Toggle waybar
+    cat > "$SCRIPTS_DIR/toggle-waybar.sh" << 'EOF'
+#!/bin/bash
+if pgrep waybar > /dev/null; then
+    killall waybar
+else
+    waybar &
+fi
+EOF
+    chmod +x "$SCRIPTS_DIR/toggle-waybar.sh"
     
     mkdir -p "$HOME/Pictures/Wallpapers" "$HOME/Pictures/Screenshots"
     return 0
@@ -347,12 +357,17 @@ hl.workspace_rule({ workspace = "3", monitor = "HDMI-A-1" })
 hl.workspace_rule({ workspace = "4", monitor = "HDMI-A-1" })
 hl.workspace_rule({ workspace = "special:gaming", monitor = "DP-3" })
 
+-- Jogos vão para special:gaming
 hl.window_rule({ name = "steam-gaming", match = { class = "^(steam_app_.*)$" }, workspace = "special:gaming" })
 hl.window_rule({ name = "steam-fullscreen", match = { class = "^(steam_app_.*)$" }, fullscreen = true })
 
 hl.on("hyprland.start", function()
-    hl.exec_cmd("waybar & hyprpaper")
+    hl.exec_cmd("waybar -c ~/.config/waybar/config -s ~/.config/waybar/style.css &")
+    hl.exec_cmd("hyprpaper")
+    hl.exec_cmd("fnott &")
+    hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
     hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
+    hl.exec_cmd("systemctl --user restart xdg-desktop-portal xdg-desktop-portal-hyprland")
     hl.exec_cmd("solaar --window hide")
 end)
 
@@ -364,6 +379,7 @@ hl.env("HYPRCURSOR_THEME", "Bibata-Modern-Ice")
 hl.env("HYPRCURSOR_SIZE", "22")
 hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
 hl.env("XDG_SESSION_TYPE", "wayland")
+hl.env("XDG_SESSION_DESKTOP", "Hyprland")
 hl.env("GDK_BACKEND", "wayland,x11,*")
 hl.env("QT_QPA_PLATFORM", "wayland;xcb")
 hl.env("SDL_VIDEODRIVER", "wayland")
@@ -383,7 +399,7 @@ hl.config({
     animations = { enabled = false },
     dwindle = { preserve_split = true },
     master = { new_status = "master" },
-    misc = { force_default_wallpaper = -1, disable_hyprland_logo = true, animate_manual_resizes = false, animate_mouse_windowdragging = false },
+    misc = { force_default_wallpaper = -1, disable_hyprland_logo = true },
     xwayland = { force_zero_scaling = true, use_nearest_neighbor = true },
 })
 
@@ -403,7 +419,7 @@ hl.bind(mainMod .. " + F10", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + F11", hl.dsp.exec_cmd("~/scripts/steam-performance.sh"))
 hl.bind(mainMod .. " + F12", hl.dsp.exec_cmd("spotify-launcher"))
 hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("~/scripts/change-wallpaper.sh"))
-hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("~/scripts/change-wallpaper.sh next"))
+hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("~/scripts/toggle-waybar.sh"))
 hl.bind(mainMod .. " + K", hl.dsp.window.close())
 hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ action = "toggle" }))
@@ -452,27 +468,53 @@ setup_niri() {
     mkdir -p "$NIRI_DIR" || return 1
     
     cat > "$NIRI_DIR/config.kdl" << 'EOF'
-spawn-sh-at-startup "qs -c noctalia-shell"
+spawn-at-startup "qs -c noctalia-shell"
 spawn-at-startup "xwayland-satellite"
 spawn-at-startup "waybar"
+spawn-at-startup "fnott"
 
-hotkey-overlay { skip-at-startup }
+hotkey-overlay {
+    skip-at-startup
+}
 
 input {
     focus-follows-mouse
-    keyboard { xkb { layout "us,br" options "grp:ralt_toggle" } }
-    mouse { accel-profile "flat" accel-speed 0.0 }
+    keyboard {
+        xkb {
+            layout "us,br"
+            options "grp:ralt_toggle"
+        }
+    }
+    mouse {
+        accel-profile "flat"
+        accel-speed 0.0
+    }
 }
 
-output "DP-3" { mode "1920x1080@319.976" scale 1 position x=0 y=0 }
-output "HDMI-A-1" { mode "1920x1080@60.000" scale 1 position x=1920 y=0 }
+output "DP-3" {
+    mode "1920x1080@319.976"
+    scale 1.0
+    position x=0 y=0
+}
+
+output "HDMI-A-1" {
+    mode "1920x1080@60.000"
+    scale 1.0
+    position x=1920 y=0
+}
 
 layout {
     gaps 10
     center-focused-column "never"
     default-column-width { proportion 0.5 }
-    focus-ring { width 4 active-color "#ffffff" inactive-color "#808080" }
-    border { off }
+    focus-ring {
+        width 4
+        active-color "#ffffff"
+        inactive-color "#808080"
+    }
+    border {
+        off
+    }
 }
 
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
@@ -481,8 +523,8 @@ prefer-no-csd
 
 binds {
     Print { screenshot; }
-    Mod+RETURN { spawn "kitty"; }
-    Mod+SPACE { spawn "fuzzel"; }
+    Mod+Return { spawn "kitty"; }
+    Mod+Space { spawn "fuzzel"; }
     Mod+F10 { spawn "nemo"; }
     Mod+F9 { spawn "librewolf"; }
     Mod+F11 { spawn "~/scripts/steam-performance.sh"; }
@@ -525,24 +567,76 @@ setup_waybar() {
     
     cat > "$CONFIG_DIR/waybar/config" << 'EOF'
 {
-    "layer": "top", "position": "top", "height": 24,
+    "layer": "top",
+    "position": "top",
+    "height": 24,
     "modules-left": ["wlr/workspaces"],
     "modules-center": ["clock"],
     "modules-right": ["cpu", "memory", "pulseaudio"],
-    "wlr/workspaces": { "format": "{icon}" },
-    "clock": { "format": "{:%H:%M}", "interval": 1 },
-    "cpu": { "format": "CPU {usage}%", "interval": 1 },
-    "memory": { "format": "RAM {}%", "interval": 1 },
-    "pulseaudio": { "format": "VOL {volume}%", "format-muted": "MUTE" }
+    "wlr/workspaces": {
+        "format": "{icon}",
+        "all-outputs": false,
+        "active-only": false,
+        "on-click": "activate"
+    },
+    "clock": {
+        "format": "{:%H:%M}",
+        "interval": 1,
+        "tooltip": false
+    },
+    "cpu": {
+        "format": "CPU {usage}%",
+        "interval": 1
+    },
+    "memory": {
+        "format": "RAM {}%",
+        "interval": 1
+    },
+    "pulseaudio": {
+        "format": "VOL {volume}%",
+        "format-muted": "MUTE",
+        "on-click": "pavucontrol"
+    }
 }
 EOF
     
     cat > "$CONFIG_DIR/waybar/style.css" << 'EOF'
-* { border: none; border-radius: 0; font-family: "JetBrains Mono"; font-size: 11px; }
-window#waybar { background: rgba(0, 0, 0, 0.85); color: #ffffff; }
-#workspaces button { padding: 0 5px; color: #666666; }
-#workspaces button.active { color: #ffffff; }
-#clock, #cpu, #memory, #pulseaudio { padding: 0 10px; }
+@import "../matugen/waybar.css";
+
+* {
+    border: none;
+    border-radius: 0;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    min-height: 0;
+}
+
+window#waybar {
+    background: alpha(@surface, 0.85);
+    color: @on_surface;
+}
+
+#workspaces button {
+    padding: 0 5px;
+    color: alpha(@on_surface, 0.4);
+}
+
+#workspaces button.active {
+    color: @primary;
+}
+
+#workspaces button.visible {
+    color: alpha(@on_surface, 0.7);
+}
+
+#clock, #cpu, #memory, #pulseaudio {
+    padding: 0 10px;
+    color: @on_surface;
+}
+
+#pulseaudio.muted {
+    color: @error;
+}
 EOF
     return 0
 }
@@ -584,6 +678,72 @@ EOF
 }
 
 # ============================================================================
+# NEOVIM COM MATUGEN
+# ============================================================================
+setup_neovim() {
+    log_section "NEOVIM"
+    mkdir -p "$CONFIG_DIR/nvim" || return 1
+    
+    cat > "$CONFIG_DIR/nvim/init.vim" << 'EOF'
+set number
+set relativenumber
+set termguicolors
+set mouse=a
+set clipboard=unnamedplus
+set cursorline
+set signcolumn=yes
+syntax on
+filetype plugin indent on
+set tabstop=4
+set shiftwidth=4
+set expandtab
+
+" Importar cores do matugen
+lua require("matugen-colors")
+EOF
+    
+    mkdir -p "$CONFIG_DIR/nvim/lua"
+    cat > "$CONFIG_DIR/nvim/lua/matugen-colors.lua" << 'EOF'
+local function hex_to_rgb(hex)
+    hex = hex:gsub("#", "")
+    return {
+        tonumber(hex:sub(1, 2), 16),
+        tonumber(hex:sub(3, 4), 16),
+        tonumber(hex:sub(5, 6), 16)
+    }
+end
+
+local function apply_colors()
+    local file = io.open(vim.fn.expand("~/.config/matugen/colors.css"), "r")
+    if not file then return end
+    
+    local colors = {}
+    for line in file:lines() do
+        local name, value = line:match("%-%-([%w_]+):%s*(#[%x]+);")
+        if name and value then
+            colors[name] = value
+        end
+    end
+    file:close()
+    
+    if colors.background and colors.on_background then
+        vim.cmd("highlight Normal guibg=" .. colors.background .. " guifg=" .. colors.on_background)
+    end
+    if colors.surface and colors.on_surface then
+        vim.cmd("highlight LineNr guibg=" .. colors.surface .. " guifg=" .. colors.outline or colors.on_surface)
+        vim.cmd("highlight CursorLine guibg=" .. colors.surface)
+    end
+    if colors.primary then
+        vim.cmd("highlight Cursor guifg=" .. colors.on_primary .. " guibg=" .. colors.primary)
+    end
+end
+
+vim.api.nvim_create_autocmd("VimEnter", { callback = apply_colors })
+EOF
+    return 0
+}
+
+# ============================================================================
 # ZSH
 # ============================================================================
 setup_zsh() {
@@ -604,6 +764,7 @@ alias vim='nvim'
 alias hc='nvim ~/.config/hypr/hyprland.lua'
 alias nc='nvim ~/.config/niri/config.kdl'
 alias zshrc='nvim ~/.zshrc'
+alias vimrc='nvim ~/.config/nvim/init.vim'
 alias update='sudo pacman -Syu'
 alias steam='~/scripts/steam-performance.sh'
 alias wallpaper='~/scripts/change-wallpaper.sh'
@@ -611,6 +772,7 @@ alias screenshot='~/scripts/screenshot.sh'
 alias perf='powerprofilesctl set performance'
 alias fetch='clear && fastfetch --logo none'
 alias l='eza --icons'
+alias hexit='hyprctl dispatch exit'
 
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
@@ -635,16 +797,17 @@ EOF
 }
 
 # ============================================================================
-# GTK/QT DARK THEME + WPS OFFICE DARK
+# TEMAS DARK ALINHADOS COM MATUGEN
 # ============================================================================
 setup_gtk_theme() {
-    log_section "TEMA GTK/QT DARK"
+    log_section "TEMAS DARK + MATUGEN"
     
     mkdir -p "$CONFIG_DIR/gtk-3.0" "$CONFIG_DIR/gtk-4.0" "$CONFIG_DIR/qt5ct" "$CONFIG_DIR/qt6ct"
-    mkdir -p "$CONFIG_DIR/Kingsoft/Office6"
+    mkdir -p "$CONFIG_DIR/Kingsoft/Office6" "$CONFIG_DIR/fnott"
     
-    # GTK 3.0 Dark com cursor Bibata
-    cat > "$CONFIG_DIR/gtk-3.0/settings.ini" << 'EOF'
+    # GTK
+    for version in 3.0 4.0; do
+        cat > "$CONFIG_DIR/gtk-$version/settings.ini" << 'EOF'
 [Settings]
 gtk-theme-name=Orchis-Dark-Compact
 gtk-icon-theme-name=Tela-circle-black
@@ -654,20 +817,8 @@ gtk-cursor-theme-size=22
 gtk-application-prefer-dark-theme=1
 gtk-enable-animations=0
 EOF
+    done
     
-    # GTK 4.0 Dark com cursor Bibata
-    cat > "$CONFIG_DIR/gtk-4.0/settings.ini" << 'EOF'
-[Settings]
-gtk-theme-name=Orchis-Dark-Compact
-gtk-icon-theme-name=Tela-circle-black
-gtk-font-name=JetBrains Mono 11
-gtk-cursor-theme-name=Bibata-Modern-Ice
-gtk-cursor-theme-size=22
-gtk-application-prefer-dark-theme=1
-gtk-enable-animations=0
-EOF
-    
-    # GTK 2.0 Dark
     cat > "$HOME/.gtkrc-2.0" << 'EOF'
 gtk-theme-name="Orchis-Dark-Compact"
 gtk-icon-theme-name="Tela-circle-black"
@@ -677,12 +828,11 @@ gtk-cursor-theme-size=22
 gtk-application-prefer-dark-theme=1
 EOF
     
-    # QT Dark
+    # QT
     cat > "$CONFIG_DIR/qt5ct/qt5ct.conf" << 'EOF'
 [Appearance]
 style=kvantum-dark
 custom_palette=true
-color_scheme_path=/usr/share/qt5ct/colors/darker.conf
 icon_theme=Tela-circle-black
 EOF
     
@@ -690,25 +840,34 @@ EOF
 [Appearance]
 style=kvantum-dark
 custom_palette=true
-color_scheme_path=/usr/share/qt6ct/colors/darker.conf
 icon_theme=Tela-circle-black
 EOF
     
-    # WPS Office modo escuro
+    # WPS Office dark
     cat > "$CONFIG_DIR/Kingsoft/Office6/wpsconfig.ini" << 'EOF'
 [General]
 Theme=dark
 UIMode=ribbon
 EOF
     
-    # Configuração global de cursores
+    # Cursor global
     sudo mkdir -p /usr/share/icons/default
     sudo tee /usr/share/icons/default/index.theme > /dev/null << 'EOF'
 [Icon Theme]
 Inherits=Bibata-Modern-Ice
 EOF
     
-    # XDG Portal para OBS
+    # Fnott
+    cat > "$CONFIG_DIR/fnott/fnott.ini" << 'EOF'
+[main]
+timeout=3
+anchor=top-right
+padding=10
+max-width=400
+font=JetBrains Mono:size=11
+EOF
+    
+    # XDG Portal OBS
     sudo mkdir -p /etc/xdg
     sudo tee /etc/xdg/xdg-desktop-portal-hyprland.conf > /dev/null << 'EOF'
 [preferred]
@@ -770,14 +929,15 @@ main() {
         "install_aur_packages|Pacotes AUR"
         "setup_services|Serviços"
         "setup_performance|Performance"
-        "setup_scripts|Scripts"
+        "setup_scripts|Scripts (gatilhos)"
         "setup_hyprland|Hyprland"
         "setup_niri|Niri"
         "setup_waybar|Waybar"
         "setup_fuzzel|Fuzzel"
         "setup_kitty|Kitty"
+        "setup_neovim|Neovim + Matugen"
         "setup_zsh|ZSH"
-        "setup_gtk_theme|Tema GTK/QT Dark + WPS Dark + Bibata"
+        "setup_gtk_theme|Temas Dark + Fnott"
     )
     
     for func_entry in "${functions[@]}"; do
