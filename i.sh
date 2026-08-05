@@ -764,7 +764,7 @@ alias wallpaper='~/scripts/change-wallpaper.sh'
 alias screenshot='~/scripts/screenshot.sh'
 alias perf='powerprofilesctl set performance'
 alias fetch='clear && fastfetch --logo none'
-alias hexit='hyprctl dispatch exit'
+alias hexit="hyprctl eval 'hl.dispatch(hl.dsp.exit())'"
 alias l='eza --icons'
 
 eval "$(starship init zsh)"
