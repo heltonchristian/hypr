@@ -1,6 +1,6 @@
 #!/bin/bash
 #==============================================================================
-# Arch Linux Niri Gaming Setup v3.2 - FINAL
+# Arch Linux Niri Gaming Setup v3.4 - FINAL
 #==============================================================================
 
 set -o pipefail
@@ -34,9 +34,16 @@ install_pkgs() {
     local failed_pkgs=()
     
     for pkg in "${pkgs[@]}"; do
+        # Skip if already installed
         if pacman -Q "$pkg" &>/dev/null; then
             continue
         fi
+        # Check if package exists in repos
+        if ! pacman -Si "$pkg" &>/dev/null; then
+            echo -e "\n  ${YELLOW}⚠${NC} Package '$pkg' not found in repos - skipping"
+            continue
+        fi
+        # Install package
         if ! sudo pacman -S --noconfirm --needed "$pkg" >> "$LOG_FILE" 2>&1; then
             failed_pkgs+=("$pkg")
         fi
@@ -77,7 +84,7 @@ install_aur_pkgs() {
 clear
 echo -e "${GREEN}"
 echo "╔══════════════════════════════════════╗"
-echo "║  Arch Linux Niri Gaming Setup v3.2  ║"
+echo "║  Arch Linux Niri Gaming Setup v3.4  ║"
 echo "╚══════════════════════════════════════╝"
 echo -e "${NC}"
 
@@ -127,7 +134,7 @@ else
 fi
 
 #==============================================================================
-# 3. CORE PACKAGES
+# 3. CORE PACKAGES (sem gtk-engine-murrine)
 #==============================================================================
 ((CURRENT++))
 
@@ -145,7 +152,7 @@ install_pkgs "Core" \
     noto-fonts noto-fonts-emoji ttf-jetbrains-mono \
     qt5-wayland qt6-wayland \
     fastfetch git curl wget imagemagick jq \
-    gtk3 gtk4 gtk-engine-murrine gnome-themes-extra \
+    gtk3 gtk4 gnome-themes-extra \
     qt5ct qt6ct kvantum kvantum-qt5 papirus-icon-theme \
     neovim \
     zsh zsh-completions zsh-syntax-highlighting zsh-autosuggestions
@@ -368,7 +375,7 @@ EOF
 ok
 
 #==============================================================================
-# 9. NIRI + WAYBAR
+# 9. NIRI + WAYBAR (2 WORKSPACES)
 #==============================================================================
 ((CURRENT++))
 
@@ -378,7 +385,7 @@ step "$CURRENT" "Niri and Waybar configs"
 
 cat > ~/.config/niri/config.kdl << 'NIRIEOF'
 //==============================================================================
-// NIRI CONFIGURATION
+// NIRI CONFIGURATION - 2 WORKSPACES
 //==============================================================================
 
 // Pipewire audio
@@ -505,7 +512,7 @@ window-rule {
 }
 
 //==============================================================================
-// KEYBINDINGS
+// KEYBINDINGS - 2 WORKSPACES
 //==============================================================================
 
 binds {
@@ -562,37 +569,24 @@ binds {
     Mod+Ctrl+Right { move-column-right; }
     Mod+Home { focus-column-first; }
     Mod+End { focus-column-last; }
-    Mod+Ctrl+Home { move-column-to-first; }
-    Mod+Ctrl+End { move-column-to-last; }
 
-    // Monitor navigation
+    // Monitor navigation (left/right only)
     Mod+Shift+Left { focus-monitor-left; }
-    Mod+Shift+Down { focus-monitor-down; }
-    Mod+Shift+Up { focus-monitor-up; }
     Mod+Shift+Right { focus-monitor-right; }
     Mod+Shift+Ctrl+Left { move-column-to-monitor-left; }
-    Mod+Shift+Ctrl+Down { move-column-to-monitor-down; }
-    Mod+Shift+Ctrl+Up { move-column-to-monitor-up; }
     Mod+Shift+Ctrl+Right { move-column-to-monitor-right; }
 
-    // Workspace navigation
-    Mod+Page_Down { focus-workspace-down; }
-    Mod+Page_Up { focus-workspace-up; }
-    Mod+Ctrl+Page_Down { move-column-to-workspace-down; }
-    Mod+Ctrl+Page_Up { move-column-to-workspace-up; }
-    Mod+Shift+Page_Down { move-workspace-down; }
-    Mod+Shift+Page_Up { move-workspace-up; }
+    // Workspace navigation (2 workspaces only)
     Mod+1 { focus-workspace 1; }
     Mod+2 { focus-workspace 2; }
-    Mod+3 { focus-workspace 3; }
-    Mod+4 { focus-workspace 4; }
-    Mod+5 { focus-workspace 5; }
     Mod+Shift+1 { move-column-to-workspace 1; }
     Mod+Shift+2 { move-column-to-workspace 2; }
+    Mod+Tab { focus-workspace-down; }
+    Mod+Shift+Tab { focus-workspace-up; }
 }
 NIRIEOF
 
-# Waybar
+# Waybar (2 workspaces)
 cat > ~/.config/waybar/config.jsonc << 'EOF'
 {
     "layer": "top",
@@ -606,7 +600,11 @@ cat > ~/.config/waybar/config.jsonc << 'EOF'
     "modules-right": ["pulseaudio", "tray"],
     "niri/workspaces": {
         "format": "{icon}",
-        "format-icons": { "1": "1", "2": "2", "3": "3", "4": "4", "5": "5" }
+        "format-icons": {
+            "1": "1",
+            "2": "2"
+        },
+        "on-click": "activate"
     },
     "niri/window": {
         "format": "{title}",
@@ -832,10 +830,41 @@ vm.vfs_cache_pressure=50" | sudo tee /etc/sysctl.d/99-gaming.conf > /dev/null
 sudo sysctl --system > /dev/null 2>&1
 
 #==============================================================================
-# WEBAPPS (como apps isolados)
+# WEBAPPS - Sem browser UI
 #==============================================================================
 
-# Discord - app isolado
+echo -e "\n  ${CYAN}Configuring webapps...${NC}"
+
+# Ativar customização no Librewolf
+cat > ~/.librewolf/user.js << 'EOF'
+user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
+user_pref("browser.tabs.inTitlebar", 0);
+EOF
+
+# Encontrar diretório do perfil
+PROFILE_DIR=$(find ~/.librewolf -maxdepth 2 -name "*.default-release" -type d 2>/dev/null | head -1)
+[ -z "$PROFILE_DIR" ] && PROFILE_DIR="$HOME/.librewolf"
+mkdir -p "$PROFILE_DIR/chrome"
+
+# CSS para remover interface
+cat > "$PROFILE_DIR/chrome/userChrome.css" << 'EOF'
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+#TabsToolbar, #nav-bar, #sidebar-box, #titlebar, #toolbar-menubar {
+    visibility: collapse !important;
+}
+.titlebar-buttonbox-container {
+    display: none !important;
+}
+EOF
+
+# Copiar para outros perfis
+for profile in $(find ~/.librewolf -maxdepth 2 -name "*.default*" -type d 2>/dev/null); do
+    mkdir -p "$profile/chrome"
+    cp "$PROFILE_DIR/chrome/userChrome.css" "$profile/chrome/userChrome.css" 2>/dev/null
+done
+echo -e "  ${GREEN}✓${NC} Librewolf customization enabled"
+
+# Discord webapp
 cat > ~/.local/share/applications/discord-webapp.desktop << 'EOF'
 [Desktop Entry]
 Name=Discord
@@ -849,7 +878,7 @@ StartupNotify=true
 Terminal=false
 EOF
 
-# WhatsApp - app isolado
+# WhatsApp webapp
 cat > ~/.local/share/applications/whatsapp-webapp.desktop << 'EOF'
 [Desktop Entry]
 Name=WhatsApp
@@ -863,7 +892,7 @@ StartupNotify=true
 Terminal=false
 EOF
 
-# Spotify - app isolado
+# Spotify webapp
 cat > ~/.local/share/applications/spotify-webapp.desktop << 'EOF'
 [Desktop Entry]
 Name=Spotify
@@ -876,43 +905,82 @@ StartupWMClass=Spotify
 StartupNotify=true
 Terminal=false
 EOF
+echo -e "  ${GREEN}✓${NC} Webapps created (Discord, WhatsApp, Spotify)"
 
-# Librewolf CSS para remover interface dos webapps
-mkdir -p ~/.librewolf/chrome
-cat > ~/.librewolf/chrome/userChrome.css << 'EOF'
-/* Remove interface for webapp windows */
-@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+#==============================================================================
+# FASTFETCH - Limpo, sem blocos de cores
+#==============================================================================
 
-/* Hide tabs, navbar and sidebar for webapps */
-#TabsToolbar, #nav-bar, #sidebar-box, #titlebar {
-    visibility: collapse !important;
-}
-
-/* Hide window controls on webapps */
-.titlebar-buttonbox-container {
-    display: none !important;
-}
-EOF
-
-# Librewolf user.js for webapp support
-cat >> ~/.librewolf/user.js << 'EOF'
-// Enable chrome customization
-user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
-EOF
-
-echo -e "  ${GREEN}✓${NC} Webapps configured as isolated apps"
-
-# Fastfetch
 cat > ~/.config/fastfetch/config.jsonc << 'EOF'
 {
-    "logo": { "type": "none" },
+    "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+    "logo": {
+        "type": "none"
+    },
+    "display": {
+        "separator": " → "
+    },
     "modules": [
-        "title", "separator", "os", "host", "kernel",
-        "cpu", "gpu", "memory", "shell", "wm", "terminal",
-        "separator", "colors"
+        {
+            "type": "title",
+            "format": "{user-name}@{host-name}",
+            "color": {
+                "user": "blue",
+                "at": "white",
+                "host": "blue"
+            }
+        },
+        "separator",
+        {
+            "type": "os",
+            "key": "OS",
+            "format": "{name} {arch}"
+        },
+        {
+            "type": "kernel",
+            "key": "Kernel",
+            "format": "{release}"
+        },
+        {
+            "type": "packages",
+            "key": "Packages",
+            "format": "{}"
+        },
+        {
+            "type": "shell",
+            "key": "Shell",
+            "format": "{name}"
+        },
+        {
+            "type": "wm",
+            "key": "WM",
+            "format": "{name}"
+        },
+        {
+            "type": "terminal",
+            "key": "Terminal",
+            "format": "{name}"
+        },
+        "separator",
+        {
+            "type": "cpu",
+            "key": "CPU",
+            "format": "{name}"
+        },
+        {
+            "type": "gpu",
+            "key": "GPU",
+            "format": "{name}"
+        },
+        {
+            "type": "memory",
+            "key": "Memory",
+            "format": "{used} / {total}"
+        }
     ]
 }
 EOF
+echo -e "  ${GREEN}✓${NC} Fastfetch configured"
 
 # Environment
 cat > ~/.config/environment.d/theme.conf << 'EOF'
@@ -922,6 +990,7 @@ XCURSOR_THEME=Bibata-Modern-Classic
 XCURSOR_SIZE=24
 MOZ_ENABLE_WAYLAND=1
 EOF
+
 ok
 
 #==============================================================================
@@ -939,33 +1008,32 @@ echo -e "\n${CYAN}Logs:${NC} $LOG_FILE"
 echo -e "${CYAN}Errors:${NC} $ERROR_LOG"
 
 echo -e "\n${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${YELLOW}Key bindings:${NC}"
+echo -e "${YELLOW}Key bindings (2 workspaces):${NC}"
 echo "  Mod+Return      → Kitty (Terminal)"
 echo "  Mod+Space       → Fuzzel (App Launcher)"
 echo "  Mod+F9          → Librewolf (Browser)"
 echo "  Mod+F10         → Nemo (File Manager)"
 echo "  Mod+F11         → Steam (Performance)"
+echo "  Mod+1/2         → Workspace 1/2"
+echo "  Mod+Shift+1/2   → Move window to WS 1/2"
+echo "  Mod+Tab         → Next workspace"
 echo "  Mod+W           → Toggle Waybar"
 echo "  Mod+P           → Change Wallpaper"
-echo "  Mod+Shift+P     → Reload Colors"
-echo "  Mod+1-5         → Workspaces 1-5"
 echo "  Print           → Screenshot"
 echo "  Ctrl+Alt+Delete → Quit Niri"
 
 echo -e "\n${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${YELLOW}Webapps (isolated apps):${NC}"
-echo "  • Discord  → Search 'Discord' in Fuzzel"
-echo "  • WhatsApp → Search 'WhatsApp' in Fuzzel"
-echo "  • Spotify  → Search 'Spotify' in Fuzzel"
-echo "  (They open as standalone windows without browser UI)"
+echo -e "${YELLOW}Webapps (no browser UI):${NC}"
+echo "  • Discord  → Fuzzel: 'Discord'"
+echo "  • WhatsApp → Fuzzel: 'WhatsApp'"
+echo "  • Spotify  → Fuzzel: 'Spotify'"
 
 echo -e "\n${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${YELLOW}First steps after reboot:${NC}"
-echo "  1. Open Kitty → run 'fetch' to see system info"
-echo "  2. Open Neovim → run ':PlugInstall'"
-echo "  3. Add wallpapers → ~/Pictures/Wallpapers/"
-echo "  4. Press Mod+P to test wallpaper change"
-echo "  5. Run 'reload-theme' to refresh colors anytime"
+echo "  1. Terminal → run 'fetch'"
+echo "  2. Neovim → run ':PlugInstall'"
+echo "  3. Wallpapers → ~/Pictures/Wallpapers/"
+echo "  4. Mod+P → Change wallpaper + update colors"
 
 echo -e "\n${GREEN}╔══════════════════════════════════════╗${NC}"
 echo -e "${GREEN}║   Installation Complete! Reboot now  ║${NC}"
