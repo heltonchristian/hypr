@@ -1,6 +1,6 @@
 #!/bin/bash
 #==============================================================================
-# Arch Linux Niri Gaming Setup v5.0 - FINAL
+# Arch Linux Niri Gaming Setup v5.3 - FINAL VALIDATED
 #==============================================================================
 
 set -o pipefail
@@ -69,7 +69,7 @@ install_aur_pkgs() {
 clear
 echo -e "${GREEN}"
 echo "╔══════════════════════════════════════╗"
-echo "║  Arch Linux Niri Gaming Setup v5.0  ║"
+echo "║  Arch Linux Niri Gaming Setup v5.3  ║"
 echo "╚══════════════════════════════════════╝"
 echo -e "${NC}"
 
@@ -86,13 +86,22 @@ CURRENT=1
 
 header "AUR HELPER"
 step "$CURRENT" "Installing yay"
-if command -v yay &>/dev/null; then ok
+if command -v yay &>/dev/null; then
+    ok
 else
     sudo pacman -S --noconfirm --needed base-devel git >> "$LOG_FILE" 2>&1
     rm -rf /tmp/yay 2>/dev/null
-    git clone https://aur.archlinux.org/yay.git /tmp/yay >> "$LOG_FILE" 2>&1
-    cd /tmp/yay && makepkg -si --noconfirm >> "$LOG_FILE" 2>&1 && cd ~
-    command -v yay &>/dev/null && ok || fail "yay"
+    if git clone https://aur.archlinux.org/yay.git /tmp/yay >> "$LOG_FILE" 2>&1; then
+        cd /tmp/yay
+        if makepkg -si --noconfirm >> "$LOG_FILE" 2>&1; then
+            cd ~
+            ok
+        else
+            fail "yay build failed"
+        fi
+    else
+        fail "yay clone failed"
+    fi
 fi
 
 #==============================================================================
@@ -102,8 +111,10 @@ fi
 step "$CURRENT" "Enabling multilib"
 if grep -q "^#\[multilib\]" /etc/pacman.conf; then
     sudo sed -i '/\[multilib\]/,/Include/s/^#//' /etc/pacman.conf
-    sudo pacman -Syu --noconfirm >> "$LOG_FILE" 2>&1 && ok || fail "multilib"
-else ok; fi
+    sudo pacman -Syu --noconfirm >> "$LOG_FILE" 2>&1 && ok || fail "multilib update failed"
+else
+    ok
+fi
 
 #==============================================================================
 # 3. CORE PACKAGES
@@ -189,12 +200,13 @@ ok
 ((CURRENT++))
 step "$CURRENT" "Wallpapers and Matugen"
 
-[ -d "$SCRIPT_DIR/Wallpapers" ] && [ -n "$(ls -A "$SCRIPT_DIR/Wallpapers" 2>/dev/null)" ] && \
-    cp "$SCRIPT_DIR/Wallpapers"/* ~/Pictures/Wallpapers/ 2>/dev/null || {
+if [ -d "$SCRIPT_DIR/Wallpapers" ] && [ -n "$(ls -A "$SCRIPT_DIR/Wallpapers" 2>/dev/null)" ]; then
+    cp "$SCRIPT_DIR/Wallpapers"/* ~/Pictures/Wallpapers/ 2>/dev/null
+else
     convert -size 1920x1080 gradient:'#1a1b26'-'#2d1b69' ~/Pictures/Wallpapers/purple.jpg 2>/dev/null
     convert -size 1920x1080 gradient:'#1b4332'-'#081c15' ~/Pictures/Wallpapers/green.jpg 2>/dev/null
     convert -size 1920x1080 gradient:'#312244'-'#3c096c' ~/Pictures/Wallpapers/dark.jpg 2>/dev/null
-}
+fi
 
 FIRST_WP=$(ls ~/Pictures/Wallpapers/*.jpg 2>/dev/null | head -1)
 [ -n "$FIRST_WP" ] && cp "$FIRST_WP" ~/.config/wallpaper/current.jpg
@@ -204,9 +216,11 @@ cat > ~/.config/matugen/config.toml << 'EOF'
 color_space = "lab"
 saturate = 1.0
 brightness = 1.0
+
 [contrast]
 dark = 0.0
 light = 0.0
+
 [colors]
 primary = "blue"
 EOF
@@ -216,7 +230,6 @@ cat > ~/.config/matugen/reload-all.sh << 'SCRIPT'
 WP="$HOME/.config/wallpaper/current.jpg"
 [ ! -f "$WP" ] && exit 0
 
-# Generate all color schemes
 matugen image "$WP" --format kitty > ~/.config/kitty/colors.conf 2>/dev/null
 matugen image "$WP" --format env > ~/.config/matugen/colors.sh 2>/dev/null
 matugen image "$WP" --format nvim > ~/.config/nvim/colors.vim 2>/dev/null
@@ -225,39 +238,66 @@ matugen image "$WP" --format kdl > ~/.config/niri/colors.kdl 2>/dev/null
 
 source ~/.config/matugen/colors.sh 2>/dev/null
 
-# GTK theme
+cat > ~/.config/fuzzel/fuzzel.ini << FUZZEL
+[main]
+terminal=kitty
+font=JetBrains Mono:size=12
+dpi-aware=yes
+width=100
+height=1
+horizontal-pad=50
+vertical-pad=4
+inner-pad=4
+line-height=14
+border-radius=0
+border-width=0
+selection-color=${primary:-#7aa2f7}ff
+selection-text-color=${surface:-#1a1b26}ff
+background=${surface:-#1a1b26}f2
+text-color=${on_surface:-#c0caf5}ff
+match-color=${primary:-#7aa2f7}ff
+placeholder-color=${surface_variant:-#666666}ff
+input-color=${on_surface:-#c0caf5}ff
+prompt-color=${primary:-#7aa2f7}ff
+layer=overlay
+exit-on-keyboard-focus-loss=yes
+fields=filename,name,generic
+icons-enabled=false
+anchor=top
+margin=0
+prompt=>
+FUZZEL
+
 cat > ~/.config/gtk-3.0/gtk.css << EOFG
 @define-color theme_bg_color ${surface:-#1a1b26};
 @define-color theme_fg_color ${on_surface:-#c0caf5};
 @define-color theme_selected_bg_color ${primary:-#7aa2f7};
 @define-color theme_selected_fg_color ${on_primary:-#1a1b26};
-@define-color borders alpha(${on_surface:-#c0caf5}, 0.1);
+@define-color borders alpha(${on_surface:-#c0caf5}, 0.05);
 window { background-color: @theme_bg_color; color: @theme_fg_color; }
-button { background-color: @theme_selected_bg_color; color: @theme_selected_fg_color; border-radius: 4px; padding: 4px 12px; }
-button:hover { opacity: 0.9; }
-entry { background-color: @theme_bg_color; color: @theme_fg_color; border: 1px solid @borders; border-radius: 4px; padding: 4px 8px; }
+button { background-color: @theme_selected_bg_color; color: @theme_selected_fg_color; border-radius: 2px; padding: 2px 8px; }
+entry { background-color: @theme_bg_color; color: @theme_fg_color; border: 1px solid @borders; border-radius: 2px; padding: 2px 6px; }
 EOFG
 cp ~/.config/gtk-3.0/gtk.css ~/.config/gtk-4.0/gtk.css 2>/dev/null
 
-# Kvantum theme
 mkdir -p ~/.config/Kvantum/Matugen
 cat > ~/.config/Kvantum/Matugen/Matugen.kvconfig << EOFK
 [General]
 author=Matugen
 opacity=100
+
 [%General]
 base_color=${surface:-#1a1b26}
 bg_color=${surface:-#1a1b26}
 fg_color=${on_surface:-#c0caf5}
 link_color=${primary:-#7aa2f7}
-tooltip_bg_color=${surface_variant:-#24283b}
-tooltip_fg_color=${on_surface:-#c0caf5}
 EOFK
 
-# Reload apps
 pkill -USR1 kitty 2>/dev/null
 pkill -USR2 waybar 2>/dev/null
-for s in /tmp/nvim.*/0; do nvim --server "$s" --remote-send ':source ~/.config/nvim/colors.vim<CR>' 2>/dev/null; done
+for s in /tmp/nvim.*/0; do
+    nvim --server "$s" --remote-send ':source ~/.config/nvim/colors.vim<CR>' 2>/dev/null
+done
 exit 0
 SCRIPT
 chmod +x ~/.config/matugen/reload-all.sh
@@ -288,16 +328,16 @@ cp ~/.config/qt5ct/qt5ct.conf ~/.config/qt6ct/qt6ct.conf
 ok
 
 #==============================================================================
-# 8. KITTY + NEOVIM + FUZZEL
+# 8. KITTY + NEOVIM
 #==============================================================================
 ((CURRENT++))
-step "$CURRENT" "Kitty, Neovim and Fuzzel"
+step "$CURRENT" "Kitty and Neovim"
 
 cat > ~/.config/kitty/kitty.conf << 'EOF'
 include colors.conf
 font_family JetBrains Mono
 font_size 11.0
-window_padding_width 10
+window_padding_width 6
 hide_window_decorations yes
 cursor_shape beam
 shell /bin/zsh
@@ -332,34 +372,6 @@ require'nvim-treesitter.configs'.setup { highlight = { enable = true } }
 require('lualine').setup { options = { theme = 'auto' } }
 LUA
 EOF
-
-# Fuzzel config - sem borda
-cat > ~/.config/fuzzel/fuzzel.ini << 'EOF'
-[main]
-terminal=kitty
-font=JetBrains Mono:size=11
-dpi-aware=yes
-width=60
-height=20
-horizontal-pad=20
-vertical-pad=10
-inner-pad=10
-line-height=20
-border-radius=8
-border-width=0
-selection-color=#7aa2f7ff
-selection-text-color=#1a1b26ff
-background=#1a1b26dd
-text-color=#c0caf5ff
-match-color=#7aa2f7ff
-placeholder=Type to search...
-placeholder-color=#444444ff
-layer=overlay
-exit-on-keyboard-focus-loss=yes
-fields=filename,name,generic
-icons-enabled=yes
-icon-theme=Papirus-Dark
-EOF
 ok
 
 #==============================================================================
@@ -381,41 +393,70 @@ spawn-at-startup "waybar"
 spawn-at-startup "power-profiles-daemon"
 spawn-at-startup "sh" "-c" "[ -f ~/.config/wallpaper/current.jpg ] && swaybg -i ~/.config/wallpaper/current.jpg -m fill &"
 
-hotkey-overlay { skip-at-startup }
+hotkey-overlay {
+    skip-at-startup
+}
 
-// Include matugen colors
 include "colors.kdl"
 
 input {
     focus-follows-mouse
-    keyboard { xkb { layout "us,br" } }
-    mouse { accel-profile "flat"; accel-speed 0.0 }
-    trackpoint { accel-profile "flat" }
+    keyboard {
+        xkb {
+            layout "us,br"
+        }
+    }
+    mouse {
+        accel-profile "flat"
+        accel-speed 0.0
+    }
+    trackpoint {
+        accel-profile "flat"
+    }
 }
 
-output "DP-3" { mode "1920x1080@319.976"; scale 1; position x=0 y=0 }
-output "HDMI-A-1" { mode "1920x1080@60.000"; scale 1; position x=1920 y=0 }
+output "DP-3" {
+    mode "1920x1080@319.976"
+    scale 1
+    position x=0 y=0
+}
+
+output "HDMI-A-1" {
+    mode "1920x1080@60.000"
+    scale 1
+    position x=1920 y=0
+}
 
 layout {
-    gaps 8
+    gaps 6
     center-focused-column "never"
     preset-column-widths {
         proportion 0.33333
         proportion 0.5
         proportion 0.66667
     }
-    default-column-width { proportion 0.5 }
-    focus-ring { width 2 }
-    border { width 1 }
-    shadow { softness 20; spread 3; offset x=0 y=3; color "#0005" }
+    default-column-width {
+        proportion 0.5
+    }
+    focus-ring {
+        width 1
+    }
+    border {
+        width 1
+    }
     tab-indicator {}
     insert-hint {}
     struts {}
 }
 
-recent-windows { highlight {} }
+recent-windows {
+    highlight {}
+}
+
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
 animations {}
+
 prefer-no-csd
 
 window-rule {
@@ -423,31 +464,30 @@ window-rule {
     open-fullscreen true
     open-floating false
 }
+
 window-rule {
     match app-id=r#"^cs2$"#
     open-fullscreen true
 }
+
 window-rule {
     match title=r#"^Counter-Strike 2$"#
     open-fullscreen true
-}
-window-rule {
-    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
-    open-floating true
 }
 
 binds {
     Print { screenshot; }
     Ctrl+Print { screenshot-screen; }
     Alt+Print { screenshot-window; }
+
     Mod+F1 { switch-layout "next"; }
     Mod+Shift+Slash { show-hotkey-overlay; }
 
-    Mod+RETURN hotkey-overlay-title="Terminal" { spawn "kitty"; }
-    Mod+SPACE hotkey-overlay-title="Apps" { spawn "fuzzel"; }
-    Mod+F9 hotkey-overlay-title="Browser" { spawn "librewolf"; }
-    Mod+F10 hotkey-overlay-title="Files" { spawn "nemo"; }
-    Mod+F11 hotkey-overlay-title="Steam" { spawn "steam"; }
+    Mod+RETURN { spawn "kitty"; }
+    Mod+SPACE { spawn "fuzzel"; }
+    Mod+F9 { spawn "librewolf"; }
+    Mod+F10 { spawn "nemo"; }
+    Mod+F11 { spawn "steam"; }
 
     Super+Alt+L { spawn "swaylock"; }
     Ctrl+Alt+Delete { quit skip-confirmation=true; }
@@ -475,38 +515,35 @@ binds {
     Mod+Down { focus-window-down; }
     Mod+Up { focus-window-up; }
     Mod+Right { focus-column-right; }
+
     Mod+Ctrl+Left { move-column-left; }
     Mod+Ctrl+Down { move-window-down; }
     Mod+Ctrl+Up { move-window-up; }
     Mod+Ctrl+Right { move-column-right; }
+
     Mod+Home { focus-column-first; }
     Mod+End { focus-column-last; }
 
     Mod+Shift+Left { focus-monitor-left; }
     Mod+Shift+Right { focus-monitor-right; }
+
     Mod+Shift+Ctrl+Left { move-column-to-monitor-left; }
     Mod+Shift+Ctrl+Right { move-column-to-monitor-right; }
 }
 NIRIEOF
 
-# Waybar - com monitor de performance
 cat > ~/.config/waybar/config.jsonc << 'EOF'
 {
     "layer": "top",
     "position": "top",
-    "height": 30,
-    "spacing": 4,
-    "margin-left": 8,
-    "margin-right": 8,
-    "margin-top": 4,
+    "height": 26,
+    "spacing": 2,
+    "margin-left": 4,
+    "margin-right": 4,
+    "margin-top": 2,
     "modules-left": ["niri/window"],
     "modules-center": ["clock"],
-    "modules-right": [
-        "cpu",
-        "memory",
-        "pulseaudio",
-        "tray"
-    ],
+    "modules-right": ["cpu", "temperature", "memory", "pulseaudio", "tray"],
     "niri/window": {
         "format": "{title}",
         "max-length": 80
@@ -518,14 +555,22 @@ cat > ~/.config/waybar/config.jsonc << 'EOF'
     "cpu": {
         "interval": 2,
         "format": "CPU {usage}%",
-        "tooltip-format": "CPU: {usage}%\nTemp: {temperature}°C",
-        "max-length": 10
+        "max-length": 10,
+        "on-click": "kitty -e htop"
+    },
+    "temperature": {
+        "hwmon-path": "/sys/class/hwmon/hwmon0/temp1_input",
+        "critical-threshold": 90,
+        "format": "GPU {temperatureC}°C",
+        "format-critical": "GPU {temperatureC}°C",
+        "interval": 2,
+        "tooltip": false
     },
     "memory": {
         "interval": 2,
-        "format": "RAM {used}G",
-        "tooltip-format": "RAM: {used}G / {total}G ({percentage}%)",
-        "max-length": 10
+        "format": "RAM {percentage}%",
+        "max-length": 10,
+        "tooltip-format": "{used:0.1f}G / {total:0.1f}G"
     },
     "pulseaudio": {
         "format": "{icon} {volume}%",
@@ -533,8 +578,8 @@ cat > ~/.config/waybar/config.jsonc << 'EOF'
         "on-click": "pavucontrol"
     },
     "tray": {
-        "icon-size": 16,
-        "spacing": 10
+        "icon-size": 14,
+        "spacing": 6
     }
 }
 EOF
@@ -544,88 +589,91 @@ cat > ~/.config/waybar/style.css << 'EOF'
 
 * {
     font-family: "JetBrains Mono", sans-serif;
-    font-size: 12px;
+    font-size: 11px;
     border: none;
-    border-radius: 6px;
+    border-radius: 2px;
     min-height: 0;
 }
 
 window#waybar {
-    background: alpha(@surface, 0.75);
+    background: alpha(@surface, 0.65);
     color: @on_surface;
 }
 
 window#waybar.hidden {
-    opacity: 0.3;
+    opacity: 0.15;
 }
 
 #window {
-    background: alpha(@surface_variant, 0.4);
+    background: alpha(@surface_variant, 0.25);
     color: @primary;
-    padding: 2px 16px;
-    margin: 3px 0;
-    font-style: italic;
+    padding: 0 10px;
+    margin: 1px 0;
 }
 
 #clock {
-    background: alpha(@surface_variant, 0.4);
+    background: alpha(@surface_variant, 0.25);
     color: @on_surface;
-    padding: 2px 16px;
-    margin: 3px 0;
+    padding: 0 10px;
+    margin: 1px 0;
     font-weight: bold;
 }
 
 #cpu {
-    background: alpha(@surface_variant, 0.4);
+    background: alpha(@surface_variant, 0.25);
     color: @tertiary;
-    padding: 2px 12px;
-    margin: 3px 2px;
+    padding: 0 8px;
+    margin: 1px 0;
+}
+
+#temperature {
+    background: alpha(@surface_variant, 0.25);
+    color: @error;
+    padding: 0 8px;
+    margin: 1px 0;
 }
 
 #memory {
-    background: alpha(@surface_variant, 0.4);
+    background: alpha(@surface_variant, 0.25);
     color: @secondary;
-    padding: 2px 12px;
-    margin: 3px 2px;
+    padding: 0 8px;
+    margin: 1px 0;
 }
 
 #pulseaudio {
-    background: alpha(@surface_variant, 0.4);
+    background: alpha(@surface_variant, 0.25);
     color: @on_surface;
-    padding: 2px 12px;
-    margin: 3px 2px;
+    padding: 0 8px;
+    margin: 1px 0;
 }
 
 #pulseaudio.muted {
     color: @error;
-    background: alpha(@error, 0.2);
 }
 
 #tray {
-    background: alpha(@surface_variant, 0.4);
-    padding: 2px 8px;
-    margin: 3px 0;
-}
-
-#tray > .passive {
-    -gtk-icon-effect: dim;
-}
-
-#tray > .needs-attention {
-    -gtk-icon-effect: highlight;
-    background: alpha(@error, 0.3);
+    background: alpha(@surface_variant, 0.25);
+    padding: 0 6px;
+    margin: 1px 0;
 }
 
 tooltip {
     background: @surface;
     border: 1px solid @outline;
-    border-radius: 6px;
+    border-radius: 2px;
 }
 
 tooltip label {
     color: @on_surface;
 }
 EOF
+
+# Detect AMD GPU hwmon path
+GPU_HWMON=$(find /sys/class/hwmon -name "temp1_input" 2>/dev/null | head -1)
+if [ -n "$GPU_HWMON" ]; then
+    GPU_HWMON_DIR=$(dirname "$GPU_HWMON")
+    sed -i "s|\"hwmon-path\": \".*\"|\"hwmon-path\": \"$GPU_HWMON_DIR/temp1_input\"|" ~/.config/waybar/config.jsonc
+fi
 ok
 
 #==============================================================================
@@ -635,35 +683,71 @@ ok
 step "$CURRENT" "ZSH, services, webapps and final setup"
 
 echo ""
-[ ! -f /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] && sudo pacman -S --noconfirm zsh-syntax-highlighting >> "$LOG_FILE" 2>&1
-[ ! -f /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ] && sudo pacman -S --noconfirm zsh-autosuggestions >> "$LOG_FILE" 2>&1
+if [ ! -f /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
+    sudo pacman -S --noconfirm zsh-syntax-highlighting >> "$LOG_FILE" 2>&1
+fi
+if [ ! -f /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
+    sudo pacman -S --noconfirm zsh-autosuggestions >> "$LOG_FILE" 2>&1
+fi
 
 cat > ~/.zshrc << 'ZSHEND'
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-export EDITOR=nvim VISUAL=nvim
-export MOZ_ENABLE_WAYLAND=1 QT_QPA_PLATFORM=wayland GDK_BACKEND=wayland XDG_SESSION_TYPE=wayland
-export QT_QPA_PLATFORMTHEME=qt5ct QT_STYLE_OVERRIDE=kvantum GTK_THEME=Adwaita-dark
-export XCURSOR_THEME=Bibata-Modern-Classic XCURSOR_SIZE=24
+
+export EDITOR=nvim
+export VISUAL=nvim
+export MOZ_ENABLE_WAYLAND=1
+export QT_QPA_PLATFORM=wayland
+export GDK_BACKEND=wayland
+export XDG_SESSION_TYPE=wayland
+export QT_QPA_PLATFORMTHEME=qt5ct
+export QT_STYLE_OVERRIDE=kvantum
+export GTK_THEME=Adwaita-dark
+export XCURSOR_THEME=Bibata-Modern-Classic
+export XCURSOR_SIZE=24
+
 [ -f ~/.config/matugen/colors.sh ] && source ~/.config/matugen/colors.sh
-alias ls='ls --color=auto'; alias la='ls -a'; alias ll='ls -l'; alias lla='ls -al'
-alias rm='rm -r'; alias cp='cp -r'; alias vi='nvim'; alias vim='nvim'
+
+alias ls='ls --color=auto'
+alias la='ls -a'
+alias ll='ls -l'
+alias lla='ls -al'
+alias rm='rm -r'
+alias cp='cp -r'
+alias vi='nvim'
+alias vim='nvim'
 alias fc='nvim ~/.config/fastfetch/config.jsonc'
 alias fetch='clear && fastfetch'
-alias zshrc='nvim ~/.zshrc'; alias vimrc='nvim ~/.config/nvim/init.vim'
-alias waybarc='nvim ~/.config/waybar/config.jsonc'; alias waybarcss='nvim ~/.config/waybar/style.css'
+alias zshrc='nvim ~/.zshrc'
+alias vimrc='nvim ~/.config/nvim/init.vim'
+alias waybarc='nvim ~/.config/waybar/config.jsonc'
+alias waybarcss='nvim ~/.config/waybar/style.css'
 alias nc='nvim ~/.config/niri/config.kdl'
+
 autoload -Uz compinit && compinit
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
-HISTSIZE=10000; SAVEHIST=10000; HISTFILE=~/.zsh_history
-setopt SHARE_HISTORY HIST_IGNORE_DUPS
+
+HISTSIZE=10000
+SAVEHIST=10000
+HISTFILE=~/.zsh_history
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_DUPS
+
 autoload -Uz colors && colors
 PROMPT='%F{cyan}%~%f %F{yellow}❯%f '
-[ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ] && exec niri
+
+if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
+    exec niri
+fi
 ZSHEND
 
-[ "$SHELL" != "/bin/zsh" ] && [ "$SHELL" != "/usr/bin/zsh" ] && { chsh -s /bin/zsh "$USER" 2>/dev/null || sudo chsh -s /bin/zsh "$USER" 2>/dev/null; echo -e "  ${GREEN}✓${NC} Shell changed to ZSH"; } || echo -e "  ${GREEN}✓${NC} ZSH already default"
+if [ "$SHELL" != "/bin/zsh" ] && [ "$SHELL" != "/usr/bin/zsh" ]; then
+    chsh -s /bin/zsh "$USER" 2>/dev/null || sudo chsh -s /bin/zsh "$USER" 2>/dev/null
+    echo -e "  ${GREEN}✓${NC} Default shell changed to ZSH"
+else
+    echo -e "  ${GREEN}✓${NC} ZSH already default shell"
+fi
 
 systemctl --user enable --now power-profiles-daemon.service pipewire.service pipewire-pulse.service wireplumber.service >> "$LOG_FILE" 2>&1
 
@@ -687,7 +771,6 @@ SERVEOF
 systemctl --user daemon-reload >> "$LOG_FILE" 2>&1
 systemctl --user enable --now matugen-watcher.path >> "$LOG_FILE" 2>&1
 
-# Auto-login (force overwrite)
 sudo mkdir -p /etc/systemd/system/getty@tty1.service.d/
 sudo rm -f /etc/systemd/system/getty@tty1.service.d/override.conf
 echo "[Service]
@@ -715,10 +798,10 @@ vm.vfs_cache_pressure=50" | sudo tee /etc/sysctl.d/99-gaming.conf > /dev/null
 sudo sysctl --system > /dev/null 2>&1
 
 #==============================================================================
-# WEBAPPS + LIBREWOLF THEME
+# WEBAPPS
 #==============================================================================
 
-echo -e "\n  ${CYAN}Configuring webapps and browser...${NC}"
+echo -e "\n  ${CYAN}Configuring webapps...${NC}"
 
 mkdir -p ~/.librewolf
 cat > ~/.librewolf/user.js << 'EOF'
@@ -727,29 +810,53 @@ user_pref("browser.tabs.inTitlebar", 0);
 EOF
 
 PROFILE=$(find ~/.librewolf -maxdepth 2 -name "*.default-release" -type d 2>/dev/null | head -1)
-[ -z "$PROFILE" ] && { mkdir -p ~/.librewolf/chrome; PROFILE="$HOME/.librewolf"; } || mkdir -p "$PROFILE/chrome"
+if [ -z "$PROFILE" ]; then
+    mkdir -p ~/.librewolf/chrome
+    PROFILE="$HOME/.librewolf"
+else
+    mkdir -p "$PROFILE/chrome"
+fi
 
-# One-line UI
 cat > "$PROFILE/chrome/userChrome.css" << 'EOF'
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
-#titlebar { visibility: collapse !important; }
+#TabsToolbar,
+#nav-bar,
+#sidebar-box,
+#sidebar-header,
+#sidebar-splitter,
+#PersonalToolbar,
+#toolbar-menubar,
+#titlebar,
+#urlbar-container,
+#back-button,
+#forward-button,
+#reload-button,
+#stop-button,
+#home-button,
+#PanelUI-button,
+#library-button,
+#sidebar-button,
+#fxa-toolbar-menu-button,
+#tracking-protection-icon-container,
+#identity-box,
+#page-action-buttons,
+#userContext-icons,
+#star-button,
+#reader-mode-button {
+    visibility: collapse !important;
+    display: none !important;
+}
 
-#nav-bar { margin-top: -32px !important; margin-right: 100px !important; }
+.titlebar-buttonbox-container {
+    display: none !important;
+}
 
-#TabsToolbar { margin-right: 35vw !important; }
-
-#tabbrowser-tabs { min-height: 32px !important; }
-
-.tab-content { padding: 2px 8px !important; }
-
-#PersonalToolbar { visibility: visible !important; margin-top: -2px !important; }
-
-#sidebar-box { visibility: collapse !important; }
-
-.titlebar-buttonbox-container { display: none !important; }
-
-#urlbar-container { min-width: 300px !important; }
+#appcontent {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+}
 EOF
 
 for p in $(find ~/.librewolf -maxdepth 2 -name "*.default*" -type d 2>/dev/null); do
@@ -757,7 +864,6 @@ for p in $(find ~/.librewolf -maxdepth 2 -name "*.default*" -type d 2>/dev/null)
     cp "$PROFILE/chrome/userChrome.css" "$p/chrome/userChrome.css" 2>/dev/null
 done
 
-# Webapps
 cat > ~/.local/share/applications/discord-webapp.desktop << 'EOF'
 [Desktop Entry]
 Name=Discord
@@ -787,10 +893,11 @@ Type=Application
 Categories=Audio;
 StartupWMClass=Spotify
 EOF
-echo -e "  ${GREEN}✓${NC} Browser themed + webapps created"
+
+echo -e "  ${GREEN}✓${NC} Webapps created (Discord, WhatsApp, Spotify)"
 
 #==============================================================================
-# FASTFETCH MINIMAL
+# FASTFETCH
 #==============================================================================
 
 cat > ~/.config/fastfetch/config.jsonc << 'EOF'
@@ -831,14 +938,16 @@ ok
 header "INSTALLATION COMPLETE"
 
 echo -e "${GREEN}✓ Success:${NC} $SUCCESS  ${RED}✗ Failed:${NC} $FAILS"
-[ $FAILS -gt 0 ] && echo -e "\n${YELLOW}Failures:${NC}" && printf '  • %s\n' "${FAILED_ITEMS[@]}"
+if [ $FAILS -gt 0 ]; then
+    echo -e "\n${YELLOW}Failures:${NC}"
+    printf '  • %s\n' "${FAILED_ITEMS[@]}"
+fi
 
 echo -e "\n${CYAN}Logs:${NC} $LOG_FILE"
 
-echo -e "\n${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${YELLOW}Key bindings:${NC}"
+echo -e "\n${YELLOW}Key bindings:${NC}"
 echo "  Mod+Return      → Kitty"
-echo "  Mod+Space       → Fuzzel"
+echo "  Mod+Space       → Fuzzel (dmenu style)"
 echo "  Mod+F9          → Librewolf"
 echo "  Mod+F10         → Nemo"
 echo "  Mod+F11         → Steam"
@@ -846,15 +955,8 @@ echo "  Mod+W           → Toggle Waybar"
 echo "  Mod+P           → Change Wallpaper"
 echo "  Mod+Shift+Left  → Focus monitor left"
 echo "  Mod+Shift+Right → Focus monitor right"
-echo "  Print           → Screenshot"
 
-echo -e "\n${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${YELLOW}Features:${NC}"
-echo "  • Colors via matugen (auto-update on wallpaper change)"
-echo "  • Waybar: CPU, RAM, Audio, Clock"
-echo "  • Fuzzel: borderless launcher"
-echo "  • Librewolf: one-line UI + webapps"
-echo "  • Neovim: vim-plug + treesitter + lualine"
-echo "  • Kitty: colors from wallpaper"
+echo -e "\n${YELLOW}Webapps (no browser UI):${NC}"
+echo "  Discord | WhatsApp | Spotify"
 
 echo -e "\n${GREEN}Reboot to start Niri!${NC}"
