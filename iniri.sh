@@ -1,6 +1,6 @@
 #!/bin/bash
 #==============================================================================
-# Arch Linux Niri Gaming Setup v3.1 - CORRIGIDO
+# Arch Linux Niri Gaming Setup v3.2 - FINAL
 #==============================================================================
 
 set -o pipefail
@@ -77,7 +77,7 @@ install_aur_pkgs() {
 clear
 echo -e "${GREEN}"
 echo "╔══════════════════════════════════════╗"
-echo "║  Arch Linux Niri Gaming Setup v3.1  ║"
+echo "║  Arch Linux Niri Gaming Setup v3.2  ║"
 echo "╚══════════════════════════════════════╝"
 echo -e "${NC}"
 
@@ -188,23 +188,23 @@ install_aur_pkgs "AUR" librewolf-bin bibata-cursor-theme
 install_pkgs "Extra" matugen obs-studio v4l2loopback-dkms
 
 #==============================================================================
-# 6. DIRECTORIES + CURSOR
+# 6. DIRECTORIES + CURSOR + GTK
 #==============================================================================
 ((CURRENT++))
 
 header "CONFIGURING SYSTEM"
 
-step "$CURRENT" "Directories and cursor"
+step "$CURRENT" "Directories and themes"
 mkdir -p ~/.config/{niri/scripts,waybar,kitty,nvim,matugen,qt5ct,qt6ct,Kvantum,gtk-3.0,gtk-4.0,fastfetch,environment.d,wallpaper,systemd/user}
 mkdir -p ~/Pictures/{Wallpapers,Screenshots}
-mkdir -p ~/.local/share/applications
+mkdir -p ~/.local/share/{applications,icons}
 
-# Cursor
+# Cursor theme
 sudo mkdir -p /usr/share/icons/default/
 echo "[Icon Theme]
 Inherits=Bibata-Modern-Classic" | sudo tee /usr/share/icons/default/index.theme > /dev/null
 
-# GTK
+# GTK settings
 cat > ~/.config/gtk-3.0/settings.ini << 'EOF'
 [Settings]
 gtk-cursor-theme-name=Bibata-Modern-Classic
@@ -260,7 +260,6 @@ matugen image "$WP" --format env > ~/.config/matugen/colors.sh 2>/dev/null
 matugen image "$WP" --format nvim > ~/.config/nvim/colors.vim 2>/dev/null
 matugen image "$WP" --format css > ~/.config/waybar/colors.css 2>/dev/null
 
-# GTK colors
 source ~/.config/matugen/colors.sh 2>/dev/null
 cat > ~/.config/gtk-3.0/gtk.css << EOFG
 @define-color theme_bg_color ${surface:-#1a1b26};
@@ -271,7 +270,6 @@ button { background-color: @theme_selected_bg_color; border-radius: 4px; padding
 EOFG
 cp ~/.config/gtk-3.0/gtk.css ~/.config/gtk-4.0/gtk.css 2>/dev/null
 
-# Kvantum
 mkdir -p ~/.config/Kvantum/Matugen
 cat > ~/.config/Kvantum/Matugen/Matugen.kvconfig << EOFK
 [General]
@@ -284,7 +282,6 @@ fg_color=${on_surface:-#c0caf5}
 link_color=${primary:-#7aa2f7}
 EOFK
 
-# Reload apps
 pkill -USR1 kitty 2>/dev/null
 pkill -USR2 waybar 2>/dev/null
 exit 0
@@ -306,7 +303,7 @@ exit 0
 SCRIPT
 chmod +x ~/.config/niri/scripts/change-wallpaper.sh
 
-# Qt
+# Qt configs
 cat > ~/.config/qt5ct/qt5ct.conf << 'EOF'
 [Appearance]
 icon_theme=Papirus-Dark
@@ -371,7 +368,7 @@ EOF
 ok
 
 #==============================================================================
-# 9. NIRI + WAYBAR (CORRIGIDO)
+# 9. NIRI + WAYBAR
 #==============================================================================
 ((CURRENT++))
 
@@ -521,7 +518,7 @@ binds {
     Mod+F1 { switch-layout "next"; }
     Mod+Shift+Slash { show-hotkey-overlay; }
 
-    // Applications - CORRIGIDO: F9=Librewolf, F10=Nemo
+    // Applications
     Mod+RETURN hotkey-overlay-title="Terminal: Kitty" { spawn "kitty"; }
     Mod+SPACE hotkey-overlay-title="App Launcher: Fuzzel" { spawn "fuzzel"; }
     Mod+F9 hotkey-overlay-title="Browser: Librewolf" { spawn "librewolf"; }
@@ -645,6 +642,7 @@ window#waybar {
     color: @on_surface;
     border-bottom: 2px solid alpha(@primary, 0.5);
 }
+window#waybar.hidden { opacity: 0.2; }
 #workspaces {
     background: alpha(@surface_variant, 0.5);
     padding: 0 8px;
@@ -675,9 +673,7 @@ window#waybar {
     padding: 0 12px;
     margin: 4px 0;
 }
-#pulseaudio.muted {
-    color: @error;
-}
+#pulseaudio.muted { color: @error; }
 #tray {
     background: alpha(@surface_variant, 0.5);
     padding: 0 8px;
@@ -688,9 +684,7 @@ tooltip {
     border: 1px solid @outline;
     border-radius: 6px;
 }
-tooltip label {
-    color: @on_surface;
-}
+tooltip label { color: @on_surface; }
 EOF
 ok
 
@@ -701,11 +695,20 @@ ok
 
 step "$CURRENT" "ZSH, services, webapps and final setup"
 
+# Verify ZSH plugins
+echo ""
+if [ ! -f /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
+    sudo pacman -S --noconfirm zsh-syntax-highlighting >> "$LOG_FILE" 2>&1
+fi
+if [ ! -f /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
+    sudo pacman -S --noconfirm zsh-autosuggestions >> "$LOG_FILE" 2>&1
+fi
+
 # ZSH config
 cat > ~/.zshrc << 'ZSHEND'
 # Plugins
-[ -f /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] && source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-[ -f /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ] && source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # Environment
 export EDITOR=nvim
@@ -755,6 +758,10 @@ HISTFILE=~/.zsh_history
 setopt SHARE_HISTORY
 setopt HIST_IGNORE_DUPS
 
+# Prompt
+autoload -Uz colors && colors
+PROMPT='%F{cyan}%~%f %F{yellow}❯%f '
+
 # Auto-start niri on tty1
 if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
     exec niri
@@ -763,7 +770,10 @@ ZSHEND
 
 # Change shell to ZSH
 if [ "$SHELL" != "/bin/zsh" ] && [ "$SHELL" != "/usr/bin/zsh" ]; then
-    sudo chsh -s /bin/zsh "$USER" >> "$LOG_FILE" 2>&1
+    chsh -s /bin/zsh "$USER" 2>/dev/null || sudo chsh -s /bin/zsh "$USER" 2>/dev/null
+    echo -e "  ${GREEN}✓${NC} Default shell changed to ZSH"
+else
+    echo -e "  ${GREEN}✓${NC} ZSH already default shell"
 fi
 
 # Services
@@ -791,13 +801,13 @@ SERVEOF
 systemctl --user daemon-reload >> "$LOG_FILE" 2>&1
 systemctl --user enable --now matugen-watcher.path >> "$LOG_FILE" 2>&1
 
-# Auto-login
-sudo mkdir -p /etc/systemd/system/getty@tty1.service.d/
-sudo tee /etc/systemd/system/getty@tty1.service.d/override.conf > /dev/null << EOF
-[Service]
+# Auto-login (safe - doesn't overwrite existing)
+if [ ! -f /etc/systemd/system/getty@tty1.service.d/override.conf ]; then
+    sudo mkdir -p /etc/systemd/system/getty@tty1.service.d/
+    echo "[Service]
 ExecStart=
-ExecStart=-/usr/bin/agetty --autologin $USER --noclear %I \$TERM
-EOF
+ExecStart=-/usr/bin/agetty --autologin $USER --noclear %I \$TERM" | sudo tee /etc/systemd/system/getty@tty1.service.d/override.conf > /dev/null
+fi
 
 # Gaming wrappers
 sudo tee /usr/local/bin/steam-performance > /dev/null << 'EOF'
@@ -816,44 +826,84 @@ powerprofilesctl set power-saver
 EOF
 sudo chmod +x /usr/local/bin/game-performance
 
-# Kernel
+# Kernel parameters
 echo "vm.swappiness=10
 vm.vfs_cache_pressure=50" | sudo tee /etc/sysctl.d/99-gaming.conf > /dev/null
 sudo sysctl --system > /dev/null 2>&1
 
-# Webapps
-cat > ~/.local/share/applications/discord-webapp.desktop << EOF
+#==============================================================================
+# WEBAPPS (como apps isolados)
+#==============================================================================
+
+# Discord - app isolado
+cat > ~/.local/share/applications/discord-webapp.desktop << 'EOF'
 [Desktop Entry]
 Name=Discord
+Comment=Discord Web App
 Exec=librewolf --class Discord --new-window https://discord.com/app
 Icon=discord
 Type=Application
-Categories=Network;
+Categories=Network;InstantMessaging;
 StartupWMClass=Discord
+StartupNotify=true
+Terminal=false
 EOF
 
-cat > ~/.local/share/applications/whatsapp-webapp.desktop << EOF
+# WhatsApp - app isolado
+cat > ~/.local/share/applications/whatsapp-webapp.desktop << 'EOF'
 [Desktop Entry]
 Name=WhatsApp
+Comment=WhatsApp Web App
 Exec=librewolf --class WhatsApp --new-window https://web.whatsapp.com
 Icon=whatsapp
 Type=Application
-Categories=Network;
+Categories=Network;InstantMessaging;
 StartupWMClass=WhatsApp
+StartupNotify=true
+Terminal=false
 EOF
 
-cat > ~/.local/share/applications/spotify-webapp.desktop << EOF
+# Spotify - app isolado
+cat > ~/.local/share/applications/spotify-webapp.desktop << 'EOF'
 [Desktop Entry]
 Name=Spotify
+Comment=Spotify Web Player
 Exec=librewolf --class Spotify --new-window https://open.spotify.com
 Icon=spotify
 Type=Application
-Categories=Audio;
+Categories=Audio;Music;Player;
 StartupWMClass=Spotify
+StartupNotify=true
+Terminal=false
 EOF
 
+# Librewolf CSS para remover interface dos webapps
+mkdir -p ~/.librewolf/chrome
+cat > ~/.librewolf/chrome/userChrome.css << 'EOF'
+/* Remove interface for webapp windows */
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+/* Hide tabs, navbar and sidebar for webapps */
+#TabsToolbar, #nav-bar, #sidebar-box, #titlebar {
+    visibility: collapse !important;
+}
+
+/* Hide window controls on webapps */
+.titlebar-buttonbox-container {
+    display: none !important;
+}
+EOF
+
+# Librewolf user.js for webapp support
+cat >> ~/.librewolf/user.js << 'EOF'
+// Enable chrome customization
+user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
+EOF
+
+echo -e "  ${GREEN}✓${NC} Webapps configured as isolated apps"
+
 # Fastfetch
-cat > ~/.config/fastfetch/config.jsonc << EOF
+cat > ~/.config/fastfetch/config.jsonc << 'EOF'
 {
     "logo": { "type": "none" },
     "modules": [
@@ -865,11 +915,12 @@ cat > ~/.config/fastfetch/config.jsonc << EOF
 EOF
 
 # Environment
-cat > ~/.config/environment.d/theme.conf << EOF
+cat > ~/.config/environment.d/theme.conf << 'EOF'
 QT_QPA_PLATFORMTHEME=qt5ct
 QT_STYLE_OVERRIDE=kvantum
 XCURSOR_THEME=Bibata-Modern-Classic
 XCURSOR_SIZE=24
+MOZ_ENABLE_WAYLAND=1
 EOF
 ok
 
@@ -887,20 +938,35 @@ echo -e "${RED}✗ Failed:${NC} $FAILS"
 echo -e "\n${CYAN}Logs:${NC} $LOG_FILE"
 echo -e "${CYAN}Errors:${NC} $ERROR_LOG"
 
-echo -e "\n${YELLOW}Key bindings:${NC}"
-echo "  Mod+Return   → Kitty (Terminal)"
-echo "  Mod+Space    → Fuzzel (App Launcher)"
-echo "  Mod+F9       → Librewolf (Browser)"
-echo "  Mod+F10      → Nemo (File Manager)"
-echo "  Mod+F11      → Steam"
-echo "  Mod+W        → Toggle Waybar"
-echo "  Mod+P        → Change Wallpaper"
-echo "  Mod+1-5      → Workspaces 1-5"
-echo "  Print        → Screenshot"
+echo -e "\n${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${YELLOW}Key bindings:${NC}"
+echo "  Mod+Return      → Kitty (Terminal)"
+echo "  Mod+Space       → Fuzzel (App Launcher)"
+echo "  Mod+F9          → Librewolf (Browser)"
+echo "  Mod+F10         → Nemo (File Manager)"
+echo "  Mod+F11         → Steam (Performance)"
+echo "  Mod+W           → Toggle Waybar"
+echo "  Mod+P           → Change Wallpaper"
+echo "  Mod+Shift+P     → Reload Colors"
+echo "  Mod+1-5         → Workspaces 1-5"
+echo "  Print           → Screenshot"
+echo "  Ctrl+Alt+Delete → Quit Niri"
 
-echo -e "\n${YELLOW}Webapps:${NC}"
-echo "  Discord | WhatsApp | Spotify"
-echo "  Find in app launcher (Fuzzel)"
+echo -e "\n${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${YELLOW}Webapps (isolated apps):${NC}"
+echo "  • Discord  → Search 'Discord' in Fuzzel"
+echo "  • WhatsApp → Search 'WhatsApp' in Fuzzel"
+echo "  • Spotify  → Search 'Spotify' in Fuzzel"
+echo "  (They open as standalone windows without browser UI)"
 
-echo -e "\n${GREEN}Reboot to start Niri!${NC}"
-echo -e "${YELLOW}After reboot, ZSH will be default shell with all customizations${NC}"
+echo -e "\n${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${YELLOW}First steps after reboot:${NC}"
+echo "  1. Open Kitty → run 'fetch' to see system info"
+echo "  2. Open Neovim → run ':PlugInstall'"
+echo "  3. Add wallpapers → ~/Pictures/Wallpapers/"
+echo "  4. Press Mod+P to test wallpaper change"
+echo "  5. Run 'reload-theme' to refresh colors anytime"
+
+echo -e "\n${GREEN}╔══════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║   Installation Complete! Reboot now  ║${NC}"
+echo -e "${GREEN}╚══════════════════════════════════════╝${NC}"
