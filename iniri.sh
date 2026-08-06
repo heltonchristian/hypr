@@ -1,6 +1,6 @@
 #!/bin/bash
 #==============================================================================
-# Arch Linux Niri Gaming Setup v6.0 - COMPLETE REWRITE
+# Arch Linux Niri Gaming Setup v6.1 - FINAL
 #==============================================================================
 
 set -o pipefail
@@ -69,7 +69,7 @@ install_aur_pkgs() {
 clear
 echo -e "${GREEN}"
 echo "╔══════════════════════════════════════╗"
-echo "║  Arch Linux Niri Gaming Setup v6.0  ║"
+echo "║  Arch Linux Niri Gaming Setup v6.1  ║"
 echo "╚══════════════════════════════════════╝"
 echo -e "${NC}"
 
@@ -106,7 +106,7 @@ if grep -q "^#\[multilib\]" /etc/pacman.conf; then
 else ok; fi
 
 #==============================================================================
-# 3. CORE PACKAGES (with fnott, bemenu)
+# 3. CORE PACKAGES
 #==============================================================================
 ((CURRENT++))
 header "INSTALLING PACKAGES"
@@ -203,7 +203,7 @@ EOF
 ok
 
 #==============================================================================
-# 7. WALLPAPERS + MATUGEN (FORCE DARK THEMES)
+# 7. WALLPAPERS + MATUGEN (SAME COLORS FOR KITTY + NVIM)
 #==============================================================================
 ((CURRENT++))
 step "$CURRENT" "Wallpapers and Matugen"
@@ -240,21 +240,26 @@ cat > ~/.config/matugen/reload-all.sh << 'SCRIPT'
 WP="$HOME/.config/wallpaper/current.jpg"
 [ ! -f "$WP" ] && exit 0
 
-# Force dark mode
+# Generate with --mode dark for consistency
 matugen image "$WP" --mode dark --format kitty > ~/.config/kitty/colors.conf 2>/dev/null
 matugen image "$WP" --mode dark --format env > ~/.config/matugen/colors.sh 2>/dev/null
-matugen image "$WP" --mode dark --format nvim > ~/.config/nvim/colors.vim 2>/dev/null
 matugen image "$WP" --mode dark --format css > ~/.config/waybar/colors.css 2>/dev/null
 matugen image "$WP" --mode dark --format kdl > ~/.config/niri/colors.kdl 2>/dev/null
 
+# Neovim uses the SAME colors as Kitty
+cp ~/.config/kitty/colors.conf ~/.config/nvim/colors.vim 2>/dev/null
+# Convert kitty format to vim format if needed
+sed -i 's/^color/let/g' ~/.config/nvim/colors.vim 2>/dev/null
+sed -i 's/=/ = /g' ~/.config/nvim/colors.vim 2>/dev/null
+
 source ~/.config/matugen/colors.sh 2>/dev/null
 
-# Bemenu config (dmenu-like, embedded in waybar area)
+# Bemenu config (dmenu replacement)
 cat > ~/.config/bemenu/config << BEMENU
 BEMENU_OPTS="--fixed-height 26 --line-height 26 --fn 'JetBrains Mono 11' --nb '${surface:-#1a1b26}' --nf '${on_surface:-#c0caf5}' --sb '${primary:-#7aa2f7}' --sf '${surface:-#1a1b26}' --tb '${surface:-#1a1b26}' --tf '${primary:-#7aa2f7}' --hb '${primary:-#7aa2f7}' --hf '${surface:-#1a1b26}' --scb '${surface_variant:-#24283b}' --scf '${on_surface:-#c0caf5}' --border 0 --margin 0 --width-factor 1.0 --center --wrap 0"
 BEMENU
 
-# GTK dark theme
+# GTK dark
 cat > ~/.config/gtk-3.0/gtk.css << EOFG
 @define-color theme_bg_color ${surface:-#1a1b26};
 @define-color theme_fg_color ${on_surface:-#c0caf5};
@@ -263,36 +268,11 @@ cat > ~/.config/gtk-3.0/gtk.css << EOFG
 @define-color theme_selected_bg_color ${primary:-#7aa2f7};
 @define-color theme_selected_fg_color ${surface:-#1a1b26};
 @define-color borders alpha(${on_surface:-#c0caf5}, 0.08);
-
-* {
-    background-color: @theme_bg_color;
-    color: @theme_fg_color;
-}
-
-window {
-    background-color: @theme_bg_color;
-    color: @theme_fg_color;
-}
-
-button {
-    background-color: @theme_selected_bg_color;
-    color: @theme_selected_fg_color;
-    border-radius: 2px;
-    padding: 2px 8px;
-    border: none;
-}
-
-button:hover {
-    opacity: 0.85;
-}
-
-entry {
-    background-color: @theme_base_color;
-    color: @theme_text_color;
-    border: 1px solid @borders;
-    border-radius: 2px;
-    padding: 2px 6px;
-}
+* { background-color: @theme_bg_color; color: @theme_fg_color; }
+window { background-color: @theme_bg_color; color: @theme_fg_color; }
+button { background-color: @theme_selected_bg_color; color: @theme_selected_fg_color; border-radius: 2px; padding: 2px 8px; border: none; }
+button:hover { opacity: 0.85; }
+entry { background-color: @theme_base_color; color: @theme_text_color; border: 1px solid @borders; border-radius: 2px; padding: 2px 6px; }
 EOFG
 cp ~/.config/gtk-3.0/gtk.css ~/.config/gtk-4.0/gtk.css 2>/dev/null
 
@@ -331,7 +311,7 @@ title-color=${primary:-#7aa2f7}ff
 summary-color=${on_surface:-#c0caf5}ff
 FNOTT
 
-# Reload apps
+# Reload
 pkill -USR1 kitty 2>/dev/null
 pkill -USR2 waybar 2>/dev/null
 pkill -HUP fnott 2>/dev/null
@@ -367,7 +347,7 @@ cp ~/.config/qt5ct/qt5ct.conf ~/.config/qt6ct/qt6ct.conf
 ok
 
 #==============================================================================
-# 8. KITTY + NEOVIM
+# 8. KITTY + NEOVIM (SHARING SAME COLORS)
 #==============================================================================
 ((CURRENT++))
 step "$CURRENT" "Kitty and Neovim"
@@ -391,10 +371,20 @@ EOF
 curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim 2>/dev/null
 
+# Neovim config - uses same colors.vim as kitty
 cat > ~/.config/nvim/init.vim << 'EOF'
+" Load colors from matugen (same as kitty)
 if filereadable(expand('~/.config/nvim/colors.vim'))
     source ~/.config/nvim/colors.vim
 endif
+
+" Set colors manually from the sourced variables
+if exists('g:background')
+    execute 'hi Normal guibg=' . g:background . ' guifg=' . g:foreground
+    execute 'hi CursorLine guibg=' . g:color8
+    execute 'hi StatusLine guibg=' . g:color4 . ' guifg=' . g:background
+endif
+
 call plug#begin('~/.local/share/nvim/plugged')
 Plug 'nvim-lualine/lualine.nvim'
 Plug 'preservim/nerdtree'
@@ -403,19 +393,28 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 call plug#end()
+
 set number relativenumber mouse=a clipboard=unnamedplus termguicolors
 set tabstop=4 shiftwidth=4 expandtab
+set cursorline
 let mapleader = " "
 nnoremap <leader>n :NERDTreeToggle<CR>
+
 lua << LUA
 require'nvim-treesitter.configs'.setup { highlight = { enable = true } }
-require('lualine').setup { options = { theme = 'auto' } }
+require('lualine').setup {
+  options = {
+    theme = 'auto',
+    component_separators = '',
+    section_separators = '',
+  }
+}
 LUA
 EOF
 ok
 
 #==============================================================================
-# 9. NIRI + WAYBAR + BEMENU + OBS FIX
+# 9. NIRI + WAYBAR + BEMENU (BORDER COLORS FIXED)
 #==============================================================================
 ((CURRENT++))
 step "$CURRENT" "Niri, Waybar and Bemenu"
@@ -477,10 +476,14 @@ layout {
         proportion 0.5
     }
     focus-ring {
-        width 1
+        width 2
+        active-color "#7aa2f7"
+        inactive-color "#333333"
     }
     border {
         width 1
+        active-color "#7aa2f7"
+        inactive-color "#2a2a2a"
     }
     tab-indicator {}
     insert-hint {}
@@ -497,25 +500,37 @@ animations {}
 
 prefer-no-csd
 
+// Gaming: fullscreen on DP-3 (main monitor), no waybar
 window-rule {
     match app-id=r#"^gamescope$"#
     open-fullscreen true
     open-floating false
+    open-on-output "DP-3"
 }
 
 window-rule {
     match app-id=r#"^cs2$"#
     open-fullscreen true
+    open-on-output "DP-3"
 }
 
 window-rule {
     match title=r#"^Counter-Strike 2$"#
     open-fullscreen true
+    open-on-output "DP-3"
 }
 
+// All Steam games
+window-rule {
+    match app-id=r#"^steam_app_.*$"#
+    open-fullscreen true
+    open-on-output "DP-3"
+}
+
+// OBS on secondary monitor
 window-rule {
     match app-id=r#"^com\.obsproject\.Studio$"#
-    open-floating false
+    open-on-output "HDMI-A-1"
 }
 
 binds {
@@ -576,7 +591,7 @@ binds {
 }
 NIRIEOF
 
-# Waybar - dark, solid, with CPU temp + power profile
+# Waybar
 cat > ~/.config/waybar/config.jsonc << 'EOF'
 {
     "layer": "top",
@@ -792,10 +807,8 @@ else
     echo -e "  ${GREEN}✓${NC} ZSH already default shell"
 fi
 
-# Services
 systemctl --user enable --now power-profiles-daemon.service pipewire.service pipewire-pulse.service wireplumber.service >> "$LOG_FILE" 2>&1
 
-# Matugen watcher
 cat > ~/.config/systemd/user/matugen-watcher.path << 'SERVEOF'
 [Unit]
 Description=Watch wallpaper changes
@@ -816,7 +829,6 @@ SERVEOF
 systemctl --user daemon-reload >> "$LOG_FILE" 2>&1
 systemctl --user enable --now matugen-watcher.path >> "$LOG_FILE" 2>&1
 
-# Auto-login fix for niri session
 sudo mkdir -p /etc/systemd/system/getty@tty1.service.d/
 sudo rm -f /etc/systemd/system/getty@tty1.service.d/override.conf
 sudo tee /etc/systemd/system/getty@tty1.service.d/override.conf > /dev/null << AUTOEOF
@@ -825,7 +837,6 @@ ExecStart=
 ExecStart=-/usr/bin/agetty --autologin $USER --noclear %I \$TERM
 AUTOEOF
 
-# Ensure niri starts on tty1 via .zprofile
 cat > ~/.zprofile << 'ZPROFILE'
 if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
     export MOZ_ENABLE_WAYLAND=1
@@ -836,7 +847,6 @@ if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
 fi
 ZPROFILE
 
-# OBS Studio Wayland fix
 mkdir -p ~/.config/obs-studio
 cat > ~/.config/obs-studio/global.ini << 'EOF'
 [General]
@@ -846,7 +856,6 @@ DockState=AAAA/wAAAAF9AAAAAwAAAAAAAAArAAAABAAAAAEBAAQAAAAAAAACQAAAAAEAAAAAAAAABY
 geometry=@ByteArray(\x1\xd9\xd0\xcb\0\x2\0\0\0\0\0\xb2\0\0\0\x1c\0\0\x3\xe8\0\0\x2\xf4\0\0\0\xb2\0\0\0\x1c\0\0\x3\xe8\0\0\x2\xf4\0\0\0\0\0\0\0\0\a\x80)
 EOF
 
-# Steam wrappers
 sudo tee /usr/local/bin/steam-performance > /dev/null << 'EOF'
 #!/bin/bash
 powerprofilesctl set performance
@@ -884,28 +893,13 @@ PROFILE=$(find ~/.librewolf -maxdepth 2 -name "*.default-release" -type d 2>/dev
 
 cat > "$PROFILE/chrome/userChrome.css" << 'EOF'
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
-
-#TabsToolbar,
-#nav-bar,
-#sidebar-box,
-#sidebar-header,
-#sidebar-splitter,
-#PersonalToolbar,
-#toolbar-menubar,
-#titlebar {
+#TabsToolbar, #nav-bar, #sidebar-box, #sidebar-header, #sidebar-splitter,
+#PersonalToolbar, #toolbar-menubar, #titlebar {
     visibility: collapse !important;
     display: none !important;
 }
-
-.titlebar-buttonbox-container {
-    display: none !important;
-}
-
-#appcontent {
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none !important;
-}
+.titlebar-buttonbox-container { display: none !important; }
+#appcontent { margin: 0 !important; padding: 0 !important; border: none !important; }
 EOF
 
 for p in $(find ~/.librewolf -maxdepth 2 -name "*.default*" -type d 2>/dev/null); do
@@ -943,7 +937,7 @@ Categories=Audio;
 StartupWMClass=Spotify
 EOF
 
-echo -e "  ${GREEN}✓${NC} Webapps created (Discord, WhatsApp, Spotify)"
+echo -e "  ${GREEN}✓${NC} Webapps created"
 
 #==============================================================================
 # FASTFETCH
@@ -999,17 +993,20 @@ echo "  Mod+Space       → Bemenu (dmenu style)"
 echo "  Mod+F9          → Librewolf"
 echo "  Mod+F10         → Nemo"
 echo "  Mod+F11         → Steam"
-echo "  Super+Alt+W     → Toggle Waybar transparency"
+echo "  Super+Alt+W     → Toggle Waybar"
 echo "  Mod+P           → Change Wallpaper"
-echo "  Mod+Shift+Left  → Focus monitor left"
+echo "  Mod+Shift+F     → Fullscreen game (no waybar)"
+echo "  Mod+Shift+Left  → Focus DP-3"
+echo "  Mod+Shift+Right → Focus HDMI-A-1"
 
-echo -e "\n${YELLOW}Features:${NC}"
-echo "  • Waybar: solid dark, CPU temp, GPU temp, Power profile"
-echo "  • Bemenu: dmenu replacement (waybar dimensions)"
-echo "  • Fnott: notifications (2s timeout)"
-echo "  • OBS: Wayland native"
-echo "  • Keyboard: US-intl + ABNT2"
-echo "  • Auto-login: tty1 → niri"
-echo "  • All themes: force dark mode"
+echo -e "\n${YELLOW}Gaming:${NC}"
+echo "  • Games auto fullscreen on DP-3 (main monitor)"
+echo "  • Use Mod+Shift+F for fullscreen without waybar"
+echo "  • Steam games: auto-detected"
+
+echo -e "\n${YELLOW}Theme:${NC}"
+echo "  • Kitty + Neovim: SAME colors from matugen"
+echo "  • Focus border: active #7aa2f7 / inactive #2a2a2a"
+echo "  • Focus ring: active #7aa2f7 / inactive #333333"
 
 echo -e "\n${GREEN}Reboot to start Niri!${NC}"
