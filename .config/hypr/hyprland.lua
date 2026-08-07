@@ -8,6 +8,16 @@ local menu        = "fuzzel"
 local mainMod     = "SUPER"
 
 -- ============================================================================
+-- AUTOSTART
+-- ============================================================================
+hl.on("hyprland.start", function()
+    hl.exec_cmd("waybar & hyprpaper & wl-gammarelay-rs")
+    hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
+    hl.exec_cmd("solaar --window hide")
+end)
+
+
+-- ============================================================================
 -- MONITORS & WORKSPACES
 -- ============================================================================
 hl.monitor({
@@ -43,39 +53,44 @@ hl.window_rule({
 })
 
 -- ============================================================================
--- AUTOSTART
+-- INPUT
 -- ============================================================================
-hl.on("hyprland.start", function()
-    hl.exec_cmd("waybar & hyprpaper & wl-gammarelay-rs")
-    hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
-    hl.exec_cmd("solaar --window hide")
-end)
+hl.config({
+    input = {
+        kb_layout  = "us",
+        kb_variant = "intl",
+        follow_mouse = 0,
+        accel_profile = "flat",
+        sensitivity = 0,
+        touchpad = {
+            natural_scroll = false,
+        },
+    },
+})
+
+hl.device({
+    name        = "logitech-pro-x-2-dex",
+    sensitivity = 0,
+})
 
 -- ============================================================================
--- ENVIRONMENT VARIABLES
+-- PERFORMANCE ENVIRONMENT VARIABLES
 -- ============================================================================
-hl.env("GTK_THEME", "Orchis-Dark-Compact")
-hl.env("ICON_THEME", "Tela-circle-black")
-hl.env("XCURSOR_THEME", "Bibata-Original-Ice")
-hl.env("XCURSOR_SIZE", "22")
-hl.env("HYPRCURSOR_SIZE", "22")
 
+-- Sessão Wayland
 hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
 hl.env("XDG_SESSION_TYPE", "wayland")
 hl.env("XDG_SESSION_DESKTOP", "Hyprland")
-hl.env("GDK_BACKEND", "wayland,x11,*")
-hl.env("MOZ_ENABLE_WAYLAND", "1")
 
-hl.env("LIBGL_ALWAYS_SOFTWARE", "0")
-hl.env("DRI_PRIME", "0")
+-- AMD Vulkan (RADV)
 hl.env("AMD_VULKAN_ICD", "radeon")
-hl.env("RADV_PERFTEST", "aco")
-hl.env("VK_ICD_FILENAMES", "/usr/share/vulkan/icd.d/radeon_icd.x86_64.json:/usr/share/vulkan/icd.d/radeon_icd.i686.json")
-hl.env("VK_LAYER_PATH", "/usr/share/vulkan/explicit_layer.d")
+
+-- Aceleração de vídeo AMD (OBS, navegador, players)
 hl.env("LIBVA_DRIVER_NAME", "radeonsi")
 
-hl.env("CPU_BOOST", "1")
-hl.env("FORCE_TSC", "1")
+-- Firefox/Apps GTK usando Wayland nativo
+hl.env("MOZ_ENABLE_WAYLAND", "1")
+hl.env("GDK_BACKEND", "wayland,x11,*")
 
 -- ============================================================================
 -- LOOK AND FEEL
@@ -159,27 +174,6 @@ hl.animation({ leaf = "fadeLayersOut", enabled = true, speed = 1.39, bezier = "a
 hl.animation({ leaf = "workspaces",    enabled = true, speed = 1.94, bezier = "almostLinear", style = "fade" })
 hl.animation({ leaf = "workspacesIn",  enabled = true, speed = 1.21, bezier = "almostLinear", style = "fade" })
 hl.animation({ leaf = "workspacesOut", enabled = true, speed = 1.94, bezier = "almostLinear", style = "fade" })
-
--- ============================================================================
--- INPUT
--- ============================================================================
-hl.config({
-    input = {
-        kb_layout  = "us",
-        kb_variant = "intl",
-        follow_mouse = 0,
-        accel_profile = "flat",
-        sensitivity = 0,
-        touchpad = {
-            natural_scroll = false,
-        },
-    },
-})
-
-hl.device({
-    name        = "logitech-pro-x-2-dex",
-    sensitivity = 0,
-})
 
 -- ============================================================================
 -- KEYBINDINGS
