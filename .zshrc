@@ -9,8 +9,10 @@ HISTFILE=~/.zsh_history
 setopt INC_APPEND_HISTORY
 setopt SHARE_HISTORY
 
-#------------ PATH ------------
-export PATH=$PATH:/usr/bin/wl-gammarelay-rs
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /usr/share/fzf/key-bindings.zsh
+source /usr/share/fzf/completion.zsh
 
 #------------ ALIAS ------------
 alias ls='ls --color=auto'
@@ -24,15 +26,10 @@ alias vim='nvim'
 alias fc='nvim ~/.config/fastfetch/config.jsonc'
 alias fetch='clear && fastfetch --logo none | sed "s/^/  /"'
 alias zshrc='nvim ~/.zshrc'
-alias ac='nvim ~/.config/alacritty/alacritty.toml'
+alias footc='nvim ~/.config/foot/foot.ini'
 alias vimrc='nvim ~/.config/nvim/init.vim'
-
-#------------ HYPRLAND ------------
-alias hc='nvim ~/.config/hypr/hyprland.conf'
-alias hw='nvim ~/.config/hypr/hyprpaper.conf'
-alias tc='nvim ~/.config/tofi/config'
-alias waybarc='nvim .config/waybar/config.jsonc'
-alias waybarcss='nvim .config/waybar/style.css'
+alias hc='nvim ~/.config/hypr/hyprland.lua'
+#alias waybarc='nvim .config/waybar/config.jsonc'
+#alias waybarcss='nvim .config/waybar/style.css'
 alias hexit='pkill -KILL -u $USER'
 
-export PATH=$PATH:/home/ly/.spicetify
