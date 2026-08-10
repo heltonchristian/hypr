@@ -1,0 +1,82 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 26,
+    "spacing": 0,
+    // ═════════════════════════════════════════════
+    // MÓDULOS
+    // ═════════════════════════════════════════════
+    "modules-left": [
+        "tray",
+        "hyprland/window"
+    ],
+    "modules-center": [
+        "clock"
+    ],
+    "modules-right": [
+        "power-profiles-daemon",
+        "pulseaudio",
+        "custom/mouse-battery"
+    ],
+    // ═════════════════════════════════════════════
+    // 1. JANELA ATIVA
+    // ═════════════════════════════════════════════
+    "hyprland/window": {
+        "format": "{}",
+        "max-length": 50,
+        "separate-outputs": true
+    },
+    // ═════════════════════════════════════════════
+    // 2. RELÓGIO
+    // ═════════════════════════════════════════════
+    "clock": {
+        "format": "{:%H:%M}",
+        "tooltip-format": "{:%A, %d de %B de %Y}"
+    },
+    // ═════════════════════════════════════════════
+    // 3. PULSEAUDIO
+    // ═════════════════════════════════════════════
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-muted": "󰖁 muted",
+        "format-icons": {
+            "default": [
+                "󰕿",
+                "󰖀",
+                "󰕾"
+            ]
+        },
+        "scroll-step": 5,
+        "on-click": "pavucontrol"
+    },
+    // ═════════════════════════════════════════════
+    // 4. BATERIA DO LOGITECH PRO X 2 DEX
+    // ═════════════════════════════════════════════
+    "custom/mouse-battery": {
+        "exec": "~/.config/waybar/scripts/mouse-battery.sh",
+        "interval": 60,
+        "format": "󰍽 {}",
+        "return-type": "text",
+        "tooltip": false
+    },
+    // ═════════════════════════════════════════════
+    // 5. POWER PROFILES
+    // ═════════════════════════════════════════════
+    "power-profiles-daemon": {
+        "format": "{icon}",
+        "tooltip-format": "{profile}\nClick to change",
+        "format-icons": {
+           "default": " ",
+           "performance": " ",
+           "balanced": " ",
+           "power-saver": " "
+        }
+    },
+    // ═════════════════════════════════════════════
+    // 6. SYSTEM TRAY
+    // ═════════════════════════════════════════════
+    "tray": {
+        "icon-size": 14,
+        "spacing": 5
+    }
+}

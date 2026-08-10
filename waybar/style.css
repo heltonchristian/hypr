@@ -1,0 +1,177 @@
+/*
+ * ═══════════════════════════════════════════════
+ * WAYBAR
+ *
+ * Background: #2c2c2c
+ * Secondary dark: #2A2A2A
+ * Foreground: #FFFFFF
+ * Font: system-ui
+ * Height: 26px
+ * ═══════════════════════════════════════════════
+ */
+
+
+* {
+    font-family: system-ui, sans-serif;
+
+    font-size: 12px;
+    font-weight: 500;
+
+    border: none;
+    border-radius: 0;
+
+    min-height: 0;
+}
+
+
+/* ═══════════════════════════════════════════════
+ * BARRA
+ * ═══════════════════════════════════════════════
+ */
+
+window#waybar {
+    background: #2c2c2c;
+
+    color: #ffffff;
+}
+
+
+/* ═══════════════════════════════════════════════
+ * 1. JANELA ATIVA
+ * ═══════════════════════════════════════════════
+ */
+
+#window {
+    color: #ffffff;
+
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+
+/* ═══════════════════════════════════════════════
+ * 2. RELÓGIO
+ * ═══════════════════════════════════════════════
+ */
+
+#clock {
+    color: #ffffff;
+
+    font-weight: 600;
+}
+
+
+/* ═══════════════════════════════════════════════
+ * 3. PULSEAUDIO
+ * ═══════════════════════════════════════════════
+ */
+
+#pulseaudio {
+    color: #ffffff;
+
+    min-width: 55px;
+
+    margin-left: 7px;
+}
+
+
+/*
+ * Áudio mutado
+ */
+
+#pulseaudio.muted {
+    color: #2A2A2A;
+}
+
+
+/* ═══════════════════════════════════════════════
+ * 4. BATERIA DO MOUSE
+ * ═══════════════════════════════════════════════
+ */
+
+#custom-mouse-battery {
+    color: #ffffff;
+
+    min-width: 50px;
+
+    margin-left: 7px;
+}
+
+
+/* ═══════════════════════════════════════════════
+ * 5. POWER PROFILES
+ * ═══════════════════════════════════════════════
+ */
+
+#power-profiles-daemon {
+    color: #ffffff;
+
+    min-width: 20px;
+
+    margin-left: 7px;
+}
+
+
+/*
+ * Perfil: economia de energia
+ */
+
+#power-profiles-daemon.power-saver {
+    color: #ffffff;
+}
+
+
+/*
+ * Perfil: balanceado
+ */
+
+#power-profiles-daemon.balanced {
+    color: #ffffff;
+}
+
+
+/*
+ * Perfil: performance
+ */
+
+#power-profiles-daemon.performance {
+    color: #ffffff;
+
+    font-weight: 700;
+}
+
+
+/*
+ * Mouse sobre o módulo
+ */
+
+#power-profiles-daemon:hover {
+    color: #ffffff;
+
+    background: #2A2A2A;
+}
+
+
+/* ═══════════════════════════════════════════════
+ * 6. SYSTEM TRAY
+ * ═══════════════════════════════════════════════
+ */
+
+#tray {
+    color: #ffffff;
+
+    margin-left: 7px;
+    margin-right: 5px;
+
+    padding: 0;
+}
+
+
+#tray > .passive {
+    -gtk-icon-effect: none;
+}
+
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+}
