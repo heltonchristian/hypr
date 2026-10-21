@@ -1,381 +1,84 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-set -u
+set -Eeuo pipefail
 
-LOG="$HOME/instalacao-arch.log"
+REPO_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+CONFIG_DIR="$HOME/.config"
 
-echo "========================================" | tee -a "$LOG"
-echo " Instalação dos pacotes Arch Linux" | tee -a "$LOG"
-echo " Início: $(date)" | tee -a "$LOG"
-echo "========================================" | tee -a "$LOG"
+exec > >(tee -a "$HOME/instalacao-arch.log") 2>&1
 
-PACMAN_PACKAGES=(
-    # ===== PACOTES OFICIAIS =====
+echo "==> Iniciando instalação"
 
-    libtiff
-    libvdpau
-    libvncserver
-    libwebp
-    libwireplumber
-    libx11
-    libxau
-    libxcb
-    libxcomposite
-    libxcrypt
-    libxcrypt-compat
-    libxcursor
-    libxcvt
-    libxdmcp
-    libxext
-    libxfixes
-    libxfont2
-    libxft
-    libxi
-    libxinerama
-    libxkbcommon
-    libxkbcommon-x11
-    libxkbfile
-    libklavier
-    libxml2
-    libxmlb
-    libxmu
-    libxrandr
-    libxrender
-    libxres
-    libxshmfence
-    libxslt
-    libxss
-    libxt
-    libxtst
-    libxv
-    libxxf86vm
-    libyaml
-    libyuv
-    libzip
-    licenses
-    lilv
-    linux-api-headers
-    linux-firmware
-    linux-firmware-amdgpu
-    linux-firmware-ath
-    linux-firmware-broadcom
-    linux-firmware-cirrus
-    linux-firmware-intel
-    linux-firmware-mediatek
-    linux-firmware-nvidia
-    linux-firmware-other
-    linux-firmware-radeon
-    linux-firmware-realtek
-    linux-firmware-whence
-    linux-zen
-    llvm-libs
-    lm_sensors
-    lmd
-    lsb-release
-    lsof
-    lua
-    lua51-lpeg
-    lua54
-    luajit
-    lv2
-    lz4
-    m4
-    mailcap
-    make
-    mangohud
-    mbedtls
-    mbedtls3
-    md4c
-    mdadm
-    mesa
-    minizip
-    mkinitcpio
-    mkinitcpio-busybox
-    mpdecimal
-    mpfr
-    mpg123
-    msgpack-c
-    mtdev
-    mupdf
-    ncurses
-    nemo
-    nemo-fileroller
-    neovim
-    nettle
-    nettle3
-    nftables
-    noto-fonts
-    noto-fonts-emoji
-    npth
-    nspr
-    nss
-    nwg-look
-    obs-studio
-    obs-studio-plugin-browser
-    ocl-icd
-    onetbb
-    oniguruma
-    opencore-amr
-    openexr
-    openh264
-    openjpeg2
-    openjph
-    openssh
-    openssl
-    opus
-    orc
-    orchis-theme
-    p11-kit
-    pacman
-    pacman-mirrorlist
-    pam
-    pambase
-    pango
-    pangomm
-    parted
-    patch
-    pciutils
-    pcre2
-    perl
-    perl-error
-    perl-mailtools
-    perl-timedate
-    pinentry
-    pipewire
-    pipewire-alsa
-    pipewire-audio
-    pipewire-jack
-    pipewire-pulse
-    pixman
-    pkgconf
-    playerctl
-    polkit
-    polkit-gnome
-    polkit-qt6
-    popt
-    portaudio
-    power-profiles-daemon
-    pps-tools
-    procps-ng
-    psmisc
-    pugixml
-    python
-    python-cairo
-    python-contourpy
-    python-cycler
-    python-dateutil
-    python-dbus
-    python-evdev
-    python-fonttools
-    python-gobject
-    python-kiwisolver
-    python-matplotlib
-    python-numpy
-    python-packaging
-    python-pillow
-    python-psutil
-    python-pyparsing
-    python-pyudev
-    python-pyxdg
-    python-secretstorage
-    python-six
-    python-typing_extensions
-    python-xlib
-    python-yaml
-    qhull
-    qrcodegen-cmake
-    qt5-base
-    qt5-declarative
-    qt5-translations
-    qt5-wayland
-    qt6-base
-    qt6-declarative
-    qt6-svg
-    qt6-translations
-    qt6-wayland
-    rav1e
-    re2
-    readline
-    rnnoise
-    rubberband
-    sassc
-    sbc
-    sdbus-cpp
-    sdl2-compat
-    sdl3
-    seatd
-    sed
-    sequoia-sq
-    serd
-    setconf
-    shaderc
-    shadow
-    shared-mime-info
-    simde
-    slurp
-    snapper
-    snappy
-    sndio
-    solaar
-    sord
-    source-highlight
-    spandsp
-    spdlog
-    speex
-    speexdsp
-    spirv-tools
-    spotify-launcher
-    sqlite
-    strato
-    srt
-    steam
-    steam-devices
-    sudo
-    svt-av1
-    systemd
-    systemd-libs
-    systemd-resolvconf
-    systemd-sysvcompat
-    tar
-    texinfo
-    tinyspatial
-    tofi
-    tofi-debug
-    tomlplusplus
-    tpm2-tss
-    tree-sitter
-    tree-sitter-c
-    tree-sitter-lua
-    tree-sitter-markdown
-    tree-sitter-query
-    tree-sitter-vim
-    tree-sitter-vimdoc
-    tslib
-    ttf-jetbrains-mono-nerd
-    ttf-liberation
-    ttf-nerd-fonts-symbols
-    ttf-nerd-fonts-symbols-common
-    tzdata
-    udisks2
-    ufw
-    unib
-    upower
-    usbutils
-    uthash
-    util-linux
-    util-linux-libs
-    uwsm
-    v4l-utils
-    vapoursynth
-    vid.stab
-    vmaf
-    volume_key
-    vulkan-icd-loader
-    vulkan-mesa-implicit-layers
-    vulkan-radeon
-    vulkan-tools
-    waybar
-    wayland
-    wayland-protocols
-    webrtc-audio-processing
-    which
-    wireplumber
-    wl-clipboard
-    wxwidgets-common
-    wxwidgets-gtk3
-    x264
-    x265
-    xapp
-    xapp-symbolic-icons
-    xcb-proto
-    xcb-util
-    xcb-util-cursor
-    xcb-util-errors
-    xcb-util-image
-    xcb-util-keysyms
-    xcb-util-renderutil
-    xcb-util-wm
-    xcur2png
-    xdg-desktop-portal
-    xdg-desktop-portal-gtk
-    xdg-desktop-portal-hyprland
-    xdg-user-dirs
-    xdg-utils
-    xf86-input-libinput
-    xf86-video-amdgpu
-    xf86-video-ati
-    xkeyboard-config
-    xorg-fonts-encodings
-    xorg-server
-    xorg-server-common
-    xorg-setxkbmap
-    xorg-xauth
-    xorg-xinit
-    xorg-xkbcomp
-    xorg-xmodmap
-    xorg-xprop
-    xorg-xrandr
-    xorg-xrdb
-    xorg-xwayland
-    xorgproto
-    xvidcore
-    xxhash
-    xz
-    yay
-    yyjson
-    zenity
-    zeromq
-    zimg
-    zix
-    zlib
-    zlib-ng
-    zram-generator
-    zsh
-    zsh-autosuggestions
-    zsh-syntax-highlighting
-    zstd
-    vlc
-    ntfs-3g
-    gvfs
-    gvfs-mtp
-)
-
-AUR_PACKAGES=(
-    # ===== AUR =====
-
-    cemu
-    hyprswitch
-    hyprswitch-debug
-    spicetify-cli
-    spicetify-cli-debug
-    tofi-debug
-    yay-debug
-)
-
-echo
-echo "[1/3] Atualizando sistema..." | tee -a "$LOG"
-
-sudo pacman -Syu --needed --noconfirm 2>&1 | tee -a "$LOG"
-
-echo
-echo "[2/3] Instalando pacotes oficiais..." | tee -a "$LOG"
-
-sudo pacman -S --needed --noconfirm \
-    "${PACMAN_PACKAGES[@]}" 2>&1 | tee -a "$LOG"
-
-echo
-echo "[3/3] Instalando pacotes AUR..." | tee -a "$LOG"
-
-if command -v yay >/dev/null 2>&1; then
-    yay -S --needed --noconfirm \
-        "${AUR_PACKAGES[@]}" 2>&1 | tee -a "$LOG"
-else
-    echo "ERRO: yay não está instalado." | tee -a "$LOG"
-    exit 1
+if [[ "$EUID" -eq 0 ]] || ! command -v pacman >/dev/null 2>&1; then
+echo "Erro: execute como usuário normal em Arch Linux."
+exit 1
 fi
 
-echo
-echo "========================================" | tee -a "$LOG"
-echo " Instalação concluída: $(date)" | tee -a "$LOG"
-echo " Log: $LOG"
-echo "========================================" | tee -a "$LOG"
+PACMAN_PACKAGES=(
+hyprland hyprpaper hyprpolkitagent waybar uwsm
+xorg-xwayland xdg-desktop-portal xdg-desktop-portal-hyprland
+grim slurp wl-clipboard
+zsh zsh-autosuggestions zsh-syntax-highlighting
+nemo nemo-fileroller gvfs ntfs-3g
+noto-fonts noto-fonts-emoji ttf-jetbrains-mono-nerd ttf-liberation
+vulkan-radeon vulkan-icd-loader vulkan-tools
+steam steam-devices obs-studio discord vlc neovim mangohud
+playerctl solaar zenity xdg-user-dirs xdg-utils nwg-look git python
+)
+
+AUR_PACKAGES=(tofi cemu hyprswitch spicetify-cli)
+
+echo "==> Instalando pacotes oficiais"
+sudo pacman -Syu --needed "${PACMAN_PACKAGES[@]}"
+
+AUR_HELPER=""
+if command -v yay >/dev/null 2>&1; then
+AUR_HELPER="yay"
+elif command -v paru >/dev/null 2>&1; then
+AUR_HELPER="paru"
+fi
+
+if [[ -n "$AUR_HELPER" ]]; then
+echo "==> Instalando pacotes AUR"
+"$AUR_HELPER" -S --needed "${AUR_PACKAGES[@]}"
+else
+echo "Aviso: yay/paru não encontrado; pacotes AUR ignorados"
+fi
+
+move_contents() {
+local source="$1" destination="$2" item name
+
+[[ -d "$source" ]] || return 0
+mkdir -p "$destination"
+
+shopt -s dotglob nullglob
+for item in "$source"/*; do
+    [[ -e "$item" ]] || continue
+    name="$(basename "$item")"
+
+    if [[ ! -e "$destination/$name" ]]; then
+        mv -- "$item" "$destination/"
+        echo "==> Movido: $name"
+    else
+        echo "==> Mantido: $name"
+    fi
+done
+shopt -u dotglob nullglob
+
+}
+
+echo "==> Aplicando configurações"
+mkdir -p "$CONFIG_DIR" "$HOME/.local/bin"
+
+move_contents "$REPO_DIR/.config" "$CONFIG_DIR"
+
+for app in hypr waybar tofi discord nvim; do
+move_contents "$REPO_DIR/$app" "$CONFIG_DIR/$app"
+done
+
+move_contents "$REPO_DIR/scripts" "$HOME/.local/bin"
+chmod +x "$HOME"/.local/bin/* 2>/dev/null || true
+
+xdg-user-dirs-update
+
+echo "==> Instalação concluída"
